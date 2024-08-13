@@ -42,12 +42,6 @@ public class AuthController {
                     .body(authService.signUp(request, image));
       }
 
-      @PostMapping(path = "/signin1", consumes = MediaType.APPLICATION_JSON_VALUE,
-              produces = MediaType.APPLICATION_JSON_VALUE)
-      public ResponseEntity<TokenDto> signIn1(@RequestBody SignInDto request) {
-            return ResponseEntity.ok(authService.signIn(request));
-      }
-
       @PostMapping(path = "/signin", consumes = MediaType.APPLICATION_JSON_VALUE,
               produces = MediaType.APPLICATION_JSON_VALUE)
       public ResponseEntity<TokenDto> signIn(@RequestBody SignInDto request) {
