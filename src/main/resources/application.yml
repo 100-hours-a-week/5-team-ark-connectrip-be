@@ -1,0 +1,48 @@
+spring:
+  profiles:
+    active: local # 기본적으로 로컬 환경(local)을 사용. 배포 시에는 'prod'로 변경
+
+# 공통 설정
+  jpa:
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+    database: mysql
+    defer-datasource-initialization: true
+
+  servlet:
+    multipart:
+      enabled: true
+      file-size-threshold: 0B
+      location: /usr/share/temp
+      max-file-size: 30MB
+      max-request-size: 30MB
+
+  data:
+    kakao:
+      grant_type: authorization_code
+      client_id: ${KAKAO_CLIENT_ID}
+      redirect_uri: ${KAKAO_REDIRECT_URI}
+
+  jwt:
+    header: Authorization
+    prefix: "Bearer "
+    secret: ${JWT_SECRET}
+    access-token-expire-time: 1800000
+    refresh-token-expire-time: 432000000
+
+cloud:
+  aws:
+    s3:
+      bucket: ${AWS_S3_BUCKET}
+    credentials:
+      accessKey: ${AWS_ACCESS_KEY}
+      secretKey: ${AWS_SECRET_KEY}
+    region:
+      static: ap-northeast-2
+      auto: false
+    stack:
+      auto: false
