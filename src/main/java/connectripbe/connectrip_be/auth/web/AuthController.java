@@ -34,7 +34,8 @@ public class AuthController {
       private final KakaoService kakaoService;
 
 
-
+      @PostMapping(path = "/signup", consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+              produces = MediaType.APPLICATION_JSON_VALUE)
       public ResponseEntity<SignUpDto> signUp(@RequestPart("request") SignUpDto request,
               @RequestPart(name = "image", required = false) MultipartFile image) {
             return ResponseEntity.status(HttpStatus.CREATED)
