@@ -19,9 +19,10 @@ public class AccompanyPostController {
 
     // 게시글 생성
     @PostMapping
-    public ResponseEntity<AccompanyPostResponse> createPost(@RequestBody AccompanyPostRequest request, @LoginUser String email) {
-        AccompanyPostResponse response = accompanyPostService.createPost(request, email);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<Void> createPost(@RequestBody AccompanyPostRequest request, @LoginUser String email) {
+        accompanyPostService.createPost(request, email);
+
+        return ResponseEntity.ok().build();
     }
 
     // 게시글 조회
@@ -33,12 +34,12 @@ public class AccompanyPostController {
 
     // 게시글 수정
     @PutMapping("/{postId}")
-    public ResponseEntity<AccompanyPostResponse> updatePost(
+    public ResponseEntity<Void> updatePost(
             @PathVariable Long postId,
             @RequestBody AccompanyPostRequest request,
             @RequestParam String email) {
-        AccompanyPostResponse response = accompanyPostService.updatePost(postId, request, email);
-        return ResponseEntity.ok(response);
+        accompanyPostService.updatePost(postId, request, email);
+        return ResponseEntity.ok().build();
     }
 
     // 게시글 삭제

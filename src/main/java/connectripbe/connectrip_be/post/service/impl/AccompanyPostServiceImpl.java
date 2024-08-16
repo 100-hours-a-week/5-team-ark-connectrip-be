@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class AccompanyPostServiceImpl implements AccompanyPostService {
 
@@ -21,18 +22,19 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
     private final MemberRepository memberRepository;
 
     @Override
-    @Transactional
-    public AccompanyPostResponse createPost(AccompanyPostRequest request, String email) {
+    public void createPost(AccompanyPostRequest request, String email) {
         Member member = getMember(email);
-        AccompanyPost accompanyPost = request.toEntity();
-        accompanyPost.setMember(member);
 
-        // Member에 게시글 추가
-        member.addPost(accompanyPost);
-
-        // 게시글 저장
-        AccompanyPost savedAccompanyPost = accompanyPostRepository.save(accompanyPost);
-        return AccompanyPostResponse.fromEntity(savedAccompanyPost);
+        // fixme-noah: custom_url, url_qr_path 보류
+        accompanyPostRepository.save(new AccompanyPost(
+                member,
+                request.title(),
+                request.startDate(),
+                request.endDate(),
+                request.accompanyArea(),
+                "temp",
+                "temp",
+                request.content()));
     }
 
     @Override
@@ -44,20 +46,20 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
 
     @Override
     @Transactional
-    public AccompanyPostResponse updatePost(Long id, AccompanyPostRequest request, String email) {
+    public void updatePost(Long id, AccompanyPostRequest request, String email) {
         AccompanyPost accompanyPost = getPost(id);
         Member member = getMember(email);
 
         // 작성자 검증
         validatePostOwnership(accompanyPost, member);
 
-        accompanyPost.setTitle(request.getTitle());
-        accompanyPost.setContent(request.getContent());
-        accompanyPost.setAccompanyArea(request.getAccompanyArea());
-        accompanyPost.setStartDate(request.getStartDate());
-        accompanyPost.setEndDate(request.getEndDate());
-
-        return AccompanyPostResponse.fromEntity(accompanyPost);
+        accompanyPost.updateAccompanyPost(
+                request.title(),
+                request.startDate(),
+                request.endDate(),
+                request.accompanyArea(),
+                request.title()
+        );
     }
 
     @Override
@@ -68,9 +70,6 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
 
         // 작성자 검증
         validatePostOwnership(accompanyPost, member);
-
-        // Member에서 게시글 삭제
-        member.removePost(accompanyPost);
 
         // 게시글 삭제
         accompanyPostRepository.delete(accompanyPost);

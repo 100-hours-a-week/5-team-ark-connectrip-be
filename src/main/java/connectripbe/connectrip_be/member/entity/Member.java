@@ -23,57 +23,40 @@ import java.util.List;
 @Table(name = "member")
 public class Member extends BaseEntity {
 
-      @Id
-      @GeneratedValue(strategy = GenerationType.IDENTITY)
-      private Long id; //아이디
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id; //아이디
 
-      @Column(nullable = false, unique = true)
-      private String email; //이메일
+    @Column(nullable = false, unique = true)
+    private String email; //이메일
 
-      @Column(name = "password")
-      private String password; //비밀번호
+    @Column(name = "password")
+    private String password; //비밀번호
 
-      @Column(name = "nickname")
-      private String nickname; // 닉네임
+    @Column(name = "nickname")
+    private String nickname; // 닉네임
 
-      @Column(name = "profile_image_path")
-      private String profileImagePath; // 프로필 이미지
+    @Column(name = "profile_image_path")
+    private String profileImagePath; // 프로필 이미지
 
-      @Column(name = "gender")
-      private String gender; // 성별
+    @Column(name = "gender")
+    private String gender; // 성별
 
-      @Column(name = "description")
-      private String description; // 자기소개
+    @Column(name = "description")
+    private String description; // 자기소개
 
-      @Column(name = "age")
-      private String age; // 나이
+    @Column(name = "age")
+    private String age; // 나이
 
-      @Enumerated(EnumType.STRING)
-      @Column(name= "login_type", nullable = false, length = 10)
-      private MemberLoginType loginType; // 로그인 타입 ex) 카카오, 이메일
+    @Enumerated(EnumType.STRING)
+    @Column(name = "login_type", nullable = false, length = 10)
+    private MemberLoginType loginType; // 로그인 타입 ex) 카카오, 이메일
 
-      @Enumerated(EnumType.STRING)
-      @Column(nullable = false, length = 10)
-      private MemberRoleType roleType; // 권한
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 10)
+    private MemberRoleType roleType; // 권한
 
-//      @Builder.Default
-//      @OneToMany(mappedBy = "member")
-//      private List<Post> posts = new ArrayList<>();
-//
-      @Builder.Default
-      @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
-      private List<AccompanyPost> accompanyPosts = new ArrayList<>();
-
-      // 게시글 추가
-      public void addPost(AccompanyPost accompanyPost) {
-            this.accompanyPosts.add(accompanyPost);
-            accompanyPost.setMember(this);
-      }
-
-      // 게시글 삭제
-      public void removePost(AccompanyPost accompanyPost) {
-            this.accompanyPosts.remove(accompanyPost);
-            accompanyPost.setMember(null);
-      }
-
+    @Builder.Default
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<AccompanyPost> accompanyPosts = new ArrayList<>();
 }

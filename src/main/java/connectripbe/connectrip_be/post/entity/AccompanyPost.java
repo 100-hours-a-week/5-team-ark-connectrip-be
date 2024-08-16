@@ -9,17 +9,14 @@ import lombok.*;
 import java.time.LocalDate;
 
 @Entity
-@Getter
-@Setter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
-@Builder
 @Table(name = "accompany_post")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
 public class AccompanyPost extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
@@ -28,25 +25,39 @@ public class AccompanyPost extends BaseEntity {
     @Column(nullable = false)
     private String title;
 
-    @Column(nullable = false)
-    private String content;
+    private LocalDate startDate;
+
+    private LocalDate endDate;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private AccompanyArea accompanyArea;
 
-    @Column(name = "start_date")
-    private LocalDate startDate;
-
-    @Column(name = "end_date")
-    private LocalDate endDate;
-
-    @Column(name = "custom_url")
+    // fixme-noah: customUrl 임시 보류
     private String customUrl;
 
-    // 댓글 추가
-    //public void addComment(Comment comment) {
-    //this.comments.add(comment);
-    //comment.setPost(this); }
-}
+    // fixme-noah: urlQrPath 임시 보류
+    private String urlQrPath;
 
+    @Column(nullable = false)
+    private String content;
+
+    public AccompanyPost(Member member, String title, LocalDate startDate, LocalDate endDate, AccompanyArea accompanyArea, String customUrl, String urlQrPath, String content) {
+        this.member = member;
+        this.title = title;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.accompanyArea = accompanyArea;
+        this.customUrl = customUrl;
+        this.urlQrPath = urlQrPath;
+        this.content = content;
+    }
+
+    public void updateAccompanyPost(String title, LocalDate startDate, LocalDate endDate, AccompanyArea accompanyArea, String content) {
+        this.title = title;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.accompanyArea = accompanyArea;
+        this.content = content;
+    }
+}
