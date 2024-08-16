@@ -32,12 +32,11 @@ public class AccompanyPostController {
         return ResponseEntity.ok(response);
     }
 
-    // 게시글 수정
-    @PutMapping("/{postId}")
+    @PatchMapping("/{postId}")
     public ResponseEntity<Void> updatePost(
+            @LoginUser String email,
             @PathVariable Long postId,
-            @RequestBody AccompanyPostRequest request,
-            @RequestParam String email) {
+            @RequestBody AccompanyPostRequest request) {
         accompanyPostService.updatePost(postId, request, email);
         return ResponseEntity.ok().build();
     }
