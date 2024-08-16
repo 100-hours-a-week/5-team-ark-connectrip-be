@@ -41,11 +41,12 @@ public class AccompanyPostController {
         return ResponseEntity.ok().build();
     }
 
-    // 게시글 삭제
     @DeleteMapping("/{postId}")
-    public ResponseEntity<Void> deletePost(@PathVariable Long postId, @RequestParam String email) {
+    public ResponseEntity<Void> deletePost(
+            @LoginUser String email,
+            @PathVariable Long postId) {
         accompanyPostService.deletePost(postId, email);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().build();
     }
 
     // 게시글 목록 조회 (페이징 처리)
