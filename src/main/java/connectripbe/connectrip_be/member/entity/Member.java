@@ -3,19 +3,16 @@ package connectripbe.connectrip_be.member.entity;
 import connectripbe.connectrip_be.global.entity.BaseEntity;
 import connectripbe.connectrip_be.member.entity.type.MemberLoginType;
 import connectripbe.connectrip_be.member.entity.type.MemberRoleType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import connectripbe.connectrip_be.post.entity.AccompanyPost;
+import jakarta.persistence.*;
 
-import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Entity
@@ -63,19 +60,20 @@ public class Member extends BaseEntity {
 //      @OneToMany(mappedBy = "member")
 //      private List<Post> posts = new ArrayList<>();
 //
-//      @Builder.Default
-//      @OneToMany(mappedBy = "member")
-//      private List<Meeting> myMeetingList = new ArrayList<>();
-//
-//      public void addPost(Post post) {
-//            this.posts.add(post);
-//            post.assignMember(this);
-//      }
-//
-//      public void removePost(Post post) {
-//            this.posts.remove(post);
-//            post.assignMember(null);
-//      }
+      @Builder.Default
+      @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+      private List<AccompanyPost> accompanyPosts = new ArrayList<>();
 
+      // 게시글 추가
+      public void addPost(AccompanyPost accompanyPost) {
+            this.accompanyPosts.add(accompanyPost);
+            accompanyPost.setMember(this);
+      }
+
+      // 게시글 삭제
+      public void removePost(AccompanyPost accompanyPost) {
+            this.accompanyPosts.remove(accompanyPost);
+            accompanyPost.setMember(null);
+      }
 
 }
