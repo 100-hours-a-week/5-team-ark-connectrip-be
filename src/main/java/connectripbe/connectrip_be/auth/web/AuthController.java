@@ -25,6 +25,8 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+
 @RestController
 @RequiredArgsConstructor
 @Slf4j
@@ -70,7 +72,7 @@ public class AuthController {
 
     // noah-Q. 시큐리티를 사용하는데 로그인이 왜 컨트롤러에 있지? 고민 중
     @GetMapping("/redirected/kakao")
-    public ResponseEntity<?> kakaoLogin(@RequestParam("code") String code, HttpServletResponse httpServletResponse) {
+    public void kakaoLogin(@RequestParam("code") String code, HttpServletResponse httpServletResponse) throws IOException {
         // fixme: Object가 아닌 TokenDto 반환으로 변경
         TokenDto tokenDto = (TokenDto) kakaoService.kakaoLogin(code);
 
@@ -91,6 +93,8 @@ public class AuthController {
 
         httpServletResponse.addCookie(accesssTokenCookie);
 
-        return ResponseEntity.ok(kakaoService.kakaoLogin(code));
+        httpServletResponse.sendRedirect("localhsot:3000/accompany");
+
+//        return ResponseEntity.ok(kakaoService.kakaoLogin(code));
     }
 }
