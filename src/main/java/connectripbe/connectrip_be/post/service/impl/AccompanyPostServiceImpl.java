@@ -3,6 +3,7 @@ package connectripbe.connectrip_be.post.service.impl;
 import connectripbe.connectrip_be.post.dto.AccompanyPostRequest;
 import connectripbe.connectrip_be.post.dto.AccompanyPostResponse;
 import connectripbe.connectrip_be.post.entity.AccompanyPostEntity;
+import connectripbe.connectrip_be.post.exception.NotFoundAccompanyPostException;
 import connectripbe.connectrip_be.post.repository.AccompanyPostRepository;
 import connectripbe.connectrip_be.post.service.AccompanyPostService;
 import connectripbe.connectrip_be.member.entity.Member;
@@ -87,8 +88,7 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
     }
 
     private AccompanyPostEntity getPost(Long postId) {
-        return accompanyPostRepository.findById(postId)
-                .orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다."));
+        return accompanyPostRepository.findById(postId).orElseThrow(NotFoundAccompanyPostException::new);
     }
 
     private void validatePostOwnership(AccompanyPostEntity accompanyPostEntity, Member member) {
