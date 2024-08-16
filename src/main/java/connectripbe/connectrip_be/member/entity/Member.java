@@ -3,7 +3,7 @@ package connectripbe.connectrip_be.member.entity;
 import connectripbe.connectrip_be.global.entity.BaseEntity;
 import connectripbe.connectrip_be.member.entity.type.MemberLoginType;
 import connectripbe.connectrip_be.member.entity.type.MemberRoleType;
-import connectripbe.connectrip_be.post.entity.AccompanyPost;
+import connectripbe.connectrip_be.post.entity.AccompanyPostEntity;
 import jakarta.persistence.*;
 
 import lombok.AllArgsConstructor;
@@ -58,5 +58,5 @@ public class Member extends BaseEntity {
 
     @Builder.Default
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<AccompanyPost> accompanyPosts = new ArrayList<>();
+    private List<AccompanyPostEntity> accompanyPostEntities = new ArrayList<>();
 }

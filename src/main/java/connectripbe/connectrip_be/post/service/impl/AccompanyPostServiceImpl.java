@@ -2,7 +2,7 @@ package connectripbe.connectrip_be.post.service.impl;
 
 import connectripbe.connectrip_be.post.dto.AccompanyPostRequest;
 import connectripbe.connectrip_be.post.dto.AccompanyPostResponse;
-import connectripbe.connectrip_be.post.entity.AccompanyPost;
+import connectripbe.connectrip_be.post.entity.AccompanyPostEntity;
 import connectripbe.connectrip_be.post.repository.AccompanyPostRepository;
 import connectripbe.connectrip_be.post.service.AccompanyPostService;
 import connectripbe.connectrip_be.member.entity.Member;
@@ -26,7 +26,7 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
         Member member = getMember(email);
 
         // fixme-noah: custom_url, url_qr_path 보류
-        accompanyPostRepository.save(new AccompanyPost(
+        accompanyPostRepository.save(new AccompanyPostEntity(
                 member,
                 request.title(),
                 request.startDate(),
@@ -40,20 +40,20 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
     @Override
     @Transactional(readOnly = true)
     public AccompanyPostResponse readPost(Long postId) {
-        AccompanyPost accompanyPost = getPost(postId);
-        return AccompanyPostResponse.fromEntity(accompanyPost);
+        AccompanyPostEntity accompanyPostEntity = getPost(postId);
+        return AccompanyPostResponse.fromEntity(accompanyPostEntity);
     }
 
     @Override
     @Transactional
     public void updatePost(Long id, AccompanyPostRequest request, String email) {
-        AccompanyPost accompanyPost = getPost(id);
+        AccompanyPostEntity accompanyPostEntity = getPost(id);
         Member member = getMember(email);
 
         // 작성자 검증
-        validatePostOwnership(accompanyPost, member);
+        validatePostOwnership(accompanyPostEntity, member);
 
-        accompanyPost.updateAccompanyPost(
+        accompanyPostEntity.updateAccompanyPost(
                 request.title(),
                 request.startDate(),
                 request.endDate(),
@@ -65,14 +65,14 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
     @Override
     @Transactional
     public void deletePost(Long id, String email) {
-        AccompanyPost accompanyPost = getPost(id);
+        AccompanyPostEntity accompanyPostEntity = getPost(id);
         Member member = getMember(email);
 
         // 작성자 검증
-        validatePostOwnership(accompanyPost, member);
+        validatePostOwnership(accompanyPostEntity, member);
 
         // 게시글 삭제
-        accompanyPostRepository.delete(accompanyPost);
+        accompanyPostRepository.delete(accompanyPostEntity);
     }
 
     @Override
@@ -86,13 +86,13 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
                 .orElseThrow(() -> new IllegalArgumentException("회원이 존재하지 않습니다."));
     }
 
-    private AccompanyPost getPost(Long postId) {
+    private AccompanyPostEntity getPost(Long postId) {
         return accompanyPostRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다."));
     }
 
-    private void validatePostOwnership(AccompanyPost accompanyPost, Member member) {
-        if (!accompanyPost.getMember().getEmail().equals(member.getEmail())) {
+    private void validatePostOwnership(AccompanyPostEntity accompanyPostEntity, Member member) {
+        if (!accompanyPostEntity.getMember().getEmail().equals(member.getEmail())) {
             throw new IllegalArgumentException("게시글 수정/삭제 권한이 없습니다.");
         }
     }

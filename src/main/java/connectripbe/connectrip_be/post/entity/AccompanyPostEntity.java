@@ -12,7 +12,7 @@ import java.time.LocalDate;
 @Table(name = "accompany_post")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class AccompanyPost extends BaseEntity {
+public class AccompanyPostEntity extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,7 +42,7 @@ public class AccompanyPost extends BaseEntity {
     @Column(nullable = false)
     private String content;
 
-    public AccompanyPost(Member member, String title, LocalDate startDate, LocalDate endDate, AccompanyArea accompanyArea, String customUrl, String urlQrPath, String content) {
+    public AccompanyPostEntity(Member member, String title, LocalDate startDate, LocalDate endDate, AccompanyArea accompanyArea, String customUrl, String urlQrPath, String content) {
         this.member = member;
         this.title = title;
         this.startDate = startDate;

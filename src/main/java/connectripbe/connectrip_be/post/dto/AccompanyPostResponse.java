@@ -1,6 +1,6 @@
 package connectripbe.connectrip_be.post.dto;
 
-import connectripbe.connectrip_be.post.entity.AccompanyPost;
+import connectripbe.connectrip_be.post.entity.AccompanyPostEntity;
 import connectripbe.connectrip_be.post.entity.enums.AccompanyArea;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,17 +27,17 @@ public class AccompanyPostResponse {
     private String customUrl;
 
     // Post 엔티티를 PostResponseDto로 변환하는 메서드
-    public static AccompanyPostResponse fromEntity(AccompanyPost accompanyPost) {
+    public static AccompanyPostResponse fromEntity(AccompanyPostEntity accompanyPostEntity) {
         return AccompanyPostResponse.builder()
-                .accompanyPostId(accompanyPost.getId())
-                .memberId(accompanyPost.getMember().getId())
-                .title(accompanyPost.getTitle())
-                .accompanyArea(accompanyPost.getAccompanyArea()) // Enum 값을 그대로 할당
-                .content(accompanyPost.getContent())
-                .startDate(accompanyPost.getStartDate())
-                .endDate(accompanyPost.getEndDate())
-                .createdAt(accompanyPost.getCreatedAt())
-                .customUrl(accompanyPost.getCustomUrl())
+                .accompanyPostId(accompanyPostEntity.getId())
+                .memberId(accompanyPostEntity.getMember().getId())
+                .title(accompanyPostEntity.getTitle())
+                .accompanyArea(accompanyPostEntity.getAccompanyArea()) // Enum 값을 그대로 할당
+                .content(accompanyPostEntity.getContent())
+                .startDate(accompanyPostEntity.getStartDate())
+                .endDate(accompanyPostEntity.getEndDate())
+                .createdAt(accompanyPostEntity.getCreatedAt())
+                .customUrl(accompanyPostEntity.getCustomUrl())
                 .build();
     }
 }
