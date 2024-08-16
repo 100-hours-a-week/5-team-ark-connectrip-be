@@ -1,5 +1,6 @@
 package connectripbe.connectrip_be.post.service.impl;
 
+import connectripbe.connectrip_be.member.exception.NotFoundMemberException;
 import connectripbe.connectrip_be.post.dto.AccompanyPostRequest;
 import connectripbe.connectrip_be.post.dto.AccompanyPostResponse;
 import connectripbe.connectrip_be.post.entity.AccompanyPostEntity;
@@ -83,8 +84,7 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
     }
 
     private Member getMember(String email) {
-        return memberRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("회원이 존재하지 않습니다."));
+        return memberRepository.findByEmail(email).orElseThrow(NotFoundMemberException::new);
     }
 
     private AccompanyPostEntity getPost(Long postId) {
