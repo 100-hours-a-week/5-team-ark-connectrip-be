@@ -36,8 +36,13 @@ public enum ErrorCode {
     // Accompany Post, 동행 게시글
     NOT_FOUND_ACCOMPANY_POST(HttpStatus.NOT_FOUND, "동행 게시글을 찾을 수 없습니다."),
 
+    //  Accompany Status, 동행 상태
+    NOT_FOUND_ACCOMPANY_STATUS(HttpStatus.INTERNAL_SERVER_ERROR, "동행 상태를 찾을 수 없습니다."),
+    ALREADY_FINISHED_ACCOMPANY_STATUS_EXCEPTION(HttpStatus.BAD_REQUEST, "이미 종료된 동행압니다."),
+
     // Meeting error
     DUPLICATE_MEETING(HttpStatus.BAD_REQUEST, "이미 모임에 참여하셨습니다."),
+
     /**
      * 401 Unauthorized
      */
@@ -46,9 +51,13 @@ public enum ErrorCode {
 
     // Security(jwt) error
     UNKNOWN_ERROR(HttpStatus.UNAUTHORIZED, "알 수 없는 오류가 발생했습니다."),
+
     INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 토큰입니다."),
+
     UNSUPPORTED_TOKEN(HttpStatus.UNAUTHORIZED, "지원하지 않는 토큰입니다."),
+
     WRONG_TYPE_TOKEN(HttpStatus.UNAUTHORIZED, "잘못된 유형의 토큰입니다."),
+
     EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, "액세스 토큰이 만료되었습니다. 재발급이 필요합니다."),
 
     /**
@@ -68,6 +77,7 @@ public enum ErrorCode {
      * 500 Internal Server Error
      */
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "내부 서버 오류가 발생했습니다."),
+
     API_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "외부 API 서버 오류가 발생했습니다."),
 
     /**

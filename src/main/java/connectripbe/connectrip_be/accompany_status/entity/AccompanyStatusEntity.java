@@ -1,5 +1,7 @@
 package connectripbe.connectrip_be.accompany_status.entity;
 
+import connectripbe.connectrip_be.accompany_status.exception.AlreadyFinishedAccompanyStatusException;
+import connectripbe.connectrip_be.global.entity.BaseEntity;
 import connectripbe.connectrip_be.post.entity.AccompanyPostEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -9,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class AccompanyStatusEntity {
+public class AccompanyStatusEntity extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,5 +28,15 @@ public class AccompanyStatusEntity {
     public AccompanyStatusEntity(AccompanyPostEntity accompanyPostEntity, AccompanyStatusEnum accompanyStatusEnum) {
         this.accompanyPostEntity = accompanyPostEntity;
         this.accompanyStatusEnum = accompanyStatusEnum;
+    }
+
+    public void updateStatus() {
+        if (accompanyStatusEnum == AccompanyStatusEnum.PROGRESSING) {
+            accompanyStatusEnum = AccompanyStatusEnum.CLOSED;
+        } else if (accompanyStatusEnum == AccompanyStatusEnum.CLOSED) {
+            accompanyStatusEnum = AccompanyStatusEnum.FINISHED;
+        } else {
+            throw new AlreadyFinishedAccompanyStatusException();
+        }
     }
 }
