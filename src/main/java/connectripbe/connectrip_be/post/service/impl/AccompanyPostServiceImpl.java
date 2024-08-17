@@ -12,7 +12,7 @@ import connectripbe.connectrip_be.post.exception.NotFoundAccompanyPostException;
 import connectripbe.connectrip_be.post.repository.AccompanyPostRepository;
 import connectripbe.connectrip_be.post.service.AccompanyPostService;
 import connectripbe.connectrip_be.member.entity.Member;
-import connectripbe.connectrip_be.member.repository.MemberRepository;
+import connectripbe.connectrip_be.member.repository.MemberJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,7 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class AccompanyPostServiceImpl implements AccompanyPostService {
 
     private final AccompanyPostRepository accompanyPostRepository;
-    private final MemberRepository memberRepository;
+    private final MemberJpaRepository memberJpaRepository;
     private final AccompanyStatusJpaRepository accompanyStatusJpaRepository;
 
     @Override
@@ -116,7 +116,7 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
     }
 
     private Member findMemberEntity(String email) {
-        return memberRepository.findByEmail(email).orElseThrow(NotFoundMemberException::new);
+        return memberJpaRepository.findByEmail(email).orElseThrow(NotFoundMemberException::new);
     }
 
     private AccompanyPostEntity findAccompanyPostEntity(long accompanyPostId) {

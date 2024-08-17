@@ -14,7 +14,7 @@ import connectripbe.connectrip_be.global.exception.GlobalException;
 import connectripbe.connectrip_be.global.service.RedisService;
 import connectripbe.connectrip_be.global.util.aws.service.AwsS3Service;
 import connectripbe.connectrip_be.member.entity.Member;
-import connectripbe.connectrip_be.member.repository.MemberRepository;
+import connectripbe.connectrip_be.member.repository.MemberJpaRepository;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,7 +32,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class AuthServiceImpl implements AuthService {
 
       private final PasswordEncoder passwordEncoder;
-      private final MemberRepository memberRepository;
+      private final MemberJpaRepository memberJpaRepository;
 
       private final AwsS3Service awsS3Service;
       private final TokenProvider tokenProvider;
@@ -42,7 +42,7 @@ public class AuthServiceImpl implements AuthService {
 
       @Transactional
       public SignUpDto signUp(SignUpDto request, MultipartFile profileImage) {
-            if (memberRepository.existsByEmail(request.getEmail())) {
+            if (memberJpaRepository.existsByEmail(request.getEmail())) {
                   throw new GlobalException(DUPLICATE_USER);
             }
             String encodedPasswordEncoder = passwordEncoder.encode(request.getPassword());
@@ -62,11 +62,11 @@ public class AuthServiceImpl implements AuthService {
 
             Member memberToSave = SignUpDto.signUpForm(request, encodedPasswordEncoder);
 
-            return SignUpDto.fromEntity(memberRepository.save(memberToSave));
+            return SignUpDto.fromEntity(memberJpaRepository.save(memberToSave));
       }
 
       public TokenDto signIn(SignInDto request) {
-            Member member = memberRepository.findByEmail(request.getEmail())
+            Member member = memberJpaRepository.findByEmail(request.getEmail())
                     .orElseThrow(() -> new GlobalException(USER_NOT_FOUND));
 
             if (!passwordEncoder.matches(request.getPassword(), member.getPassword())) {

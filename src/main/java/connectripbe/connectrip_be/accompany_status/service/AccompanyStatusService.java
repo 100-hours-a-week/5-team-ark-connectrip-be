@@ -7,7 +7,7 @@ import connectripbe.connectrip_be.accompany_status.response.AccompanyStatusRespo
 import connectripbe.connectrip_be.member.entity.Member;
 import connectripbe.connectrip_be.member.exception.MemberNotOwnerException;
 import connectripbe.connectrip_be.member.exception.NotFoundMemberException;
-import connectripbe.connectrip_be.member.repository.MemberRepository;
+import connectripbe.connectrip_be.member.repository.MemberJpaRepository;
 import connectripbe.connectrip_be.post.entity.AccompanyPostEntity;
 import connectripbe.connectrip_be.post.exception.NotFoundAccompanyPostException;
 import connectripbe.connectrip_be.post.repository.AccompanyPostRepository;
@@ -22,7 +22,7 @@ public class AccompanyStatusService {
 
     private final AccompanyPostRepository accompanyPostRepository;
     private final AccompanyStatusJpaRepository accompanyStatusJpaRepository;
-    private final MemberRepository memberRepository;
+    private final MemberJpaRepository memberJpaRepository;
 
     // fixme-noah: 최적화 고민 중
     @Transactional(readOnly = true)
@@ -38,7 +38,7 @@ public class AccompanyStatusService {
 
     // fixme-noah: 코드 수정 고민 중
     public void updateAccompanyStatus(String memberEmail, long postId) {
-        Member memberEntity = memberRepository.findByEmail(memberEmail)
+        Member memberEntity = memberJpaRepository.findByEmail(memberEmail)
                 .orElseThrow(NotFoundMemberException::new);
 
         AccompanyPostEntity accompanyPostEntity = accompanyPostRepository.findById(postId)

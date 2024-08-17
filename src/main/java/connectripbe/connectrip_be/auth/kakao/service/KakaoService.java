@@ -14,7 +14,7 @@ import connectripbe.connectrip_be.auth.service.AuthService;
 import connectripbe.connectrip_be.global.exception.GlobalException;
 import connectripbe.connectrip_be.member.entity.Member;
 import connectripbe.connectrip_be.member.entity.type.MemberRoleType;
-import connectripbe.connectrip_be.member.repository.MemberRepository;
+import connectripbe.connectrip_be.member.repository.MemberJpaRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,7 +28,7 @@ import org.springframework.stereotype.Service;
 public class KakaoService {
 
   private final KakaoApi kakaoApi;
-  private final MemberRepository memberRepository;
+  private final MemberJpaRepository memberJpaRepository;
   private final AuthService authService;
 
   @Value("${spring.data.kakao.grant_type}")
@@ -57,7 +57,7 @@ public class KakaoService {
 
     try {
       // 이메일을 통해 기존 회원이 있는지 확인한다.
-      Member member = memberRepository.findByEmail(userInfo.getKakaoAccount().getEmail())
+      Member member = memberJpaRepository.findByEmail(userInfo.getKakaoAccount().getEmail())
           .orElseThrow(() -> new GlobalException(USER_NOT_FOUND));
 
 
@@ -71,7 +71,7 @@ public class KakaoService {
                 .email(userInfo.getKakaoAccount().getEmail())
                 .roleType(MemberRoleType.USER) // 기본 사용자 권한 설정
                 .build();
-        memberRepository.save(newMember);
+        memberJpaRepository.save(newMember);
 
         // 토큰 생성 및 반환
         return authService.generateToken(newMember.getEmail(), newMember.getRoleType().getCode());
@@ -95,7 +95,7 @@ public class KakaoService {
     Member member = KaKaoSignUpDto.toEntity(request);
 
     // 회원 정보 저장
-    memberRepository.save(member);
+    memberJpaRepository.save(member);
 
     // 토큰 생성 및 반환
     return authService.generateToken(member.getEmail(), member.getRoleType().getCode());
