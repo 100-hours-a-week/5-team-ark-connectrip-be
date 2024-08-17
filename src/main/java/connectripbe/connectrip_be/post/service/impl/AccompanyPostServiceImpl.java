@@ -1,5 +1,6 @@
 package connectripbe.connectrip_be.post.service.impl;
 
+import connectripbe.connectrip_be.member.exception.MemberNotOwnerException;
 import connectripbe.connectrip_be.member.exception.NotFoundMemberException;
 import connectripbe.connectrip_be.post.dto.AccompanyPostRequest;
 import connectripbe.connectrip_be.post.dto.AccompanyPostResponse;
@@ -116,8 +117,8 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
     }
 
     private void validateAccompanyPostOwnership(Member member, AccompanyPostEntity accompanyPostEntity) {
-        if (!accompanyPostEntity.getMember().getEmail().equals(member.getEmail())) {
-            throw new IllegalArgumentException("게시글 수정/삭제 권한이 없습니다.");
+        if (!member.getId().equals(accompanyPostEntity.getMember().getId())) {
+            throw new MemberNotOwnerException();
         }
     }
 }
