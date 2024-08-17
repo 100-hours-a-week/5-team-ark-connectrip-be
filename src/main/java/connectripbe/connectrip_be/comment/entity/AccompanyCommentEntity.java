@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Builder;
 
 import java.time.LocalDateTime;
 
@@ -40,6 +41,7 @@ public class AccompanyCommentEntity extends BaseEntity {
     @Column
     private LocalDateTime deletedDate;  // 삭제 일자 (NULL 허용)
 
+    @Builder
     public AccompanyCommentEntity(MemberEntity memberEntity, AccompanyPostEntity accompanyPostEntity, String content) {
         this.memberEntity = memberEntity;
         this.accompanyPostEntity = accompanyPostEntity;
