@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Table(name = "accompany_comment")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class AccompanyComment extends BaseEntity {
+public class AccompanyCommentEntity extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,7 +40,7 @@ public class AccompanyComment extends BaseEntity {
     @Column
     private LocalDateTime deletedDate;  // 삭제 일자 (NULL 허용)
 
-    public AccompanyComment(MemberEntity memberEntity, AccompanyPostEntity accompanyPostEntity, String content) {
+    public AccompanyCommentEntity(MemberEntity memberEntity, AccompanyPostEntity accompanyPostEntity, String content) {
         this.memberEntity = memberEntity;
         this.accompanyPostEntity = accompanyPostEntity;
         this.content = content;
