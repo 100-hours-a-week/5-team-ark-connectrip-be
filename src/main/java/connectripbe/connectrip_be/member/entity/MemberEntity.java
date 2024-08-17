@@ -21,7 +21,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @Table(name = "member")
-public class Member extends BaseEntity {
+public class MemberEntity extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -57,6 +57,6 @@ public class Member extends BaseEntity {
     private MemberRoleType roleType; // 권한
 
     @Builder.Default
-    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "memberEntity", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AccompanyPostEntity> accompanyPostEntities = new ArrayList<>();
 }

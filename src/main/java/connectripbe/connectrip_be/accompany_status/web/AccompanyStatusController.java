@@ -1,7 +1,7 @@
 package connectripbe.connectrip_be.accompany_status.web;
 
 import connectripbe.connectrip_be.accompany_status.response.AccompanyStatusResponse;
-import connectripbe.connectrip_be.accompany_status.service.AccompanyStatusService;
+import connectripbe.connectrip_be.accompany_status.service.AccompanyStatusServiceImpl;
 import connectripbe.connectrip_be.auth.config.LoginUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -14,16 +14,16 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class AccompanyStatusController {
 
-    private final AccompanyStatusService accompanyStatusService;
+    private final AccompanyStatusServiceImpl accompanyStatusServiceImpl;
 
     @GetMapping("/{id}/status")
     public AccompanyStatusResponse getAccompanyStatus(@PathVariable("id") Long id) {
-        return accompanyStatusService.getAccompanyStatus(id);
+        return accompanyStatusServiceImpl.getAccompanyStatus(id);
     }
 
     @PostMapping("/{id}/status")
     public ResponseEntity<Void> updateAccompanyStatus(@LoginUser String memberEmail, @PathVariable("id") Long id) {
-        accompanyStatusService.updateAccompanyStatus(memberEmail, id);
+        accompanyStatusServiceImpl.updateAccompanyStatus(memberEmail, id);
 
         return ResponseEntity.ok().build();
     }
