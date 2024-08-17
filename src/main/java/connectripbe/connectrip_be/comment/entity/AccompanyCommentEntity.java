@@ -4,17 +4,16 @@ import connectripbe.connectrip_be.global.entity.BaseEntity;
 import connectripbe.connectrip_be.member.entity.MemberEntity;
 import connectripbe.connectrip_be.post.entity.AccompanyPostEntity;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Builder;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "accompany_comment")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @Getter
+@Builder
 public class AccompanyCommentEntity extends BaseEntity {
 
     @Id
@@ -41,7 +40,6 @@ public class AccompanyCommentEntity extends BaseEntity {
     @Column
     private LocalDateTime deletedDate;  // 삭제 일자 (NULL 허용)
 
-    @Builder
     public AccompanyCommentEntity(MemberEntity memberEntity, AccompanyPostEntity accompanyPostEntity, String content) {
         this.memberEntity = memberEntity;
         this.accompanyPostEntity = accompanyPostEntity;
