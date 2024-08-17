@@ -1,5 +1,8 @@
 package connectripbe.connectrip_be.post.service.impl;
 
+import connectripbe.connectrip_be.accompany_status.entity.AccompanyStatusEntity;
+import connectripbe.connectrip_be.accompany_status.entity.AccompanyStatusEnum;
+import connectripbe.connectrip_be.accompany_status.repository.AccompanyStatusJpaRepository;
 import connectripbe.connectrip_be.member.exception.MemberNotOwnerException;
 import connectripbe.connectrip_be.member.exception.NotFoundMemberException;
 import connectripbe.connectrip_be.post.dto.AccompanyPostRequest;
@@ -23,13 +26,14 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
 
     private final AccompanyPostRepository accompanyPostRepository;
     private final MemberRepository memberRepository;
+    private final AccompanyStatusJpaRepository accompanyStatusJpaRepository;
 
     @Override
     public void createAccompanyPost(String memberEmail, AccompanyPostRequest request) {
         Member memberEntity = findMemberEntity(memberEmail);
 
         // fixme-noah: custom_url, url_qr_path 보류
-        accompanyPostRepository.save(new AccompanyPostEntity(
+        AccompanyPostEntity savedAccompanyPostEntity = accompanyPostRepository.save(new AccompanyPostEntity(
                 memberEntity,
                 request.title(),
                 request.startDate(),
@@ -38,6 +42,9 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
                 "temp",
                 "temp",
                 request.content()));
+
+        // info-noah: status 위치가 모호하다고 느낌, 나중에 백엔드 팀과 상의
+        accompanyStatusJpaRepository.save(new AccompanyStatusEntity(savedAccompanyPostEntity, AccompanyStatusEnum.PROGRESSING));
     }
 
     @Override
