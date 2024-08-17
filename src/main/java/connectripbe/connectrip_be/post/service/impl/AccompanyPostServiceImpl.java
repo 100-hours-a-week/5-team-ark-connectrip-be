@@ -11,7 +11,7 @@ import connectripbe.connectrip_be.post.entity.AccompanyPostEntity;
 import connectripbe.connectrip_be.post.exception.NotFoundAccompanyPostException;
 import connectripbe.connectrip_be.post.repository.AccompanyPostRepository;
 import connectripbe.connectrip_be.post.service.AccompanyPostService;
-import connectripbe.connectrip_be.member.entity.Member;
+import connectripbe.connectrip_be.member.entity.MemberEntity;
 import connectripbe.connectrip_be.member.repository.MemberJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -30,7 +30,7 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
 
     @Override
     public void createAccompanyPost(String memberEmail, AccompanyPostRequest request) {
-        Member memberEntity = findMemberEntity(memberEmail);
+        MemberEntity memberEntity = findMemberEntity(memberEmail);
 
         // fixme-noah: custom_url, url_qr_path 보류
         AccompanyPostEntity savedAccompanyPostEntity = accompanyPostRepository.save(new AccompanyPostEntity(
@@ -55,7 +55,7 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
         // fixme-noah: 생성일자가 들어가는가?
         return new AccompanyPostResponse(
                 accompanyPostEntity.getId(),
-                accompanyPostEntity.getMember().getId(),
+                accompanyPostEntity.getMemberEntity().getId(),
                 accompanyPostEntity.getTitle(),
                 accompanyPostEntity.getStartDate(),
                 accompanyPostEntity.getEndDate(),
@@ -69,7 +69,7 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
     @Override
     @Transactional
     public void updateAccompanyPost(String memberEmail, long id, AccompanyPostRequest request) {
-        Member memberEntity = findMemberEntity(memberEmail);
+        MemberEntity memberEntity = findMemberEntity(memberEmail);
 
         AccompanyPostEntity accompanyPostEntity = findAccompanyPostEntity(id);
 
@@ -87,7 +87,7 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
     @Override
     @Transactional
     public void deleteAccompanyPost(String memberEmail, long id) {
-        Member memberEntity = findMemberEntity(memberEmail);
+        MemberEntity memberEntity = findMemberEntity(memberEmail);
 
         AccompanyPostEntity accompanyPostEntity = findAccompanyPostEntity(id);
 
@@ -103,7 +103,7 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
                     // fixme-noah: 생성일자가 들어가는가?
                     return new AccompanyPostResponse(
                             accompanyPostEntity.getId(),
-                            accompanyPostEntity.getMember().getId(),
+                            accompanyPostEntity.getMemberEntity().getId(),
                             accompanyPostEntity.getTitle(),
                             accompanyPostEntity.getStartDate(),
                             accompanyPostEntity.getEndDate(),
@@ -115,7 +115,7 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
                 });
     }
 
-    private Member findMemberEntity(String email) {
+    private MemberEntity findMemberEntity(String email) {
         return memberJpaRepository.findByEmail(email).orElseThrow(NotFoundMemberException::new);
     }
 
@@ -123,8 +123,8 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
         return accompanyPostRepository.findById(accompanyPostId).orElseThrow(NotFoundAccompanyPostException::new);
     }
 
-    private void validateAccompanyPostOwnership(Member member, AccompanyPostEntity accompanyPostEntity) {
-        if (!member.getId().equals(accompanyPostEntity.getMember().getId())) {
+    private void validateAccompanyPostOwnership(MemberEntity memberEntity, AccompanyPostEntity accompanyPostEntity) {
+        if (!memberEntity.getId().equals(accompanyPostEntity.getMemberEntity().getId())) {
             throw new MemberNotOwnerException();
         }
     }

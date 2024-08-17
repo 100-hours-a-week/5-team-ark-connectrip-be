@@ -1,11 +1,10 @@
 package connectripbe.connectrip_be.auth.dto;
 
 
-import connectripbe.connectrip_be.member.entity.Member;
+import connectripbe.connectrip_be.member.entity.MemberEntity;
 import connectripbe.connectrip_be.member.entity.type.MemberLoginType;
 import connectripbe.connectrip_be.member.entity.type.MemberRoleType;
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -32,17 +31,17 @@ public class SignUpDto {
 
       private String profileImageUrl;
 
-      public static SignUpDto fromEntity(Member member) {
+      public static SignUpDto fromEntity(MemberEntity memberEntity) {
             return SignUpDto.builder()
-                    .email(member.getEmail())
+                    .email(memberEntity.getEmail())
                     .password("password")
-                    .nickname(member.getNickname())
-                    .profileImageUrl(member.getProfileImagePath())
+                    .nickname(memberEntity.getNickname())
+                    .profileImageUrl(memberEntity.getProfileImagePath())
                     .build();
       }
 
-      public static Member signUpForm(SignUpDto request, String encodedPasswordEncoder) {
-            return Member.builder()
+      public static MemberEntity signUpForm(SignUpDto request, String encodedPasswordEncoder) {
+            return MemberEntity.builder()
                     .email(request.getEmail())
                     .password(encodedPasswordEncoder)
                     .nickname(request.getNickname())

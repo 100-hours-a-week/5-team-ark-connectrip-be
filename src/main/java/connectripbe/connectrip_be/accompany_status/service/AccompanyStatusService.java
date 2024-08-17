@@ -4,7 +4,7 @@ import connectripbe.connectrip_be.accompany_status.entity.AccompanyStatusEntity;
 import connectripbe.connectrip_be.accompany_status.exception.NotFoundAccompanyStatusException;
 import connectripbe.connectrip_be.accompany_status.repository.AccompanyStatusJpaRepository;
 import connectripbe.connectrip_be.accompany_status.response.AccompanyStatusResponse;
-import connectripbe.connectrip_be.member.entity.Member;
+import connectripbe.connectrip_be.member.entity.MemberEntity;
 import connectripbe.connectrip_be.member.exception.MemberNotOwnerException;
 import connectripbe.connectrip_be.member.exception.NotFoundMemberException;
 import connectripbe.connectrip_be.member.repository.MemberJpaRepository;
@@ -38,7 +38,7 @@ public class AccompanyStatusService {
 
     // fixme-noah: 코드 수정 고민 중
     public void updateAccompanyStatus(String memberEmail, long postId) {
-        Member memberEntity = memberJpaRepository.findByEmail(memberEmail)
+        MemberEntity memberEntity = memberJpaRepository.findByEmail(memberEmail)
                 .orElseThrow(NotFoundMemberException::new);
 
         AccompanyPostEntity accompanyPostEntity = accompanyPostRepository.findById(postId)
@@ -52,8 +52,8 @@ public class AccompanyStatusService {
         accompanyStatusEntity.updateStatus();
     }
 
-    private void validateAccompanyPostOwnership(Member member, AccompanyPostEntity accompanyPostEntity) {
-        if (!member.getId().equals(accompanyPostEntity.getMember().getId())) {
+    private void validateAccompanyPostOwnership(MemberEntity memberEntity, AccompanyPostEntity accompanyPostEntity) {
+        if (!memberEntity.getId().equals(accompanyPostEntity.getMemberEntity().getId())) {
             throw new MemberNotOwnerException();
         }
     }

@@ -1,15 +1,15 @@
 package connectripbe.connectrip_be.member.repository;
 
 
-import connectripbe.connectrip_be.member.entity.Member;
+import connectripbe.connectrip_be.member.entity.MemberEntity;
 
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface MemberJpaRepository extends JpaRepository<Member, Long> {
+public interface MemberJpaRepository extends JpaRepository<MemberEntity, Long> {
 
-    Optional<Member> findByEmail(String email);
+    Optional<MemberEntity> findByEmail(String email);
 
     boolean existsByEmail(String email);
 

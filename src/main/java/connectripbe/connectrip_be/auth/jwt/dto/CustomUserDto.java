@@ -1,6 +1,6 @@
 package connectripbe.connectrip_be.auth.jwt.dto;
 
-import connectripbe.connectrip_be.member.entity.Member;
+import connectripbe.connectrip_be.member.entity.MemberEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,12 +19,12 @@ public class CustomUserDto {
       private String password;
       private String roleType;
 
-      public static CustomUserDto fromEntity(Member member) {
+      public static CustomUserDto fromEntity(MemberEntity memberEntity) {
             return CustomUserDto.builder()
-                    .id(member.getId())
-                    .email(member.getEmail())
-                    .password(member.getPassword())
-                    .roleType(member.getRoleType().getCode())
+                    .id(memberEntity.getId())
+                    .email(memberEntity.getEmail())
+                    .password(memberEntity.getPassword())
+                    .roleType(memberEntity.getRoleType().getCode())
                     .build();
       }
 

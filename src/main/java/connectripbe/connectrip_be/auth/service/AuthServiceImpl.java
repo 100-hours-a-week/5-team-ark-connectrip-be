@@ -13,7 +13,7 @@ import connectripbe.connectrip_be.auth.jwt.dto.TokenDto;
 import connectripbe.connectrip_be.global.exception.GlobalException;
 import connectripbe.connectrip_be.global.service.RedisService;
 import connectripbe.connectrip_be.global.util.aws.service.AwsS3Service;
-import connectripbe.connectrip_be.member.entity.Member;
+import connectripbe.connectrip_be.member.entity.MemberEntity;
 import connectripbe.connectrip_be.member.repository.MemberJpaRepository;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -60,21 +60,21 @@ public class AuthServiceImpl implements AuthService {
 
             request.setProfileImageUrl(profileImageUrl);  // 새로 추가
 
-            Member memberToSave = SignUpDto.signUpForm(request, encodedPasswordEncoder);
+            MemberEntity memberEntityToSave = SignUpDto.signUpForm(request, encodedPasswordEncoder);
 
-            return SignUpDto.fromEntity(memberJpaRepository.save(memberToSave));
+            return SignUpDto.fromEntity(memberJpaRepository.save(memberEntityToSave));
       }
 
       public TokenDto signIn(SignInDto request) {
-            Member member = memberJpaRepository.findByEmail(request.getEmail())
+            MemberEntity memberEntity = memberJpaRepository.findByEmail(request.getEmail())
                     .orElseThrow(() -> new GlobalException(USER_NOT_FOUND));
 
-            if (!passwordEncoder.matches(request.getPassword(), member.getPassword())) {
+            if (!passwordEncoder.matches(request.getPassword(), memberEntity.getPassword())) {
                   throw new GlobalException(PASSWORD_NOT_MATCH);
             }
 
 
-            return generateToken(member.getEmail(), member.getRoleType().getCode());
+            return generateToken(memberEntity.getEmail(), memberEntity.getRoleType().getCode());
       }
 
       /**

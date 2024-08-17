@@ -1,7 +1,7 @@
 package connectripbe.connectrip_be.post.entity;
 
 import connectripbe.connectrip_be.global.entity.BaseEntity;
-import connectripbe.connectrip_be.member.entity.Member;
+import connectripbe.connectrip_be.member.entity.MemberEntity;
 import connectripbe.connectrip_be.post.entity.enums.AccompanyArea;
 import jakarta.persistence.*;
 import lombok.*;
@@ -19,8 +19,8 @@ public class AccompanyPostEntity extends BaseEntity {
     private long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id", nullable = false)
-    private Member member;
+    @JoinColumn(name = "member__id", nullable = false)
+    private MemberEntity memberEntity;
 
     @Column(nullable = false)
     private String title;
@@ -42,8 +42,8 @@ public class AccompanyPostEntity extends BaseEntity {
     @Column(nullable = false)
     private String content;
 
-    public AccompanyPostEntity(Member member, String title, LocalDate startDate, LocalDate endDate, AccompanyArea accompanyArea, String customUrl, String urlQrPath, String content) {
-        this.member = member;
+    public AccompanyPostEntity(MemberEntity memberEntity, String title, LocalDate startDate, LocalDate endDate, AccompanyArea accompanyArea, String customUrl, String urlQrPath, String content) {
+        this.memberEntity = memberEntity;
         this.title = title;
         this.startDate = startDate;
         this.endDate = endDate;

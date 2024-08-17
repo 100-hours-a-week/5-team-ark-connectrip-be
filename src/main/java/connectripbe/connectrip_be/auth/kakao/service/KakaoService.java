@@ -12,7 +12,7 @@ import connectripbe.connectrip_be.auth.kakao.dto.api.KakaoTokenApiResponse;
 import connectripbe.connectrip_be.auth.kakao.dto.api.KakaoUserInfoApiResponse;
 import connectripbe.connectrip_be.auth.service.AuthService;
 import connectripbe.connectrip_be.global.exception.GlobalException;
-import connectripbe.connectrip_be.member.entity.Member;
+import connectripbe.connectrip_be.member.entity.MemberEntity;
 import connectripbe.connectrip_be.member.entity.type.MemberRoleType;
 import connectripbe.connectrip_be.member.repository.MemberJpaRepository;
 import lombok.RequiredArgsConstructor;
@@ -57,24 +57,24 @@ public class KakaoService {
 
     try {
       // 이메일을 통해 기존 회원이 있는지 확인한다.
-      Member member = memberJpaRepository.findByEmail(userInfo.getKakaoAccount().getEmail())
+      MemberEntity memberEntity = memberJpaRepository.findByEmail(userInfo.getKakaoAccount().getEmail())
           .orElseThrow(() -> new GlobalException(USER_NOT_FOUND));
 
 
       // 토큰 생성 및 반환
-      return authService.generateToken(member.getEmail(), member.getRoleType().getCode());
+      return authService.generateToken(memberEntity.getEmail(), memberEntity.getRoleType().getCode());
 
     } catch (GlobalException e) {
       // 카카오로 처음 로그인(회원가입) 하는 경우, 사용자 정보를 반환하여 추가 정보 입력을 유도한다.
       if (USER_NOT_FOUND.equals(e.getErrorCode())) {
-        Member newMember = Member.builder()
+        MemberEntity newMemberEntity = MemberEntity.builder()
                 .email(userInfo.getKakaoAccount().getEmail())
                 .roleType(MemberRoleType.USER) // 기본 사용자 권한 설정
                 .build();
-        memberJpaRepository.save(newMember);
+        memberJpaRepository.save(newMemberEntity);
 
         // 토큰 생성 및 반환
-        return authService.generateToken(newMember.getEmail(), newMember.getRoleType().getCode());
+        return authService.generateToken(newMemberEntity.getEmail(), newMemberEntity.getRoleType().getCode());
 
       } else {
         throw e; // USER_NOT_FOUND 가 아닌 다른 GlobalException 은 그대로 다시 throw.
@@ -92,13 +92,13 @@ public class KakaoService {
   public TokenDto kakaoSignUp(KaKaoSignUpDto request) {
 
     // DTO 로부터 Member 엔티티 생성
-    Member member = KaKaoSignUpDto.toEntity(request);
+    MemberEntity memberEntity = KaKaoSignUpDto.toEntity(request);
 
     // 회원 정보 저장
-    memberJpaRepository.save(member);
+    memberJpaRepository.save(memberEntity);
 
     // 토큰 생성 및 반환
-    return authService.generateToken(member.getEmail(), member.getRoleType().getCode());
+    return authService.generateToken(memberEntity.getEmail(), memberEntity.getRoleType().getCode());
   }
 
 }
