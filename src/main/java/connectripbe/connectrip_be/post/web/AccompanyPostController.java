@@ -11,47 +11,48 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/post")
+@RequestMapping("/api/v1/accompany/posts")
 @RequiredArgsConstructor
 public class AccompanyPostController {
 
     private final AccompanyPostService accompanyPostService;
 
-    // 게시글 생성
     @PostMapping
-    public ResponseEntity<AccompanyPostResponse> createPost(@RequestBody AccompanyPostRequest request, @LoginUser String email) {
-        AccompanyPostResponse response = accompanyPostService.createPost(request, email);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<Void> createAccompanyPost(@LoginUser String memberEmail, @RequestBody AccompanyPostRequest request) {
+        accompanyPostService.createAccompanyPost(memberEmail, request);
+
+        return ResponseEntity.ok().build();
     }
 
     // 게시글 조회
-    @GetMapping("/{postId}")
-    public ResponseEntity<AccompanyPostResponse> readPost(@PathVariable Long postId) {
-        AccompanyPostResponse response = accompanyPostService.readPost(postId);
-        return ResponseEntity.ok(response);
+    @GetMapping("/{id}")
+    public ResponseEntity<AccompanyPostResponse> readAccompanyPost(@PathVariable Long id) {
+        return ResponseEntity.ok(accompanyPostService.readAccompanyPost(id));
     }
 
-    // 게시글 수정
-    @PutMapping("/{postId}")
-    public ResponseEntity<AccompanyPostResponse> updatePost(
-            @PathVariable Long postId,
-            @RequestBody AccompanyPostRequest request,
-            @RequestParam String email) {
-        AccompanyPostResponse response = accompanyPostService.updatePost(postId, request, email);
-        return ResponseEntity.ok(response);
+    @PatchMapping("/{id}")
+    public ResponseEntity<Void> updateAccompanyPost(
+            @LoginUser String memberEmail,
+            @PathVariable Long id,
+            @RequestBody AccompanyPostRequest request) {
+        accompanyPostService.updateAccompanyPost(memberEmail, id, request);
+
+        return ResponseEntity.ok().build();
     }
 
-    // 게시글 삭제
-    @DeleteMapping("/{postId}")
-    public ResponseEntity<Void> deletePost(@PathVariable Long postId, @RequestParam String email) {
-        accompanyPostService.deletePost(postId, email);
-        return ResponseEntity.noContent().build();
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteAccompanyPost(
+            @LoginUser String memberEmail,
+            @PathVariable Long id) {
+        accompanyPostService.deleteAccompanyPost(memberEmail, id);
+
+        return ResponseEntity.ok().build();
     }
 
+    // fixme-naoh: 나중에 수정
     // 게시글 목록 조회 (페이징 처리)
     @GetMapping
     public ResponseEntity<Page<AccompanyPostResponse>> listPosts(Pageable pageable) {
-        Page<AccompanyPostResponse> responses = accompanyPostService.postList(pageable);
-        return ResponseEntity.ok(responses);
+        return ResponseEntity.ok(accompanyPostService.accompanyPostList(pageable));
     }
 }

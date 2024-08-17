@@ -1,8 +1,11 @@
 package connectripbe.connectrip_be.post.service.impl;
 
+import connectripbe.connectrip_be.member.exception.MemberNotOwnerException;
+import connectripbe.connectrip_be.member.exception.NotFoundMemberException;
 import connectripbe.connectrip_be.post.dto.AccompanyPostRequest;
 import connectripbe.connectrip_be.post.dto.AccompanyPostResponse;
-import connectripbe.connectrip_be.post.entity.AccompanyPost;
+import connectripbe.connectrip_be.post.entity.AccompanyPostEntity;
+import connectripbe.connectrip_be.post.exception.NotFoundAccompanyPostException;
 import connectripbe.connectrip_be.post.repository.AccompanyPostRepository;
 import connectripbe.connectrip_be.post.service.AccompanyPostService;
 import connectripbe.connectrip_be.member.entity.Member;
@@ -14,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class AccompanyPostServiceImpl implements AccompanyPostService {
 
@@ -21,80 +25,100 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
     private final MemberRepository memberRepository;
 
     @Override
-    @Transactional
-    public AccompanyPostResponse createPost(AccompanyPostRequest request, String email) {
-        Member member = getMember(email);
-        AccompanyPost accompanyPost = request.toEntity();
-        accompanyPost.setMember(member);
+    public void createAccompanyPost(String memberEmail, AccompanyPostRequest request) {
+        Member memberEntity = findMemberEntity(memberEmail);
 
-        // Member에 게시글 추가
-        member.addPost(accompanyPost);
-
-        // 게시글 저장
-        AccompanyPost savedAccompanyPost = accompanyPostRepository.save(accompanyPost);
-        return AccompanyPostResponse.fromEntity(savedAccompanyPost);
+        // fixme-noah: custom_url, url_qr_path 보류
+        accompanyPostRepository.save(new AccompanyPostEntity(
+                memberEntity,
+                request.title(),
+                request.startDate(),
+                request.endDate(),
+                request.accompanyArea(),
+                "temp",
+                "temp",
+                request.content()));
     }
 
     @Override
     @Transactional(readOnly = true)
-    public AccompanyPostResponse readPost(Long postId) {
-        AccompanyPost accompanyPost = getPost(postId);
-        return AccompanyPostResponse.fromEntity(accompanyPost);
+    public AccompanyPostResponse readAccompanyPost(long id) {
+        AccompanyPostEntity accompanyPostEntity = findAccompanyPostEntity(id);
+
+        // fixme-noah: 생성일자가 들어가는가?
+        return new AccompanyPostResponse(
+                accompanyPostEntity.getId(),
+                accompanyPostEntity.getMember().getId(),
+                accompanyPostEntity.getTitle(),
+                accompanyPostEntity.getStartDate(),
+                accompanyPostEntity.getEndDate(),
+                accompanyPostEntity.getAccompanyArea(),
+                accompanyPostEntity.getCustomUrl(),
+                accompanyPostEntity.getUrlQrPath(),
+                accompanyPostEntity.getContent()
+        );
     }
 
     @Override
     @Transactional
-    public AccompanyPostResponse updatePost(Long id, AccompanyPostRequest request, String email) {
-        AccompanyPost accompanyPost = getPost(id);
-        Member member = getMember(email);
+    public void updateAccompanyPost(String memberEmail, long id, AccompanyPostRequest request) {
+        Member memberEntity = findMemberEntity(memberEmail);
 
-        // 작성자 검증
-        validatePostOwnership(accompanyPost, member);
+        AccompanyPostEntity accompanyPostEntity = findAccompanyPostEntity(id);
 
-        accompanyPost.setTitle(request.getTitle());
-        accompanyPost.setContent(request.getContent());
-        accompanyPost.setAccompanyArea(request.getAccompanyArea());
-        accompanyPost.setStartDate(request.getStartDate());
-        accompanyPost.setEndDate(request.getEndDate());
+        validateAccompanyPostOwnership(memberEntity, accompanyPostEntity);
 
-        return AccompanyPostResponse.fromEntity(accompanyPost);
+        accompanyPostEntity.updateAccompanyPost(
+                request.title(),
+                request.startDate(),
+                request.endDate(),
+                request.accompanyArea(),
+                request.title()
+        );
     }
 
     @Override
     @Transactional
-    public void deletePost(Long id, String email) {
-        AccompanyPost accompanyPost = getPost(id);
-        Member member = getMember(email);
+    public void deleteAccompanyPost(String memberEmail, long id) {
+        Member memberEntity = findMemberEntity(memberEmail);
 
-        // 작성자 검증
-        validatePostOwnership(accompanyPost, member);
+        AccompanyPostEntity accompanyPostEntity = findAccompanyPostEntity(id);
 
-        // Member에서 게시글 삭제
-        member.removePost(accompanyPost);
+        validateAccompanyPostOwnership(memberEntity, accompanyPostEntity);
 
-        // 게시글 삭제
-        accompanyPostRepository.delete(accompanyPost);
+        accompanyPostRepository.delete(accompanyPostEntity);
     }
 
     @Override
-    public Page<AccompanyPostResponse> postList(Pageable pageable) {
+    public Page<AccompanyPostResponse> accompanyPostList(Pageable pageable) {
         return accompanyPostRepository.findAll(pageable)
-                .map(AccompanyPostResponse::fromEntity);
+                .map(accompanyPostEntity -> {
+                    // fixme-noah: 생성일자가 들어가는가?
+                    return new AccompanyPostResponse(
+                            accompanyPostEntity.getId(),
+                            accompanyPostEntity.getMember().getId(),
+                            accompanyPostEntity.getTitle(),
+                            accompanyPostEntity.getStartDate(),
+                            accompanyPostEntity.getEndDate(),
+                            accompanyPostEntity.getAccompanyArea(),
+                            accompanyPostEntity.getCustomUrl(),
+                            accompanyPostEntity.getUrlQrPath(),
+                            accompanyPostEntity.getContent()
+                    );
+                });
     }
 
-    private Member getMember(String email) {
-        return memberRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("회원이 존재하지 않습니다."));
+    private Member findMemberEntity(String email) {
+        return memberRepository.findByEmail(email).orElseThrow(NotFoundMemberException::new);
     }
 
-    private AccompanyPost getPost(Long postId) {
-        return accompanyPostRepository.findById(postId)
-                .orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다."));
+    private AccompanyPostEntity findAccompanyPostEntity(long accompanyPostId) {
+        return accompanyPostRepository.findById(accompanyPostId).orElseThrow(NotFoundAccompanyPostException::new);
     }
 
-    private void validatePostOwnership(AccompanyPost accompanyPost, Member member) {
-        if (!accompanyPost.getMember().getEmail().equals(member.getEmail())) {
-            throw new IllegalArgumentException("게시글 수정/삭제 권한이 없습니다.");
+    private void validateAccompanyPostOwnership(Member member, AccompanyPostEntity accompanyPostEntity) {
+        if (!member.getId().equals(accompanyPostEntity.getMember().getId())) {
+            throw new MemberNotOwnerException();
         }
     }
 }

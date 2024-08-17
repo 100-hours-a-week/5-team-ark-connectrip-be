@@ -7,19 +7,14 @@ import org.springframework.data.domain.Pageable;
 
 public interface AccompanyPostService {
 
-    // 게시글 생성
-    AccompanyPostResponse createPost(AccompanyPostRequest request, String email);
+    void createAccompanyPost(String memberEmail, AccompanyPostRequest request);
 
-    // 게시글 조회
-    AccompanyPostResponse readPost(Long postId);
+    AccompanyPostResponse readAccompanyPost(long id);
 
-    // 게시글 수정
-    AccompanyPostResponse updatePost(Long id, AccompanyPostRequest request, String email);
+    void updateAccompanyPost(String memberEmail, long id, AccompanyPostRequest request);
 
-    // 게시글 삭제
-    void deletePost(Long id, String email);
+    void deleteAccompanyPost(String memberEmail, long id);
 
     // 게시물 전체 리스트 - 페이징 처리
-    Page<AccompanyPostResponse> postList(Pageable pageable);
-
+    Page<AccompanyPostResponse> accompanyPostList(Pageable pageable);
 }
