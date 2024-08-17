@@ -42,7 +42,20 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
     @Override
     @Transactional(readOnly = true)
     public AccompanyPostResponse readAccompanyPost(long id) {
-        return AccompanyPostResponse.fromEntity(findAccompanyPostEntity(id));
+        AccompanyPostEntity accompanyPostEntity = findAccompanyPostEntity(id);
+
+        // fixme-noah: 생성일자가 들어가는가?
+        return new AccompanyPostResponse(
+                accompanyPostEntity.getId(),
+                accompanyPostEntity.getMember().getId(),
+                accompanyPostEntity.getTitle(),
+                accompanyPostEntity.getStartDate(),
+                accompanyPostEntity.getEndDate(),
+                accompanyPostEntity.getAccompanyArea(),
+                accompanyPostEntity.getCustomUrl(),
+                accompanyPostEntity.getUrlQrPath(),
+                accompanyPostEntity.getContent()
+        );
     }
 
     @Override
@@ -78,7 +91,20 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
     @Override
     public Page<AccompanyPostResponse> accompanyPostList(Pageable pageable) {
         return accompanyPostRepository.findAll(pageable)
-                .map(AccompanyPostResponse::fromEntity);
+                .map(accompanyPostEntity -> {
+                    // fixme-noah: 생성일자가 들어가는가?
+                    return new AccompanyPostResponse(
+                            accompanyPostEntity.getId(),
+                            accompanyPostEntity.getMember().getId(),
+                            accompanyPostEntity.getTitle(),
+                            accompanyPostEntity.getStartDate(),
+                            accompanyPostEntity.getEndDate(),
+                            accompanyPostEntity.getAccompanyArea(),
+                            accompanyPostEntity.getCustomUrl(),
+                            accompanyPostEntity.getUrlQrPath(),
+                            accompanyPostEntity.getContent()
+                    );
+                });
     }
 
     private Member findMemberEntity(String email) {
