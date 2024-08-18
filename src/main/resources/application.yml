@@ -5,7 +5,6 @@ spring:
 # 공통 설정
   jpa:
     hibernate:
-
       ddl-auto: update # none, create, create-drop, update
     properties:
       hibernate:
