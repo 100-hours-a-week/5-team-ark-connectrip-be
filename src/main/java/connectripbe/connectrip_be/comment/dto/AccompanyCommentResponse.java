@@ -34,7 +34,6 @@ public class AccompanyCommentResponse {
                 .createdDate(comment.getCreatedDate())
                 .modifiedDate(comment.getModifiedDate())
                 .deletedDate(comment.getDeletedDate())
-
                 .build();
     }
 }
