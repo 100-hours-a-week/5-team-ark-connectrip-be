@@ -34,9 +34,6 @@ public class AccompanyCommentEntity extends BaseEntity {
     @Column(nullable = false)
     private LocalDateTime createdDate;  // 생성 일자
 
-    @Column(nullable = false)
-    private LocalDateTime modifiedDate;  // 수정 일자
-
     @Column
     private LocalDateTime deletedDate;  // 삭제 일자 (NULL 허용)
 
@@ -45,7 +42,6 @@ public class AccompanyCommentEntity extends BaseEntity {
         this.accompanyPostEntity = accompanyPostEntity;
         this.content = content;
         this.createdDate = LocalDateTime.now();
-        this.modifiedDate = LocalDateTime.now();
     }
 
 }
