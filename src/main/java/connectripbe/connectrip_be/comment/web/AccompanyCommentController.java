@@ -6,13 +6,11 @@ import connectripbe.connectrip_be.comment.dto.AccompanyCommentResponse;
 import connectripbe.connectrip_be.comment.service.AccompanyCommentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort.Direction;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/comment")
@@ -25,9 +23,8 @@ public class AccompanyCommentController {
      * 특정 게시물의 댓글 목록 조회
      */
     @GetMapping
-    public ResponseEntity<Page<AccompanyCommentResponse>> getCommentList(@RequestParam("postId") Long postId,
-                                                                         @PageableDefault(sort = "createdDate", direction = Direction.DESC) Pageable pageable) {
-        Page<AccompanyCommentResponse> comments = accompanyCommentService.getCommentsByPost(postId, pageable);
+    public ResponseEntity<List<AccompanyCommentResponse>> getCommentList(@RequestParam("postId") Long postId) {
+        List<AccompanyCommentResponse> comments = accompanyCommentService.getCommentsByPost(postId);
         return ResponseEntity.ok(comments);
     }
 

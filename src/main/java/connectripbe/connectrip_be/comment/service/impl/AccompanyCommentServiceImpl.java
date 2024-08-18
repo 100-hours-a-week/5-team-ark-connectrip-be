@@ -12,10 +12,10 @@ import connectripbe.connectrip_be.member.repository.MemberJpaRepository;
 import connectripbe.connectrip_be.post.entity.AccompanyPostEntity;
 import connectripbe.connectrip_be.post.repository.AccompanyPostRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -24,15 +24,6 @@ public class AccompanyCommentServiceImpl implements AccompanyCommentService {
     private final AccompanyCommentRepository accompanyCommentRepository;
     private final MemberJpaRepository memberRepository;
     private final AccompanyPostRepository accompanyPostRepository;
-
-    /**
-     * 메서드 내용(동작 과정)
-     * 
-     * @param
-     * @param
-     *
-     * @return
-     */
 
     @Override
     @Transactional
@@ -53,9 +44,11 @@ public class AccompanyCommentServiceImpl implements AccompanyCommentService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<AccompanyCommentResponse> getCommentsByPost(Long postId, Pageable pageable) {
-        Page<AccompanyCommentEntity> comments = accompanyCommentRepository.findByAccompanyPostEntity_Id(postId, pageable);
-        return comments.map(AccompanyCommentResponse::fromEntity);
+    public List<AccompanyCommentResponse> getCommentsByPost(Long postId) {
+        List<AccompanyCommentEntity> comments = accompanyCommentRepository.findByAccompanyPostEntity_Id(postId);
+        return comments.stream()
+                .map(AccompanyCommentResponse::fromEntity)
+                .toList();
     }
 
     private AccompanyCommentEntity getComment(Long commentId) {
