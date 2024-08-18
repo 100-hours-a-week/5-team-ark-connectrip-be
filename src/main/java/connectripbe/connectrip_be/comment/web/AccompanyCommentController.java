@@ -1,5 +1,6 @@
 package connectripbe.connectrip_be.comment.web;
 
+import connectripbe.connectrip_be.auth.config.LoginUser;
 import connectripbe.connectrip_be.comment.dto.AccompanyCommentRequest;
 import connectripbe.connectrip_be.comment.dto.AccompanyCommentResponse;
 import connectripbe.connectrip_be.comment.service.AccompanyCommentService;
@@ -34,8 +35,8 @@ public class AccompanyCommentController {
      * 댓글 생성
      */
     @PostMapping
-    public ResponseEntity<AccompanyCommentResponse> createComment(@RequestBody @Valid AccompanyCommentRequest request) {
-        AccompanyCommentResponse response = accompanyCommentService.createComment(request);
+    public ResponseEntity<AccompanyCommentResponse> createComment(@RequestBody @Valid AccompanyCommentRequest request, @LoginUser String email) {
+        AccompanyCommentResponse response = accompanyCommentService.createComment(request, email);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 

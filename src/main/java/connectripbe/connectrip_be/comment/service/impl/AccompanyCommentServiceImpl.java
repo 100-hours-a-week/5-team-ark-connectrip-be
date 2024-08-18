@@ -25,10 +25,19 @@ public class AccompanyCommentServiceImpl implements AccompanyCommentService {
     private final MemberJpaRepository memberRepository;
     private final AccompanyPostRepository accompanyPostRepository;
 
+    /**
+     * 메서드 내용(동작 과정)
+     * 
+     * @param
+     * @param
+     *
+     * @return
+     */
+
     @Override
     @Transactional
-    public AccompanyCommentResponse createComment(AccompanyCommentRequest request) {
-        MemberEntity member = getMember(request.getMemberId());
+    public AccompanyCommentResponse createComment(AccompanyCommentRequest request, String email) {
+        MemberEntity member = getMember(email);
         AccompanyPostEntity post = getPost(request.getPostId());
 
         AccompanyCommentEntity comment = new AccompanyCommentEntity(member, post, request.getContent());
@@ -45,7 +54,7 @@ public class AccompanyCommentServiceImpl implements AccompanyCommentService {
     @Override
     @Transactional(readOnly = true)
     public Page<AccompanyCommentResponse> getCommentsByPost(Long postId, Pageable pageable) {
-        Page<AccompanyCommentEntity> comments = accompanyCommentRepository.findByAccompanyPostId(postId, pageable);
+        Page<AccompanyCommentEntity> comments = accompanyCommentRepository.findByAccompanyPostEntity_Id(postId, pageable);
         return comments.map(AccompanyCommentResponse::fromEntity);
     }
 
@@ -59,8 +68,8 @@ public class AccompanyCommentServiceImpl implements AccompanyCommentService {
                 .orElseThrow(() -> new GlobalException(ErrorCode.NOT_FOUND_ACCOMPANY_POST));
     }
 
-    private MemberEntity getMember(Long memberId) {
-        return memberRepository.findById(memberId)
+    private MemberEntity getMember(String email) {
+        return memberRepository.findByEmail(email)
                 .orElseThrow(() -> new GlobalException(ErrorCode.NOT_FOUND_MEMBER));
     }
 }

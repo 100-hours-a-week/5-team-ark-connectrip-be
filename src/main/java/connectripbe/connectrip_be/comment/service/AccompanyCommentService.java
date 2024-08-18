@@ -7,7 +7,7 @@ import org.springframework.data.domain.Pageable;
 
 public interface AccompanyCommentService {
     // 댓글 생성
-    AccompanyCommentResponse createComment(AccompanyCommentRequest request);
+    AccompanyCommentResponse createComment(AccompanyCommentRequest request, String email);
 
     // 댓글 삭제
     void deleteComment(Long commentId);

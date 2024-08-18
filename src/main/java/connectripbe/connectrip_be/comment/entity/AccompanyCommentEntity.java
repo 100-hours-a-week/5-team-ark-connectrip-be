@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "accompany_comment")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Builder
 public class AccompanyCommentEntity extends BaseEntity {
@@ -47,4 +47,5 @@ public class AccompanyCommentEntity extends BaseEntity {
         this.createdDate = LocalDateTime.now();
         this.modifiedDate = LocalDateTime.now();
     }
+
 }
