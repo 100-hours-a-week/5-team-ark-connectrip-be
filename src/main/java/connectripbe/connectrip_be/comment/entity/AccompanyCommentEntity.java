@@ -31,17 +31,12 @@ public class AccompanyCommentEntity extends BaseEntity {
     @Column(nullable = false)
     private String content;  // 내용
 
-    @Column(nullable = false)
-    private LocalDateTime createdDate;  // 생성 일자
-
-    @Column
-    private LocalDateTime deletedDate;  // 삭제 일자 (NULL 허용)
-
     public AccompanyCommentEntity(MemberEntity memberEntity, AccompanyPostEntity accompanyPostEntity, String content) {
         this.memberEntity = memberEntity;
         this.accompanyPostEntity = accompanyPostEntity;
         this.content = content;
-        this.createdDate = LocalDateTime.now();
+
     }
+
 
 }

@@ -30,8 +30,6 @@ public class AccompanyCommentResponse {
                 .memberId(comment.getMemberEntity().getId())
                 .accompanyPostId(comment.getAccompanyPostEntity().getId())
                 .content(comment.getContent())
-                .createdDate(comment.getCreatedDate())
-                .deletedDate(comment.getDeletedDate())
                 .build();
     }
 }
