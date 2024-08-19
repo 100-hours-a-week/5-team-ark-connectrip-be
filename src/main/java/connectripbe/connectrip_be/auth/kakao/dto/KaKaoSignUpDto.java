@@ -1,7 +1,7 @@
 package connectripbe.connectrip_be.auth.kakao.dto;
 
 
-import connectripbe.connectrip_be.member.entity.Member;
+import connectripbe.connectrip_be.member.entity.MemberEntity;
 import connectripbe.connectrip_be.member.entity.type.MemberRoleType;
 import jakarta.validation.constraints.Email;
 import lombok.AllArgsConstructor;
@@ -22,8 +22,8 @@ public class KaKaoSignUpDto {
       @Email
       private String email;
 
-      public static Member toEntity(KaKaoSignUpDto request) {
-            return Member.builder()
+      public static MemberEntity toEntity(KaKaoSignUpDto request) {
+            return MemberEntity.builder()
                     .email(request.getEmail())
                     .roleType(MemberRoleType.USER)
                     .build();

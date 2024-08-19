@@ -6,8 +6,8 @@ import static connectripbe.connectrip_be.global.exception.type.ErrorCode.USER_NO
 
 import connectripbe.connectrip_be.auth.jwt.dto.CustomUserDto;
 import connectripbe.connectrip_be.global.exception.GlobalException;
-import connectripbe.connectrip_be.member.entity.Member;
-import connectripbe.connectrip_be.member.repository.MemberRepository;
+import connectripbe.connectrip_be.member.entity.MemberEntity;
+import connectripbe.connectrip_be.member.repository.MemberJpaRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -26,14 +26,14 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class JwtUserDetailService implements UserDetailsService {
 
-      private final MemberRepository memberRepository;
+      private final MemberJpaRepository memberJpaRepository;
 
       @Override
       public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 
-            Member member = memberRepository.findByEmail(email)
+            MemberEntity memberEntity = memberJpaRepository.findByEmail(email)
                     .orElseThrow(() -> new GlobalException(USER_NOT_FOUND));
 
-            return new JwtUserDetails(CustomUserDto.fromEntity(member));
+            return new JwtUserDetails(CustomUserDto.fromEntity(memberEntity));
       }
 }
