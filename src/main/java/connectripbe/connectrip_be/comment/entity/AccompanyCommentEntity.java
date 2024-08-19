@@ -37,6 +37,9 @@ public class AccompanyCommentEntity extends BaseEntity {
         this.content = content;
 
     }
+    public void setContent(String content) {
+        this.content = content;
+    }
 
 
 }

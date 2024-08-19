@@ -58,4 +58,23 @@ public class AccompanyCommentController {
         accompanyCommentService.deleteComment(commentId);
         return ResponseEntity.noContent().build(); // 204 No Content 반환
     }
+
+    /**
+     * 댓글 수정.
+     * 주어진 요청 정보와 댓글 ID를 이용해 댓글을 수정하고, 수정된 댓글을 반환합니다.
+     *
+     * @param commentId 수정할 댓글의 ID
+     * @param request 댓글 수정 요청 정보 (수정된 댓글 내용 포함)
+     * @param email 댓글 작성자의 이메일
+     * @return 수정된 댓글 정보를 담은 ResponseEntity<AccompanyCommentResponse>
+     */
+    @PutMapping("/{id}")
+    public ResponseEntity<AccompanyCommentResponse> updateComment(
+            @PathVariable("id") Long commentId,
+            @RequestBody @Valid AccompanyCommentRequest request,
+            @LoginUser String email) {
+        AccompanyCommentResponse response = accompanyCommentService.updateComment(request, commentId, email);
+        return ResponseEntity.ok(response);
+    }
+
 }

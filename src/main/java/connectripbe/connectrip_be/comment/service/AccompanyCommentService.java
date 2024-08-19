@@ -6,6 +6,7 @@ import connectripbe.connectrip_be.comment.dto.AccompanyCommentResponse;
 import java.util.List;
 
 public interface AccompanyCommentService {
+
     // 댓글 생성
     AccompanyCommentResponse createComment(AccompanyCommentRequest request, String email);
 
@@ -14,4 +15,7 @@ public interface AccompanyCommentService {
 
     // 특정 게시물에 달린 댓글 목록 조회
     List<AccompanyCommentResponse> getCommentsByPost(Long postId);
+
+    // 댓글 수정
+    AccompanyCommentResponse updateComment(AccompanyCommentRequest request, Long commentId, String email);
 }

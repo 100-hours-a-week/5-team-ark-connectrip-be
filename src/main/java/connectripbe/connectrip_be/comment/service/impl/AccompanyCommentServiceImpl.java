@@ -45,6 +45,30 @@ public class AccompanyCommentServiceImpl implements AccompanyCommentService {
     }
 
     /**
+     * 댓글을 수정하는 메서드.
+     * 주어진 댓글 ID를 통해 AccompanyCommentEntity를 조회하고,
+     * 수정 권한이 있는지 확인한 후 댓글 내용을 업데이트
+     *
+     * @param request 댓글 수정 요청 정보 (수정된 댓글 내용 포함)
+     * @param commentId 수정할 댓글의 ID
+     * @param email 수정하려는 사용자의 이메일
+     * @return 수정된 댓글의 정보를 담은 AccompanyCommentResponse 객체
+     */
+    @Override
+    @Transactional
+    public AccompanyCommentResponse updateComment(AccompanyCommentRequest request, Long commentId, String email) {
+        AccompanyCommentEntity comment = getComment(commentId);
+
+        // 댓글 작성자와 요청한 사용자가 일치하는지 확인
+        validateCommentAuthor(comment, email);
+
+        // 댓글 내용 업데이트
+        comment.setContent(request.getContent());
+
+        return AccompanyCommentResponse.fromEntity(accompanyCommentRepository.save(comment));
+    }
+
+    /**
      * 댓글을 삭제하는 메서드.
      * 주어진 댓글 ID를 통해 AccompanyCommentEntity를 조회한 후, 해당 댓글을 데이터베이스에서 삭제
      *
@@ -107,5 +131,18 @@ public class AccompanyCommentServiceImpl implements AccompanyCommentService {
     private MemberEntity getMember(String email) {
         return memberRepository.findByEmail(email)
                 .orElseThrow(() -> new GlobalException(ErrorCode.NOT_FOUND_MEMBER));
+    }
+
+    /**
+     * 댓글 작성자와 요청한 사용자가 일치하는지 확인하는 메서드.
+     * 만약 일치하지 않으면 GlobalException을 발생
+     *
+     * @param comment 조회된 AccompanyCommentEntity 객체
+     * @param email 요청한 사용자의 이메일
+     */
+    private void validateCommentAuthor(AccompanyCommentEntity comment, String email) {
+        if (!comment.getMemberEntity().getEmail().equals(email)) {
+            throw new GlobalException(ErrorCode.WRITE_NOT_YOURSELF);
+        }
     }
 }
