@@ -13,7 +13,7 @@ public interface AccompanyCommentService {
     // 댓글 삭제
     void deleteComment(Long commentId);
 
-    // 특정 게시물에 달린 댓글 목록 조회
+    // 특정 게시물에 달린 삭제되지 않은 댓글 목록 조회
     List<AccompanyCommentResponse> getCommentsByPost(Long postId);
 
     // 댓글 수정

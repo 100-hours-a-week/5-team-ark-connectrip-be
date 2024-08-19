@@ -83,7 +83,7 @@ public class AccompanyCommentServiceImpl implements AccompanyCommentService {
 
     /**
      * 특정 게시물에 달린 모든 댓글을 조회하는 메서드.
-     * 주어진 게시물 ID를 통해 해당 게시물에 달린 댓글 목록을 조회한 후, 이를 DTO로 변환하여 반환
+     * 주어진 게시물 ID를 통해 해당 게시물에 달린 삭제되지 않은 댓글 목록을 조회한 후, 이를 DTO로 변환하여 반환
      *
      * @param postId 댓글을 조회할 게시물의 ID
      * @return 해당 게시물에 달린 댓글들의 정보를 담은 List<AccompanyCommentResponse> 객체
@@ -91,7 +91,7 @@ public class AccompanyCommentServiceImpl implements AccompanyCommentService {
     @Override
     @Transactional(readOnly = true)
     public List<AccompanyCommentResponse> getCommentsByPost(Long postId) {
-        List<AccompanyCommentEntity> comments = accompanyCommentRepository.findByAccompanyPostEntity_Id(postId);
+        List<AccompanyCommentEntity> comments = accompanyCommentRepository.findByAccompanyPostEntity_IdAndDeletedAtIsNull(postId);
         return comments.stream()
                 .map(AccompanyCommentResponse::fromEntity)
                 .toList();
