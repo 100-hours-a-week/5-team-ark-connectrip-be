@@ -6,8 +6,6 @@ import connectripbe.connectrip_be.post.entity.AccompanyPostEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
-
 @Entity
 @Table(name = "accompany_comment")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -28,6 +26,7 @@ public class AccompanyCommentEntity extends BaseEntity {
     @JoinColumn(name = "accompany_post_id", nullable = false)
     private AccompanyPostEntity accompanyPostEntity;  // 동행 아이디 (외래키)
 
+    @Setter
     @Column(nullable = false)
     private String content;  // 내용
 
@@ -36,9 +35,6 @@ public class AccompanyCommentEntity extends BaseEntity {
         this.accompanyPostEntity = accompanyPostEntity;
         this.content = content;
 
-    }
-    public void setContent(String content) {
-        this.content = content;
     }
 
 
