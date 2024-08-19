@@ -69,6 +69,7 @@ public class KakaoService {
                         .email(userInfo.getKakaoAccount().getEmail())
                         .roleType(MemberRoleType.USER) // 기본 사용자 권한 설정
                         .loginType(MemberLoginType.KAKAO)
+                        .profileImagePath(userInfo.getKakaoAccount().getProfile().getProfileImageUrl())
                         .build();
                 memberJpaRepository.save(newMemberEntity);
 
