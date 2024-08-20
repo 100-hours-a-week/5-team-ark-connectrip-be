@@ -30,12 +30,5 @@ public class AccompanyCommentEntity extends BaseEntity {
     @Column(nullable = false)
     private String content;  // 내용
 
-    public AccompanyCommentEntity(MemberEntity memberEntity, AccompanyPostEntity accompanyPostEntity, String content) {
-        this.memberEntity = memberEntity;
-        this.accompanyPostEntity = accompanyPostEntity;
-        this.content = content;
-
-    }
-
-
+    // 기존 생성자 제거 (빌더 패턴으로 대체됨)
 }
