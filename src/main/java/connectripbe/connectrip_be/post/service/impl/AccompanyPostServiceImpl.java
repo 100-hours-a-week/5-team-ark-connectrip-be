@@ -56,6 +56,8 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
         return new AccompanyPostResponse(
                 accompanyPostEntity.getId(),
                 accompanyPostEntity.getMemberEntity().getId(),
+                accompanyPostEntity.getMemberEntity().getNickname(),
+                accompanyPostEntity.getMemberEntity().getProfileImagePath(),
                 accompanyPostEntity.getTitle(),
                 accompanyPostEntity.getStartDate(),
                 accompanyPostEntity.getEndDate(),
