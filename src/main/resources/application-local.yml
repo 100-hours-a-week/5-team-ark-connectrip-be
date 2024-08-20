@@ -6,7 +6,7 @@ spring:
     password: ${DB_PASSWORD}
   data:
     redis:
-      host: localhost
+      host: ${REDIS_HOST}
       port: 6379
 
 # .env 파일에서 로드될 변수들:

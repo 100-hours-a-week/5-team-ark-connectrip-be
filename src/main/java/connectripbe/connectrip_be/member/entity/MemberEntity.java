@@ -6,14 +6,11 @@ import connectripbe.connectrip_be.member.entity.type.MemberRoleType;
 import connectripbe.connectrip_be.post.entity.AccompanyPostEntity;
 import jakarta.persistence.*;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
 
 @Entity
 @Getter
@@ -45,8 +42,8 @@ public class MemberEntity extends BaseEntity {
     @Column(name = "description")
     private String description; // 자기소개
 
-    @Column(name = "age")
-    private String age; // 나이
+    @Column(name = "birth_date")
+    private LocalDateTime birthDate;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "login_type", nullable = false, length = 10)
@@ -59,4 +56,10 @@ public class MemberEntity extends BaseEntity {
     @Builder.Default
     @OneToMany(mappedBy = "memberEntity", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AccompanyPostEntity> accompanyPostEntities = new ArrayList<>();
+
+    public void firstUpdate(String nickname, LocalDateTime birthDate, String gender) {
+        this.nickname = nickname;
+        this.birthDate = birthDate;
+        this.gender = gender;
+    }
 }

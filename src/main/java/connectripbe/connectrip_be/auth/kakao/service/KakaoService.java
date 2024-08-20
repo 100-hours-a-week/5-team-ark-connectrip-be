@@ -47,7 +47,7 @@ public class KakaoService {
    * @return 로그인 처리 결과
    */
 
-  public Object kakaoLogin(String code) {
+  public TokenDto kakaoLogin(String code) {
     // 카카오 서버로부터 액세스 토큰을 받아온다.
     KakaoTokenApiResponse token = kakaoApi.getToken(grant_type, client_id, redirect_uri, code);
     String accessToken = token.getAccess_token();
