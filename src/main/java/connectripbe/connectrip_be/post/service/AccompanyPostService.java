@@ -1,9 +1,10 @@
 package connectripbe.connectrip_be.post.service;
 
+import connectripbe.connectrip_be.post.dto.AccompanyPostListResponse;
 import connectripbe.connectrip_be.post.dto.AccompanyPostRequest;
 import connectripbe.connectrip_be.post.dto.AccompanyPostResponse;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import java.util.List;
+
 
 public interface AccompanyPostService {
 
@@ -14,7 +15,6 @@ public interface AccompanyPostService {
     void updateAccompanyPost(String memberEmail, long id, AccompanyPostRequest request);
 
     void deleteAccompanyPost(String memberEmail, long id);
-
     // 게시물 전체 리스트 - 페이징 처리
-    Page<AccompanyPostResponse> accompanyPostList(Pageable pageable);
+    List<AccompanyPostListResponse> accompanyPostList();
 }

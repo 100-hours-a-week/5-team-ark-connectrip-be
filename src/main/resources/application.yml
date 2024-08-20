@@ -10,6 +10,8 @@ spring:
       hibernate:
         format_sql: true
         show_sql: true
+        jdbc:
+          time_zone: UTC
     database: mysql
     defer-datasource-initialization: true
 

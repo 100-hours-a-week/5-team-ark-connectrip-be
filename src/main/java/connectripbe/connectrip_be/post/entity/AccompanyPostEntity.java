@@ -11,7 +11,9 @@ import java.time.LocalDate;
 @Entity
 @Table(name = "accompany_post")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @Getter
+@Builder
 public class AccompanyPostEntity extends BaseEntity {
 
     @Id
@@ -60,4 +62,5 @@ public class AccompanyPostEntity extends BaseEntity {
         this.accompanyArea = accompanyArea;
         this.content = content;
     }
+
 }
