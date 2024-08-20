@@ -8,6 +8,7 @@ import lombok.*;
 
 import java.time.LocalDate;
 
+
 @Entity
 @Table(name = "accompany_post")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
