@@ -75,14 +75,20 @@ public class AccompanyCommentServiceImpl implements AccompanyCommentService {
 
     /**
      * 댓글을 삭제하는 메서드.
-     * 주어진 댓글 ID를 통해 AccompanyCommentEntity를 조회한 후, 해당 댓글을 데이터베이스에서 삭제
+     * 주어진 댓글 ID를 통해 AccompanyCommentEntity를 조회한 후, 삭제 권한이 있는지 확인하고
+     * 해당 댓글을 데이터베이스에서 삭제
      *
      * @param commentId 삭제할 댓글의 ID
+     * @param email 삭제하려는 사용자의 이메일
      */
     @Override
     @Transactional
-    public void deleteComment(Long commentId) {
+    public void deleteComment(Long commentId, String email) {
         AccompanyCommentEntity comment = getComment(commentId);
+
+        // 댓글 작성자와 요청한 사용자가 일치하는지 확인
+        validateCommentAuthor(comment, email);
+
         accompanyCommentRepository.delete(comment);
     }
 

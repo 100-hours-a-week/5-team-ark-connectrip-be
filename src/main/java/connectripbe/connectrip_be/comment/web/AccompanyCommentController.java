@@ -34,10 +34,11 @@ public class AccompanyCommentController {
 
     /**
      * 댓글 생성.
-     * 주어진 요청 정보와 사용자의 이메일을 이용해 댓글을 생성하고, 생성된 댓글을 반환합니다.
+     * 주어진 요청 정보와 로그인한 사용자의 이메일을 이용해 댓글을 생성하고, 생성된 댓글을 반환합니다.
+     * 로그인한 사용자만 댓글을 작성할 수 있습니다.
      *
      * @param request 댓글 생성 요청 정보 (게시물 ID, 댓글 내용 포함)
-     * @param email 댓글 작성자의 이메일
+     * @param email 로그인한 사용자의 이메일
      * @return 생성된 댓글 정보를 담은 ResponseEntity<AccompanyCommentResponse>
      */
     @PostMapping
@@ -49,23 +50,26 @@ public class AccompanyCommentController {
     /**
      * 댓글 삭제.
      * 주어진 댓글 ID에 해당하는 댓글을 삭제합니다.
+     * 로그인한 사용자만 자신의 댓글을 삭제할 수 있습니다.
      *
      * @param commentId 삭제할 댓글의 ID
+     * @param email 로그인한 사용자의 이메일
      * @return 204 No Content 상태 코드를 담은 ResponseEntity
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteComment(@PathVariable("id") Long commentId) {
-        accompanyCommentService.deleteComment(commentId);
+    public ResponseEntity<?> deleteComment(@PathVariable("id") Long commentId, @LoginUser String email) {
+        accompanyCommentService.deleteComment(commentId, email);
         return ResponseEntity.noContent().build(); // 204 No Content 반환
     }
 
     /**
      * 댓글 수정.
      * 주어진 요청 정보와 댓글 ID를 이용해 댓글을 수정하고, 수정된 댓글을 반환합니다.
+     * 로그인한 사용자만 자신의 댓글을 수정할 수 있습니다.
      *
      * @param commentId 수정할 댓글의 ID
      * @param request 댓글 수정 요청 정보 (수정된 댓글 내용 포함)
-     * @param email 댓글 작성자의 이메일
+     * @param email 로그인한 사용자의 이메일
      * @return 수정된 댓글 정보를 담은 ResponseEntity<AccompanyCommentResponse>
      */
     @PutMapping("/{id}")
