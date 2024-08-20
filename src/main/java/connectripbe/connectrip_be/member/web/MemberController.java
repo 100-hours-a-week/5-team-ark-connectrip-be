@@ -1,12 +1,11 @@
 package connectripbe.connectrip_be.member.web;
 
 import connectripbe.connectrip_be.auth.config.LoginUser;
+import connectripbe.connectrip_be.member.dto.FirstUpdateMemberRequest;
 import connectripbe.connectrip_be.member.dto.MemberHeaderInfoResponse;
 import connectripbe.connectrip_be.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/members")
@@ -18,5 +17,10 @@ public class MemberController {
     @GetMapping("/me")
     public MemberHeaderInfoResponse getMemberHeaderInfo(@LoginUser String email) {
         return memberService.getMemberHeaderInfo(email);
+    }
+
+    @PostMapping("/first")
+    public MemberHeaderInfoResponse firstUpdateMember(@LoginUser String email, @RequestBody FirstUpdateMemberRequest request) {
+        return memberService.getFirstUpdateMemberResponse(email, request);
     }
 }

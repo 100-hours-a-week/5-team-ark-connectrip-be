@@ -30,6 +30,8 @@ public enum ErrorCode {
 
     // Member, 사용자
     NOT_FOUND_MEMBER(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다."),
+    DUPLICATE_MEMBER_NICKNAME(HttpStatus.CONFLICT, "중복된 닉네임입니다."),
+
     // info-noah: 세분화 시 변경될 수 있음
     MEMBER_NOT_OWNER_EXCEPTION(HttpStatus.FORBIDDEN, "소유자가 아닙니다."),
 
