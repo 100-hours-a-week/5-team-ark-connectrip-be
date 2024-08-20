@@ -27,7 +27,7 @@ public class AccompanyCommentEntity extends BaseEntity {
     private AccompanyPostEntity accompanyPostEntity;  // 동행 아이디 (외래키)
 
     @Setter
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String content;  // 내용
 
     // 기존 생성자 제거 (빌더 패턴으로 대체됨)
