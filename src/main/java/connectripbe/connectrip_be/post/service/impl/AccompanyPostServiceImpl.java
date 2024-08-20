@@ -5,6 +5,7 @@ import connectripbe.connectrip_be.accompany_status.entity.AccompanyStatusEnum;
 import connectripbe.connectrip_be.accompany_status.repository.AccompanyStatusJpaRepository;
 import connectripbe.connectrip_be.member.exception.MemberNotOwnerException;
 import connectripbe.connectrip_be.member.exception.NotFoundMemberException;
+import connectripbe.connectrip_be.post.dto.AccompanyPostListResponse;
 import connectripbe.connectrip_be.post.dto.AccompanyPostRequest;
 import connectripbe.connectrip_be.post.dto.AccompanyPostResponse;
 import connectripbe.connectrip_be.post.entity.AccompanyPostEntity;
@@ -13,9 +14,8 @@ import connectripbe.connectrip_be.post.repository.AccompanyPostRepository;
 import connectripbe.connectrip_be.post.service.AccompanyPostService;
 import connectripbe.connectrip_be.member.entity.MemberEntity;
 import connectripbe.connectrip_be.member.repository.MemberJpaRepository;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -97,23 +97,11 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
     }
 
     @Override
-    public Page<AccompanyPostResponse> accompanyPostList(Pageable pageable) {
-        return accompanyPostRepository.findAll(pageable)
-                .map(accompanyPostEntity -> {
-                    // fixme-noah: 생성일자가 들어가는가?
-                    return new AccompanyPostResponse(
-                            accompanyPostEntity.getId(),
-                            accompanyPostEntity.getMemberEntity().getId(),
-                            accompanyPostEntity.getTitle(),
-                            accompanyPostEntity.getStartDate(),
-                            accompanyPostEntity.getEndDate(),
-                            accompanyPostEntity.getAccompanyArea(),
-                            accompanyPostEntity.getCustomUrl(),
-                            accompanyPostEntity.getUrlQrPath(),
-                            accompanyPostEntity.getContent()
-                    );
-                });
+    public List<AccompanyPostListResponse> accompanyPostList() {
+        List<AccompanyPostEntity> all =  accompanyPostRepository.findAll();
+        return all.stream().map(AccompanyPostListResponse::fromEntity).toList();
     }
+
 
     private MemberEntity findMemberEntity(String email) {
         return memberJpaRepository.findByEmail(email).orElseThrow(NotFoundMemberException::new);
