@@ -3,7 +3,7 @@ name: Build and Deploy Backend
 on:
   push:
     branches:
-	# master, develop 브랜치로 merge되어 push가 트리거 된 경우 실행
+      # master, develop 브랜치로 merge되어 push가 트리거 된 경우 실행
       - master
       - develop
 
