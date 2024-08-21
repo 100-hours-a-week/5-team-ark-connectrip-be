@@ -6,12 +6,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@NoArgsConstructor  // 기본 생성자 필요
-@AllArgsConstructor  // 모든 필드를 포함하는 생성자를 Lombok이 자동으로 생성
-@Builder  // 빌더 패턴을 사용하기 위함
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class AccompanyReviewRequest {
     private Long reviewerId;
     private Long targetId;
-    private Long accompanyPostId;
+    private Long chatRoomId;  // 수정된 부분
     private String content;
 }

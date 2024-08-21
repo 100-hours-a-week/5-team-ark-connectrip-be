@@ -6,5 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface AccompanyReviewRepository extends JpaRepository<AccompanyReviewEntity, Long> {
-    List<AccompanyReviewEntity> findByAccompanyPostId(Long accompanyPostId);
+    List<AccompanyReviewEntity> findByChatRoomId(Long chatRoomId);  // 수정된 부분
 }

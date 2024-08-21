@@ -5,8 +5,8 @@ import connectripbe.connectrip_be.Review.dto.AccompanyReviewResponse;
 import connectripbe.connectrip_be.Review.entity.AccompanyReviewEntity;
 import connectripbe.connectrip_be.Review.repository.AccompanyReviewRepository;
 import connectripbe.connectrip_be.Review.service.AccompanyReviewService;
+import connectripbe.connectrip_be.chat.repository.ChatRoomRepository;
 import connectripbe.connectrip_be.member.repository.MemberJpaRepository;
-import connectripbe.connectrip_be.post.repository.AccompanyPostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +19,7 @@ public class AccompanyReviewServiceImpl implements AccompanyReviewService {
 
     private final AccompanyReviewRepository accompanyReviewRepository;
     private final MemberJpaRepository MemberJpaRepository;
-    private final AccompanyPostRepository accompanyPostRepository;
+    private final ChatRoomRepository chatRoomRepository;
 
     @Override
     public AccompanyReviewResponse createReview(AccompanyReviewRequest reviewRequest) {
@@ -27,13 +27,13 @@ public class AccompanyReviewServiceImpl implements AccompanyReviewService {
                 .orElseThrow(() -> new IllegalArgumentException("Invalid reviewer ID"));
         var target = MemberJpaRepository.findById(reviewRequest.getTargetId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid target ID"));
-        var accompanyPost = accompanyPostRepository.findById(reviewRequest.getAccompanyPostId())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid accompany post ID"));
+        var chatRoom = chatRoomRepository.findById(reviewRequest.getChatRoomId())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid chat room ID"));
 
         AccompanyReviewEntity review = AccompanyReviewEntity.builder()
                 .reviewer(reviewer)
                 .target(target)
-                .accompanyPost(accompanyPost)
+                .chatRoom(chatRoom)
                 .content(reviewRequest.getContent())
                 .build();
 
@@ -43,8 +43,8 @@ public class AccompanyReviewServiceImpl implements AccompanyReviewService {
     }
 
     @Override
-    public List<AccompanyReviewResponse> getReviewsByAccompanyPostId(Long accompanyPostId) {
-        List<AccompanyReviewEntity> reviews = accompanyReviewRepository.findByAccompanyPostId(accompanyPostId);
+    public List<AccompanyReviewResponse> getReviewsByChatRoomId(Long chatRoomId) {
+        List<AccompanyReviewEntity> reviews = accompanyReviewRepository.findByChatRoomId(chatRoomId);
         return reviews.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
@@ -53,7 +53,7 @@ public class AccompanyReviewServiceImpl implements AccompanyReviewService {
                 .reviewId(review.getId())
                 .reviewerId(review.getReviewer().getId())
                 .targetId(review.getTarget().getId())
-                .accompanyPostId(review.getAccompanyPost().getId())
+                .chatRoomId(review.getChatRoom().getId())  // 수정된 부분
                 .content(review.getContent())
                 .createdAt(review.getCreatedAt())
                 .updatedAt(review.getUpdatedAt())

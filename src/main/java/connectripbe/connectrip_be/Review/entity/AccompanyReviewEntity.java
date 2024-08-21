@@ -1,8 +1,8 @@
 package connectripbe.connectrip_be.Review.entity;
 
+import connectripbe.connectrip_be.chat.entity.ChatRoomEntity;
 import connectripbe.connectrip_be.global.entity.BaseEntity;
 import connectripbe.connectrip_be.member.entity.MemberEntity;
-import connectripbe.connectrip_be.post.entity.AccompanyPostEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -27,8 +27,8 @@ public class AccompanyReviewEntity extends BaseEntity {
     private MemberEntity target;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "accompany_post_id", nullable = false)
-    private AccompanyPostEntity accompanyPost;
+    @JoinColumn(name = "chat_room_id", nullable = false)
+    private ChatRoomEntity chatRoom;
 
     @Setter
     @Column(nullable = false, columnDefinition = "TEXT")
