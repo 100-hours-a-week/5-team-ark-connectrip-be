@@ -54,4 +54,4 @@ public class AccompanyCommentResponse {
                 .format(UTC_FORMATTER);
     }
 }
-}
+
