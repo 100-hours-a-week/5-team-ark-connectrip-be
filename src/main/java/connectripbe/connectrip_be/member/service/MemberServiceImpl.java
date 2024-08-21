@@ -2,6 +2,7 @@ package connectripbe.connectrip_be.member.service;
 
 import connectripbe.connectrip_be.global.dto.GlobalResponse;
 import connectripbe.connectrip_be.member.dto.CheckDuplicateEmailDto;
+import connectripbe.connectrip_be.member.dto.CheckDuplicateNicknameDto;
 import connectripbe.connectrip_be.member.dto.FirstUpdateMemberRequest;
 import connectripbe.connectrip_be.member.dto.MemberHeaderInfoDto;
 import connectripbe.connectrip_be.member.entity.MemberEntity;
@@ -23,6 +24,12 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public GlobalResponse<CheckDuplicateEmailDto> checkDuplicateEmail(String email) {
         return new GlobalResponse<>("SUCCESS", new CheckDuplicateEmailDto(memberJpaRepository.existsByEmail(email)));
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public GlobalResponse<CheckDuplicateNicknameDto> checkDuplicateNickname(String nickname) {
+        return new GlobalResponse<>("SUCCESS", new CheckDuplicateNicknameDto(memberJpaRepository.existsByNickname(nickname)));
     }
 
     /**

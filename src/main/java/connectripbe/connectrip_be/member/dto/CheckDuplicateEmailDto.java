@@ -1,5 +1,5 @@
 package connectripbe.connectrip_be.member.dto;
 
 public record CheckDuplicateEmailDto(
-        boolean isDuplicateEmail) {
+        boolean isDuplicatedEmail) {
 }
