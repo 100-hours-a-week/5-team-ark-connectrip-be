@@ -11,4 +11,6 @@ public interface ChatRoomMemberRepository extends JpaRepository<ChatRoomMemberEn
 
       List<ChatRoomMemberEntity> findByMember_Email(String email);
 
+      List<ChatRoomMemberEntity> findByChatRoom_Id(Long chatRoomId);
+
 }
