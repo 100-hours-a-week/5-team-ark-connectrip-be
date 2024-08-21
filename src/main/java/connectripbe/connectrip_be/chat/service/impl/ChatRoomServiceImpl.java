@@ -2,6 +2,7 @@ package connectripbe.connectrip_be.chat.service.impl;
 
 import connectripbe.connectrip_be.chat.dto.ChatRoomListResponse;
 import connectripbe.connectrip_be.chat.entity.ChatRoomMemberEntity;
+
 import connectripbe.connectrip_be.chat.repository.ChatRoomMemberRepository;
 import connectripbe.connectrip_be.chat.service.ChatRoomService;
 
@@ -25,11 +26,11 @@ public class ChatRoomServiceImpl implements ChatRoomService {
       @Override
       public List<ChatRoomListResponse> getChatRoomList(String email) {
             // 사용자 참여한 모든 ChatRoomMemberEntity 조회
-            List<ChatRoomMemberEntity> chatRoomMembers = chatRoomMemberRepository.findByMember_Email(
-                    email);
+            List<ChatRoomMemberEntity> chatRoomMembers =  chatRoomMemberRepository.myChatRoomList(email);
 
             return chatRoomMembers.stream()
-                    .map(member -> ChatRoomListResponse.fromEntity(member.getChatRoom())).toList();
+                    .map(member -> ChatRoomListResponse.fromEntity(member.getChatRoom()))
+                    .toList();
       }
 
 
