@@ -63,6 +63,7 @@ public class AuthController {
                 }
 
                 cookie.setMaxAge(0);
+                cookie.setPath("/");
                 httpServletResponse.addCookie(cookie);
             }
         }
