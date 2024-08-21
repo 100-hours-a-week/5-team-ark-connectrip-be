@@ -76,7 +76,7 @@ public class AuthController {
         refreshTokenCookie.setPath("/");
         refreshTokenCookie.setSecure(true);
         refreshTokenCookie.setHttpOnly(true);
-        refreshTokenCookie.setMaxAge(Math.toIntExact(tokenDto.getRefreshTokenExpireTime()));
+        refreshTokenCookie.setMaxAge(3600 * 24 * 7);
 
         httpServletResponse.addCookie(refreshTokenCookie);
 
@@ -84,7 +84,7 @@ public class AuthController {
         accessTokenCookie.setPath("/");
         accessTokenCookie.setSecure(true);
         accessTokenCookie.setHttpOnly(true);
-        accessTokenCookie.setMaxAge(Math.toIntExact(tokenDto.getAccessTokenExpireTime()));
+        accessTokenCookie.setMaxAge(3600 * 24);
 
         httpServletResponse.addCookie(accessTokenCookie);
 

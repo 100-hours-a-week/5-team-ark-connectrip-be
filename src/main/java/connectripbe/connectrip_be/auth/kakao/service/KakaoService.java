@@ -13,6 +13,7 @@ import connectripbe.connectrip_be.auth.kakao.dto.api.KakaoUserInfoApiResponse;
 import connectripbe.connectrip_be.auth.service.AuthService;
 import connectripbe.connectrip_be.global.exception.GlobalException;
 import connectripbe.connectrip_be.member.entity.MemberEntity;
+import connectripbe.connectrip_be.member.entity.type.MemberLoginType;
 import connectripbe.connectrip_be.member.entity.type.MemberRoleType;
 import connectripbe.connectrip_be.member.repository.MemberJpaRepository;
 import lombok.RequiredArgsConstructor;
@@ -69,6 +70,8 @@ public class KakaoService {
       if (USER_NOT_FOUND.equals(e.getErrorCode())) {
         MemberEntity newMemberEntity = MemberEntity.builder()
                 .email(userInfo.getKakaoAccount().getEmail())
+                .profileImagePath(userInfo.getKakaoAccount().getKakaoProfile().getImagePath())
+                .loginType(MemberLoginType.KAKAO)
                 .roleType(MemberRoleType.USER) // 기본 사용자 권한 설정
                 .build();
         memberJpaRepository.save(newMemberEntity);
