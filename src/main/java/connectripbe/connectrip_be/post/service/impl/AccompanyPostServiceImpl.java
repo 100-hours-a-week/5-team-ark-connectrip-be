@@ -14,7 +14,9 @@ import connectripbe.connectrip_be.post.repository.AccompanyPostRepository;
 import connectripbe.connectrip_be.post.service.AccompanyPostService;
 import connectripbe.connectrip_be.member.entity.MemberEntity;
 import connectripbe.connectrip_be.member.repository.MemberJpaRepository;
+
 import java.util.List;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -97,11 +99,18 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<AccompanyPostListResponse> accompanyPostList() {
-        List<AccompanyPostEntity> all =  accompanyPostRepository.findAll();
+        List<AccompanyPostEntity> all = accompanyPostRepository.findAll();
         return all.stream().map(AccompanyPostListResponse::fromEntity).toList();
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public List<AccompanyPostListResponse> searchByQuery(String query) {
+        return accompanyPostRepository.findAllByTitleContainingOrContentContainingOrderByCreatedAtDesc(query).stream()
+                .map(AccompanyPostListResponse::fromEntity).toList();
+    }
 
     private MemberEntity findMemberEntity(String email) {
         return memberJpaRepository.findByEmail(email).orElseThrow(NotFoundMemberException::new);
