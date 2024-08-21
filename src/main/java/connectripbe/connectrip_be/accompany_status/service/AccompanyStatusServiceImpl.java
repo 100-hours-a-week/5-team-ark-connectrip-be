@@ -1,6 +1,8 @@
 package connectripbe.connectrip_be.accompany_status.service;
 
 import connectripbe.connectrip_be.accompany_status.entity.AccompanyStatusEntity;
+import connectripbe.connectrip_be.accompany_status.entity.AccompanyStatusEnum;
+import connectripbe.connectrip_be.accompany_status.exception.AlreadyFinishedAccompanyStatusException;
 import connectripbe.connectrip_be.accompany_status.exception.NotFoundAccompanyStatusException;
 import connectripbe.connectrip_be.accompany_status.repository.AccompanyStatusJpaRepository;
 import connectripbe.connectrip_be.accompany_status.response.AccompanyStatusResponse;
@@ -49,7 +51,13 @@ public class AccompanyStatusServiceImpl implements AccompanyStatusService {
         AccompanyStatusEntity accompanyStatusEntity = accompanyStatusJpaRepository.findTopByAccompanyPostEntityOrderByCreatedAtDesc(accompanyPostEntity)
                 .orElseThrow(NotFoundAccompanyPostException::new);
 
-        accompanyStatusEntity.updateStatus();
+        if (accompanyStatusEntity.getAccompanyStatusEnum() == AccompanyStatusEnum.PROGRESSING) {
+            accompanyStatusJpaRepository.save(new AccompanyStatusEntity(accompanyPostEntity, AccompanyStatusEnum.CLOSED));
+        } else if (accompanyStatusEntity.getAccompanyStatusEnum() == AccompanyStatusEnum.CLOSED) {
+            accompanyStatusJpaRepository.save(new AccompanyStatusEntity(accompanyPostEntity, AccompanyStatusEnum.FINISHED));
+        } else {
+            throw new AlreadyFinishedAccompanyStatusException();
+        }
     }
 
     private void validateAccompanyPostOwnership(MemberEntity memberEntity, AccompanyPostEntity accompanyPostEntity) {
