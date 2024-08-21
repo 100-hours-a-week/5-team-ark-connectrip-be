@@ -57,8 +57,9 @@ public class MemberServiceImpl implements MemberService {
         MemberEntity memberEntity = memberJpaRepository.findByEmail(email)
                 .orElseThrow(NotFoundMemberException::new);
 
+        // fixme-noah: 추후 글로벌 response가 정해지면 exception handler로 변경
         if (memberJpaRepository.existsByNickname(request.nickname())) {
-            throw new DuplicateMemberNicknameException();
+            return new GlobalResponse<>("DUPLICATED_NICKNAME", null);
         }
 
         memberEntity.firstUpdate(request.nickname(), request.birthDate(), request.gender());

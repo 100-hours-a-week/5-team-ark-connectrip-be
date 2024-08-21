@@ -8,6 +8,7 @@ import connectripbe.connectrip_be.member.dto.FirstUpdateMemberRequest;
 import connectripbe.connectrip_be.member.dto.MemberHeaderInfoDto;
 import connectripbe.connectrip_be.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -32,8 +33,11 @@ public class MemberController {
         return memberService.getMemberHeaderInfo(email);
     }
 
+    // fixme-noah: 2024-08-21, 엉망 코드
     @PostMapping("/first")
-    public GlobalResponse<MemberHeaderInfoDto> firstUpdateMember(@LoginUser String email, @RequestBody FirstUpdateMemberRequest request) {
-        return memberService.getFirstUpdateMemberResponse(email, request);
+    public ResponseEntity<GlobalResponse<MemberHeaderInfoDto>> firstUpdateMember(@LoginUser String email, @RequestBody FirstUpdateMemberRequest request) {
+        GlobalResponse<MemberHeaderInfoDto> firstUpdateMemberResponse = memberService.getFirstUpdateMemberResponse(email, request);
+
+        return ResponseEntity.status(firstUpdateMemberResponse.message().equals("SUCCESS") ? 200 : 409).body(firstUpdateMemberResponse);
     }
 }
