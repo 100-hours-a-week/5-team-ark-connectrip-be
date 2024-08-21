@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
+@Table(name = "accompany_status")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class AccompanyStatusEntity extends BaseEntity {
