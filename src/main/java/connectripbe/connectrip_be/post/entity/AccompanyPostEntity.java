@@ -45,6 +45,9 @@ public class AccompanyPostEntity extends BaseEntity {
     @Column(nullable = false)
     private String content;
 
+    // fixme-eric 동행 요청 상태 임시보류
+    private String requestStatus;
+
     public AccompanyPostEntity(MemberEntity memberEntity, String title, LocalDate startDate, LocalDate endDate, AccompanyArea accompanyArea, String customUrl, String urlQrPath, String content) {
         this.memberEntity = memberEntity;
         this.title = title;
