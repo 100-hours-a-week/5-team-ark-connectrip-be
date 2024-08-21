@@ -8,11 +8,11 @@ import java.util.List;
 
 public interface AccompanyPostService {
 
-    void createAccompanyPost(String memberEmail, AccompanyPostRequest request);
+    AccompanyPostResponse createAccompanyPost(String memberEmail, AccompanyPostRequest request);
 
     AccompanyPostResponse readAccompanyPost(long id);
 
-    void updateAccompanyPost(String memberEmail, long id, AccompanyPostRequest request);
+    AccompanyPostResponse updateAccompanyPost(String memberEmail, long id, AccompanyPostRequest request);
 
     void deleteAccompanyPost(String memberEmail, long id);
     // 게시물 전체 리스트 - 페이징 처리
