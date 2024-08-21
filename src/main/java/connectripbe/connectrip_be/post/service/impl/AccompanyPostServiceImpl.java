@@ -32,20 +32,35 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
     public AccompanyPostResponse createAccompanyPost(String memberEmail, AccompanyPostRequest request) {
         MemberEntity memberEntity = findMemberEntity(memberEmail);
 
-        AccompanyPostEntity savedAccompanyPostEntity = accompanyPostRepository.save(new AccompanyPostEntity(
-                memberEntity,
-                request.title(),
-                request.startDate(),
-                request.endDate(),
-                request.accompanyArea(),
-                "temp",
-                "temp",
-                request.content()));
+//        AccompanyPostEntity savedAccompanyPostEntity = accompanyPostRepository.save(new AccompanyPostEntity(
+//                memberEntity,
+//                request.title(),
+//                request.startDate(),
+//                request.endDate(),
+//                request.accompanyArea(),
+//                "temp",
+//                "temp",
+//                request.content()));
 
-        accompanyStatusJpaRepository.save(new AccompanyStatusEntity(savedAccompanyPostEntity, AccompanyStatusEnum.PROGRESSING));
+        AccompanyPostEntity post = AccompanyPostEntity.builder()
+                .memberEntity(memberEntity)
+                .title(request.title())
+                .startDate(request.startDate())
+                .endDate(request.endDate())
+                .accompanyArea(request.accompanyArea())
+                .content(request.content())
+                .accompanyArea(request.accompanyArea())
+                .urlQrPath("temp")
+                .customUrl("temp")
+                .requestStatus("DEFAULT")
+                .build();
+
+        accompanyPostRepository.save(post);
+        accompanyStatusJpaRepository.save(new AccompanyStatusEntity(post, AccompanyStatusEnum.PROGRESSING));
+        //accompanyStatusJpaRepository.save(new AccompanyStatusEntity(savedAccompanyPostEntity, AccompanyStatusEnum.PROGRESSING));
 
         // 생성된 데이터를 응답으로 반환
-        return AccompanyPostResponse.fromEntity(savedAccompanyPostEntity);
+        return AccompanyPostResponse.fromEntity(post);
     }
 
     @Override
