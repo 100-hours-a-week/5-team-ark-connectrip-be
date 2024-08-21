@@ -7,8 +7,6 @@ import connectripbe.connectrip_be.post.dto.AccompanyPostResponse;
 import connectripbe.connectrip_be.post.service.AccompanyPostService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -52,7 +50,8 @@ public class AccompanyPostController {
             return ResponseEntity.ok().build();
       }
 
-      // fixme-naoh: 나중에 수정
+
+      // 게시물 최신순으로 정렬
       @GetMapping
       public ResponseEntity<List<AccompanyPostListResponse>> listPosts() {
             return ResponseEntity.ok(accompanyPostService.accompanyPostList());
