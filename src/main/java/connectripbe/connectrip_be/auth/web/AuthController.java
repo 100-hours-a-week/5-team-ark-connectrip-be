@@ -1,14 +1,14 @@
 package connectripbe.connectrip_be.auth.web;
 
-
-import connectripbe.connectrip_be.auth.dto.LogoutDto;
 import connectripbe.connectrip_be.auth.dto.ReissueDto;
 import connectripbe.connectrip_be.auth.dto.SignInDto;
 import connectripbe.connectrip_be.auth.dto.SignUpDto;
 import connectripbe.connectrip_be.auth.jwt.dto.TokenDto;
 import connectripbe.connectrip_be.auth.kakao.service.KakaoService;
 import connectripbe.connectrip_be.auth.service.AuthService;
+import connectripbe.connectrip_be.global.dto.GlobalResponse;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -52,12 +52,23 @@ public class AuthController {
         return ResponseEntity.ok(authService.signIn(request));
     }
 
-    @PostMapping(path = "/logout", consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> logout(@RequestBody LogoutDto request) {
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
+        Cookie[] cookies = httpServletRequest.getCookies();
 
-        authService.logout(request);
-        return ResponseEntity.status(HttpStatus.OK).body("로그아웃 성공");
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("accessToken".equals(cookie.getName())) {
+                    authService.logout(cookie.getValue());
+                }
+
+                cookie.setMaxAge(0);
+                cookie.setPath("/");
+                httpServletResponse.addCookie(cookie);
+            }
+        }
+
+        return ResponseEntity.ok(new GlobalResponse<>("SUCCESS", null));
     }
 
     @PostMapping(path = "/reissue", consumes = MediaType.APPLICATION_JSON_VALUE,
