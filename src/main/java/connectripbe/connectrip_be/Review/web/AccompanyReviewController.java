@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/chatrooms/{chatRoomId}/reviews")  // 수정된 부분
+@RequestMapping("/api/v1/chatrooms/{chatRoomId}/reviews")
 @RequiredArgsConstructor
 public class AccompanyReviewController {
 

@@ -12,6 +12,6 @@ import lombok.NoArgsConstructor;
 public class AccompanyReviewRequest {
     private Long reviewerId;
     private Long targetId;
-    private Long chatRoomId;  // 수정된 부분
+    private Long chatRoomId;
     private String content;
 }
