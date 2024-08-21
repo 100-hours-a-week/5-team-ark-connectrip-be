@@ -23,13 +23,17 @@ public class MemberServiceImpl implements MemberService {
     @Transactional(readOnly = true)
     @Override
     public GlobalResponse<CheckDuplicateEmailDto> checkDuplicateEmail(String email) {
-        return new GlobalResponse<>("SUCCESS", new CheckDuplicateEmailDto(memberJpaRepository.existsByEmail(email)));
+        boolean existsByEmail = memberJpaRepository.existsByEmail(email);
+
+        return new GlobalResponse<>(existsByEmail ? "DUPLICATED_EMAIL" : "SUCCESS", new CheckDuplicateEmailDto(existsByEmail));
     }
 
     @Transactional(readOnly = true)
     @Override
     public GlobalResponse<CheckDuplicateNicknameDto> checkDuplicateNickname(String nickname) {
-        return new GlobalResponse<>("SUCCESS", new CheckDuplicateNicknameDto(memberJpaRepository.existsByNickname(nickname)));
+        boolean existsByNickname = memberJpaRepository.existsByNickname(nickname);
+
+        return new GlobalResponse<>(existsByNickname ? "DUPLICATED_NICKNAME" : "SUCCESS", new CheckDuplicateNicknameDto(existsByNickname));
     }
 
     /**
