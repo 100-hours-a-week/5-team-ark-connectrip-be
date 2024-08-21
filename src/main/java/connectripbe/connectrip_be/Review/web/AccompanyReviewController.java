@@ -3,8 +3,10 @@ package connectripbe.connectrip_be.Review.web;
 import connectripbe.connectrip_be.Review.dto.AccompanyReviewRequest;
 import connectripbe.connectrip_be.Review.dto.AccompanyReviewResponse;
 import connectripbe.connectrip_be.Review.service.AccompanyReviewService;
+import connectripbe.connectrip_be.auth.jwt.JwtUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,9 +29,12 @@ public class AccompanyReviewController {
      */
     @PostMapping
     public ResponseEntity<AccompanyReviewResponse> createReview(
+            @AuthenticationPrincipal JwtUserDetails jwtUserDetails,
             @PathVariable Long chatRoomId,
             @RequestBody AccompanyReviewRequest reviewRequest) {
-        AccompanyReviewResponse response = accompanyReviewService.createReview(reviewRequest);
+        AccompanyReviewResponse response =
+                accompanyReviewService.createReview(chatRoomId, jwtUserDetails.getId(), reviewRequest);
+
         return ResponseEntity.ok(response);
     }
 

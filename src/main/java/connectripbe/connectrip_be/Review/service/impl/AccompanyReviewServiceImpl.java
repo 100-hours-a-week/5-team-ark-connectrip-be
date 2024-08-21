@@ -36,10 +36,12 @@ public class AccompanyReviewServiceImpl implements AccompanyReviewService {
      * @return 생성된 리뷰의 정보를 담은 AccompanyReviewResponse 객체
      */
     @Override
-    public AccompanyReviewResponse createReview(AccompanyReviewRequest reviewRequest) {
-        MemberEntity reviewer = findMemberById(reviewRequest.getReviewerId());
+    public AccompanyReviewResponse createReview(Long chatRoomId, Long memberId, AccompanyReviewRequest reviewRequest) {
+        MemberEntity reviewer = findMemberById(memberId);
+
         MemberEntity target = findMemberById(reviewRequest.getTargetId());
-        ChatRoomEntity chatRoom = findChatRoomById(reviewRequest.getChatRoomId());
+
+        ChatRoomEntity chatRoom = findChatRoomById(chatRoomId);
 
         // 채팅방이 FINISH 상태인지 확인
         if (chatRoom.getChatRoomType() != ChatRoomType.FINISH) {

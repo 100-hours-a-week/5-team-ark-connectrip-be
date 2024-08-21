@@ -6,6 +6,6 @@ import connectripbe.connectrip_be.Review.dto.AccompanyReviewResponse;
 import java.util.List;
 
 public interface AccompanyReviewService {
-    AccompanyReviewResponse createReview(AccompanyReviewRequest reviewRequest);
+    AccompanyReviewResponse createReview(Long chatRoomId, Long memberId, AccompanyReviewRequest reviewRequest);
     List<AccompanyReviewResponse> getReviewsByChatRoomId(Long chatRoomId);
 }

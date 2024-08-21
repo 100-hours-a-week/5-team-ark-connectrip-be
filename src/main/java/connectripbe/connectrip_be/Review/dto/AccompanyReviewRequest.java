@@ -10,8 +10,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class AccompanyReviewRequest {
-    private Long reviewerId;
     private Long targetId;
-    private Long chatRoomId;
     private String content;
 }
