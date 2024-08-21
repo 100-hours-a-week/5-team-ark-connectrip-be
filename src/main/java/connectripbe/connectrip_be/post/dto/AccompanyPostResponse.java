@@ -7,6 +7,8 @@ import java.time.LocalDate;
 public record AccompanyPostResponse(
         long id,
         long memberId,
+        String nickname,
+        String profileImagePath,
         String title,
         LocalDate startDate,
         LocalDate endDate,

@@ -17,49 +17,47 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class AccompanyPostController {
 
-    private final AccompanyPostService accompanyPostService;
+      private final AccompanyPostService accompanyPostService;
 
-    @PostMapping
-    public ResponseEntity<Void> createAccompanyPost(@LoginUser String memberEmail,
-                                                    @RequestBody AccompanyPostRequest request) {
-        accompanyPostService.createAccompanyPost(memberEmail, request);
+      @PostMapping
+      public ResponseEntity<AccompanyPostResponse> createAccompanyPost(@LoginUser String memberEmail,
+                                                                       @RequestBody AccompanyPostRequest request) {
+            AccompanyPostResponse response = accompanyPostService.createAccompanyPost(memberEmail, request);
+            return ResponseEntity.ok(response);  // 데이터가 포함된 응답 반환
+      }
 
-        return ResponseEntity.ok().build();
-    }
+      // 게시글 조회
+      @GetMapping("/{id}")
+      public ResponseEntity<AccompanyPostResponse> readAccompanyPost(@PathVariable Long id) {
+            AccompanyPostResponse response = accompanyPostService.readAccompanyPost(id);
+            return ResponseEntity.ok(response);  // 데이터 반환
+      }
 
-    // 게시글 조회
-    @GetMapping("/{id}")
-    public ResponseEntity<AccompanyPostResponse> readAccompanyPost(@PathVariable Long id) {
-        return ResponseEntity.ok(accompanyPostService.readAccompanyPost(id));
-    }
+      @PatchMapping("/{id}")
+      public ResponseEntity<AccompanyPostResponse> updateAccompanyPost(
+              @LoginUser String memberEmail,
+              @PathVariable Long id,
+              @RequestBody AccompanyPostRequest request) {
+            AccompanyPostResponse response = accompanyPostService.updateAccompanyPost(memberEmail, id, request);
+            return ResponseEntity.ok(response);  // 수정된 데이터 반환
+      }
 
-    @PatchMapping("/{id}")
-    public ResponseEntity<Void> updateAccompanyPost(
-            @LoginUser String memberEmail,
-            @PathVariable Long id,
-            @RequestBody AccompanyPostRequest request) {
-        accompanyPostService.updateAccompanyPost(memberEmail, id, request);
+      @DeleteMapping("/{id}")
+      public ResponseEntity<Void> deleteAccompanyPost(
+              @LoginUser String memberEmail,
+              @PathVariable Long id) {
+            accompanyPostService.deleteAccompanyPost(memberEmail, id);
+            return ResponseEntity.ok().build();  // 삭제는 빈 응답
+      }
 
-        return ResponseEntity.ok().build();
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteAccompanyPost(
-            @LoginUser String memberEmail,
-            @PathVariable Long id) {
-        accompanyPostService.deleteAccompanyPost(memberEmail, id);
-
-        return ResponseEntity.ok().build();
-    }
-
-    // fixme-naoh: 나중에 수정
-    @GetMapping
-    public ResponseEntity<List<AccompanyPostListResponse>> listPosts() {
-        return ResponseEntity.ok(accompanyPostService.accompanyPostList());
-    }
-
-    @GetMapping("/search")
-    public ResponseEntity<List<AccompanyPostListResponse>> searchByQuery(@RequestParam String query) {
-        return ResponseEntity.ok(accompanyPostService.searchByQuery(query));
-    }
+      @GetMapping
+      public ResponseEntity<List<AccompanyPostListResponse>> listPosts() {
+            List<AccompanyPostListResponse> response = accompanyPostService.accompanyPostList();
+            return ResponseEntity.ok(response);  // 전체 리스트 반환
+      }
+  
+      @GetMapping("/search")
+      public ResponseEntity<List<AccompanyPostListResponse>> searchByQuery(@RequestParam String query) {
+          return ResponseEntity.ok(accompanyPostService.searchByQuery(query));
+      }
 }

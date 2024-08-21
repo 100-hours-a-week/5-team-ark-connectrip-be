@@ -31,10 +31,9 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
     private final AccompanyStatusJpaRepository accompanyStatusJpaRepository;
 
     @Override
-    public void createAccompanyPost(String memberEmail, AccompanyPostRequest request) {
+    public AccompanyPostResponse createAccompanyPost(String memberEmail, AccompanyPostRequest request) {
         MemberEntity memberEntity = findMemberEntity(memberEmail);
 
-        // fixme-noah: custom_url, url_qr_path 보류
         AccompanyPostEntity savedAccompanyPostEntity = accompanyPostRepository.save(new AccompanyPostEntity(
                 memberEntity,
                 request.title(),
@@ -45,8 +44,22 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
                 "temp",
                 request.content()));
 
-        // info-noah: status 위치가 모호하다고 느낌, 나중에 백엔드 팀과 상의
         accompanyStatusJpaRepository.save(new AccompanyStatusEntity(savedAccompanyPostEntity, AccompanyStatusEnum.PROGRESSING));
+
+        // 생성된 데이터를 응답으로 반환
+        return new AccompanyPostResponse(
+                savedAccompanyPostEntity.getId(),
+                memberEntity.getId(),
+                memberEntity.getNickname(),
+                memberEntity.getProfileImagePath(),
+                savedAccompanyPostEntity.getTitle(),
+                savedAccompanyPostEntity.getStartDate(),
+                savedAccompanyPostEntity.getEndDate(),
+                savedAccompanyPostEntity.getAccompanyArea(),
+                savedAccompanyPostEntity.getCustomUrl(),
+                savedAccompanyPostEntity.getUrlQrPath(),
+                savedAccompanyPostEntity.getContent()
+        );
     }
 
     @Override
@@ -54,10 +67,14 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
     public AccompanyPostResponse readAccompanyPost(long id) {
         AccompanyPostEntity accompanyPostEntity = findAccompanyPostEntity(id);
 
-        // fixme-noah: 생성일자가 들어가는가?
+        // 로그 추가
+        System.out.println("AccompanyPostEntity: " + accompanyPostEntity);
+
         return new AccompanyPostResponse(
                 accompanyPostEntity.getId(),
                 accompanyPostEntity.getMemberEntity().getId(),
+                accompanyPostEntity.getMemberEntity().getNickname(),
+                accompanyPostEntity.getMemberEntity().getProfileImagePath(),
                 accompanyPostEntity.getTitle(),
                 accompanyPostEntity.getStartDate(),
                 accompanyPostEntity.getEndDate(),
@@ -69,8 +86,7 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
     }
 
     @Override
-    @Transactional
-    public void updateAccompanyPost(String memberEmail, long id, AccompanyPostRequest request) {
+    public AccompanyPostResponse updateAccompanyPost(String memberEmail, long id, AccompanyPostRequest request) {
         MemberEntity memberEntity = findMemberEntity(memberEmail);
 
         AccompanyPostEntity accompanyPostEntity = findAccompanyPostEntity(id);
@@ -82,7 +98,22 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
                 request.startDate(),
                 request.endDate(),
                 request.accompanyArea(),
-                request.title()
+                request.content()
+        );
+
+        // 수정된 데이터를 응답으로 반환
+        return new AccompanyPostResponse(
+                accompanyPostEntity.getId(),
+                memberEntity.getId(),
+                memberEntity.getNickname(),
+                memberEntity.getProfileImagePath(),
+                accompanyPostEntity.getTitle(),
+                accompanyPostEntity.getStartDate(),
+                accompanyPostEntity.getEndDate(),
+                accompanyPostEntity.getAccompanyArea(),
+                accompanyPostEntity.getCustomUrl(),
+                accompanyPostEntity.getUrlQrPath(),
+                accompanyPostEntity.getContent()
         );
     }
 
