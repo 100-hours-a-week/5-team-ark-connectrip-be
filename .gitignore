@@ -37,4 +37,4 @@ out/
 .vscode/
 
 ### Exclude application.yml
-.env
+.env.DS_Store
