@@ -19,6 +19,8 @@ public class AccompanyCommentResponse {
     private Long id;  // 댓글 아이디
     private Long memberId;  // 사용자 아이디
     private Long accompanyPostId;  // 동행 아이디
+    private String memberNickname;  // 사용자 닉네임
+    private String memberProfileImage;  // 사용자 프로필 이미지
     private String content;  // 내용
     private LocalDateTime createdAt;  // 생성 일자
     private LocalDateTime updatedAt;
@@ -30,6 +32,8 @@ public class AccompanyCommentResponse {
                 .id(comment.getId())
                 .memberId(comment.getMemberEntity().getId())
                 .accompanyPostId(comment.getAccompanyPostEntity().getId())
+                .memberNickname(comment.getMemberEntity().getNickname())
+                .memberProfileImage(comment.getMemberEntity().getProfileImagePath())
                 .content(comment.getContent())
                 .createdAt(comment.getCreatedAt())
                 .updatedAt(comment.getUpdatedAt())
