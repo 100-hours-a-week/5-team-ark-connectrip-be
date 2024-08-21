@@ -77,8 +77,8 @@ public class SecurityConfig {
                     antMatcher(POST,"/api/v1/comment"),
                     antMatcher(PATCH,"/api/v1/comment"),
                     antMatcher(DELETE,"/api/v1/comment"),
-                    antMatcher(GET,"/api/v1/comment")
-
+                    antMatcher(GET,"/api/v1/comment"),
+                    antMatcher(GET,"/api/v1/chatRoom")
             );
             return requestMatchers.toArray(RequestMatcher[]::new);
       }
