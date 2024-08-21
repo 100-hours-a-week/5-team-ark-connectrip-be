@@ -34,32 +34,35 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
     public AccompanyPostResponse createAccompanyPost(String memberEmail, AccompanyPostRequest request) {
         MemberEntity memberEntity = findMemberEntity(memberEmail);
 
-        AccompanyPostEntity savedAccompanyPostEntity = accompanyPostRepository.save(new AccompanyPostEntity(
-                memberEntity,
-                request.title(),
-                request.startDate(),
-                request.endDate(),
-                request.accompanyArea(),
-                "temp",
-                "temp",
-                request.content()));
+//        AccompanyPostEntity savedAccompanyPostEntity = accompanyPostRepository.save(new AccompanyPostEntity(
+//                memberEntity,
+//                request.title(),
+//                request.startDate(),
+//                request.endDate(),
+//                request.accompanyArea(),
+//                "temp",
+//                "temp",
+//                request.content()));
 
-        accompanyStatusJpaRepository.save(new AccompanyStatusEntity(savedAccompanyPostEntity, AccompanyStatusEnum.PROGRESSING));
+        AccompanyPostEntity post = AccompanyPostEntity.builder()
+                .memberEntity(memberEntity)
+                .title(request.title())
+                .startDate(request.startDate())
+                .endDate(request.endDate())
+                .accompanyArea(request.accompanyArea())
+                .content(request.content())
+                .accompanyArea(request.accompanyArea())
+                .urlQrPath("temp")
+                .customUrl("temp")
+                .requestStatus("DEFAULT")
+                .build();
+
+        accompanyPostRepository.save(post);
+        accompanyStatusJpaRepository.save(new AccompanyStatusEntity(post, AccompanyStatusEnum.PROGRESSING));
+        //accompanyStatusJpaRepository.save(new AccompanyStatusEntity(savedAccompanyPostEntity, AccompanyStatusEnum.PROGRESSING));
 
         // 생성된 데이터를 응답으로 반환
-        return new AccompanyPostResponse(
-                savedAccompanyPostEntity.getId(),
-                memberEntity.getId(),
-                memberEntity.getNickname(),
-                memberEntity.getProfileImagePath(),
-                savedAccompanyPostEntity.getTitle(),
-                savedAccompanyPostEntity.getStartDate(),
-                savedAccompanyPostEntity.getEndDate(),
-                savedAccompanyPostEntity.getAccompanyArea(),
-                savedAccompanyPostEntity.getCustomUrl(),
-                savedAccompanyPostEntity.getUrlQrPath(),
-                savedAccompanyPostEntity.getContent()
-        );
+        return AccompanyPostResponse.fromEntity(post);
     }
 
     @Override
@@ -70,19 +73,7 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
         // 로그 추가
         System.out.println("AccompanyPostEntity: " + accompanyPostEntity);
 
-        return new AccompanyPostResponse(
-                accompanyPostEntity.getId(),
-                accompanyPostEntity.getMemberEntity().getId(),
-                accompanyPostEntity.getMemberEntity().getNickname(),
-                accompanyPostEntity.getMemberEntity().getProfileImagePath(),
-                accompanyPostEntity.getTitle(),
-                accompanyPostEntity.getStartDate(),
-                accompanyPostEntity.getEndDate(),
-                accompanyPostEntity.getAccompanyArea(),
-                accompanyPostEntity.getCustomUrl(),
-                accompanyPostEntity.getUrlQrPath(),
-                accompanyPostEntity.getContent()
-        );
+        return AccompanyPostResponse.fromEntity(accompanyPostEntity);
     }
 
     @Override
@@ -102,19 +93,7 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
         );
 
         // 수정된 데이터를 응답으로 반환
-        return new AccompanyPostResponse(
-                accompanyPostEntity.getId(),
-                memberEntity.getId(),
-                memberEntity.getNickname(),
-                memberEntity.getProfileImagePath(),
-                accompanyPostEntity.getTitle(),
-                accompanyPostEntity.getStartDate(),
-                accompanyPostEntity.getEndDate(),
-                accompanyPostEntity.getAccompanyArea(),
-                accompanyPostEntity.getCustomUrl(),
-                accompanyPostEntity.getUrlQrPath(),
-                accompanyPostEntity.getContent()
-        );
+        return AccompanyPostResponse.fromEntity(accompanyPostEntity);
     }
 
     @Override

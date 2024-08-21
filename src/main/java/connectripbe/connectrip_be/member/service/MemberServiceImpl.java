@@ -23,13 +23,17 @@ public class MemberServiceImpl implements MemberService {
     @Transactional(readOnly = true)
     @Override
     public GlobalResponse<CheckDuplicateEmailDto> checkDuplicateEmail(String email) {
-        return new GlobalResponse<>("SUCCESS", new CheckDuplicateEmailDto(memberJpaRepository.existsByEmail(email)));
+        boolean existsByEmail = memberJpaRepository.existsByEmail(email);
+
+        return new GlobalResponse<>(existsByEmail ? "DUPLICATED_EMAIL" : "SUCCESS", new CheckDuplicateEmailDto(existsByEmail));
     }
 
     @Transactional(readOnly = true)
     @Override
     public GlobalResponse<CheckDuplicateNicknameDto> checkDuplicateNickname(String nickname) {
-        return new GlobalResponse<>("SUCCESS", new CheckDuplicateNicknameDto(memberJpaRepository.existsByNickname(nickname)));
+        boolean existsByNickname = memberJpaRepository.existsByNickname(nickname);
+
+        return new GlobalResponse<>(existsByNickname ? "DUPLICATED_NICKNAME" : "SUCCESS", new CheckDuplicateNicknameDto(existsByNickname));
     }
 
     /**
@@ -53,8 +57,9 @@ public class MemberServiceImpl implements MemberService {
         MemberEntity memberEntity = memberJpaRepository.findByEmail(email)
                 .orElseThrow(NotFoundMemberException::new);
 
+        // fixme-noah: 추후 글로벌 response가 정해지면 exception handler로 변경
         if (memberJpaRepository.existsByNickname(request.nickname())) {
-            throw new DuplicateMemberNicknameException();
+            return new GlobalResponse<>("DUPLICATED_NICKNAME", null);
         }
 
         memberEntity.firstUpdate(request.nickname(), request.birthDate(), request.gender());

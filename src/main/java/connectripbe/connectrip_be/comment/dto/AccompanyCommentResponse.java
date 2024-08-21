@@ -10,6 +10,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 
 @Getter
 @Setter
@@ -28,6 +30,7 @@ public class AccompanyCommentResponse {
     private String updatedAt;
     private String deletedAt;  // 삭제 일자 (null 가능)
 
+
     // 엔티티를 DTO로 변환하는 메서드
     public static AccompanyCommentResponse fromEntity(AccompanyCommentEntity comment) {
         return AccompanyCommentResponse.builder()
@@ -41,7 +44,7 @@ public class AccompanyCommentResponse {
                 .updatedAt(formatToUTC(comment.getUpdatedAt()))
                 .deletedAt(formatToUTC(comment.getDeletedAt()))
                 .build();
-    }
+
     // UTC 형식으로 변환하는 메서드 추가
     private static final DateTimeFormatter UTC_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
