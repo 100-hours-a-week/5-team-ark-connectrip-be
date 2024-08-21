@@ -1,14 +1,14 @@
 package connectripbe.connectrip_be.auth.web;
 
-
-import connectripbe.connectrip_be.auth.dto.LogoutDto;
 import connectripbe.connectrip_be.auth.dto.ReissueDto;
 import connectripbe.connectrip_be.auth.dto.SignInDto;
 import connectripbe.connectrip_be.auth.dto.SignUpDto;
 import connectripbe.connectrip_be.auth.jwt.dto.TokenDto;
 import connectripbe.connectrip_be.auth.kakao.service.KakaoService;
 import connectripbe.connectrip_be.auth.service.AuthService;
+import connectripbe.connectrip_be.global.dto.GlobalResponse;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -52,12 +52,23 @@ public class AuthController {
         return ResponseEntity.ok(authService.signIn(request));
     }
 
-    @PostMapping(path = "/logout", consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> logout(@RequestBody LogoutDto request) {
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
+        Cookie[] cookies = httpServletRequest.getCookies();
 
-        authService.logout(request);
-        return ResponseEntity.status(HttpStatus.OK).body("로그아웃 성공");
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("accessToken".equals(cookie.getName())) {
+                    authService.logout(cookie.getValue());
+                }
+
+                cookie.setMaxAge(0);
+                cookie.setPath("/");
+                httpServletResponse.addCookie(cookie);
+            }
+        }
+
+        return ResponseEntity.ok(new GlobalResponse<>("SUCCESS", null));
     }
 
     @PostMapping(path = "/reissue", consumes = MediaType.APPLICATION_JSON_VALUE,
@@ -72,19 +83,15 @@ public class AuthController {
     public void kakaoLogin(@RequestParam("code") String code, HttpServletResponse httpServletResponse) throws IOException {
         TokenDto tokenDto = kakaoService.kakaoLogin(code);
 
-        Cookie refreshTokenCookie = new Cookie("refresh_token", tokenDto.getRefreshToken());
+        Cookie refreshTokenCookie = new Cookie("refreshToken", tokenDto.getRefreshToken());
         refreshTokenCookie.setPath("/");
-        refreshTokenCookie.setSecure(true);
-        refreshTokenCookie.setHttpOnly(true);
-        refreshTokenCookie.setMaxAge(Math.toIntExact(tokenDto.getRefreshTokenExpireTime()));
+        refreshTokenCookie.setMaxAge(3600 * 24 * 7);
 
         httpServletResponse.addCookie(refreshTokenCookie);
 
-        Cookie accessTokenCookie = new Cookie("access_token", tokenDto.getAccessToken());
+        Cookie accessTokenCookie = new Cookie("accessToken", tokenDto.getAccessToken());
         accessTokenCookie.setPath("/");
-        accessTokenCookie.setSecure(true);
-        accessTokenCookie.setHttpOnly(true);
-        accessTokenCookie.setMaxAge(Math.toIntExact(tokenDto.getAccessTokenExpireTime()));
+        accessTokenCookie.setMaxAge(3600 * 24);
 
         httpServletResponse.addCookie(accessTokenCookie);
 

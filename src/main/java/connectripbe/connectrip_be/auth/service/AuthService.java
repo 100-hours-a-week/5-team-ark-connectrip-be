@@ -1,7 +1,6 @@
 package connectripbe.connectrip_be.auth.service;
 
 
-import connectripbe.connectrip_be.auth.dto.LogoutDto;
 import connectripbe.connectrip_be.auth.dto.ReissueDto;
 import connectripbe.connectrip_be.auth.dto.SignInDto;
 import connectripbe.connectrip_be.auth.dto.SignUpDto;
@@ -15,7 +14,7 @@ public interface AuthService {
 
       TokenDto signIn(SignInDto request);
 
-      void logout(LogoutDto request);
+      void logout(String accessToken);
 
       TokenDto reissue(ReissueDto request);
 

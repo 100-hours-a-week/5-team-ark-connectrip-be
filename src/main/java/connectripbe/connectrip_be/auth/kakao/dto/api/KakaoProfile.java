@@ -6,15 +6,9 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
-public class KakaoAccount {
+public class KakaoProfile {
 
-  @JsonProperty("name")
-  String name;
-
-  @JsonProperty("email")
-  String email;
-
-  @JsonProperty("profile")
-  KakaoProfile kakaoProfile;
+    @JsonProperty("profile_image_url")
+    String imagePath;
 
 }
