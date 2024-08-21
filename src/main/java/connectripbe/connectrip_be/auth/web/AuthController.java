@@ -72,18 +72,14 @@ public class AuthController {
     public void kakaoLogin(@RequestParam("code") String code, HttpServletResponse httpServletResponse) throws IOException {
         TokenDto tokenDto = kakaoService.kakaoLogin(code);
 
-        Cookie refreshTokenCookie = new Cookie("refresh_token", tokenDto.getRefreshToken());
+        Cookie refreshTokenCookie = new Cookie("refreshToken", tokenDto.getRefreshToken());
         refreshTokenCookie.setPath("/");
-        refreshTokenCookie.setSecure(true);
-        refreshTokenCookie.setHttpOnly(true);
         refreshTokenCookie.setMaxAge(3600 * 24 * 7);
 
         httpServletResponse.addCookie(refreshTokenCookie);
 
-        Cookie accessTokenCookie = new Cookie("access_token", tokenDto.getAccessToken());
+        Cookie accessTokenCookie = new Cookie("accessToken", tokenDto.getAccessToken());
         accessTokenCookie.setPath("/");
-        accessTokenCookie.setSecure(true);
-        accessTokenCookie.setHttpOnly(true);
         accessTokenCookie.setMaxAge(3600 * 24);
 
         httpServletResponse.addCookie(accessTokenCookie);
