@@ -10,8 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
+
 
 @Getter
 @Setter
@@ -44,9 +43,11 @@ public class AccompanyCommentResponse {
                 .updatedAt(formatToUTC(comment.getUpdatedAt()))
                 .deletedAt(formatToUTC(comment.getDeletedAt()))
                 .build();
+    }
 
     // UTC 형식으로 변환하는 메서드 추가
-    private static final DateTimeFormatter UTC_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+    private static final DateTimeFormatter UTC_FORMATTER = DateTimeFormatter.ofPattern(
+            "yyyy-MM-dd'T'HH:mm:ss'Z'");
 
     private static String formatToUTC(LocalDateTime dateTime) {
         if (dateTime == null) {
@@ -57,4 +58,3 @@ public class AccompanyCommentResponse {
                 .format(UTC_FORMATTER);
     }
 }
-

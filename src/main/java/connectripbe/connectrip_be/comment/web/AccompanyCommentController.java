@@ -26,8 +26,8 @@ public class AccompanyCommentController {
      * @param postId 댓글을 조회할 게시물의 ID
      * @return 댓글 목록을 담은 ResponseEntity<List<AccompanyCommentResponse>>
      */
-    @GetMapping
-    public ResponseEntity<List<AccompanyCommentResponse>> getCommentList(@RequestParam("postId") Long postId) {
+    @GetMapping("/{postId}")
+    public ResponseEntity<List<AccompanyCommentResponse>> getCommentList(@PathVariable Long postId) {
         List<AccompanyCommentResponse> comments = accompanyCommentService.getCommentsByPost(postId);
         return ResponseEntity.ok(comments);
     }
