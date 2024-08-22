@@ -5,10 +5,9 @@ import connectripbe.connectrip_be.accompany_status.entity.AccompanyStatusEnum;
 import connectripbe.connectrip_be.accompany_status.repository.AccompanyStatusJpaRepository;
 import connectripbe.connectrip_be.member.exception.MemberNotOwnerException;
 import connectripbe.connectrip_be.member.exception.NotFoundMemberException;
-import connectripbe.connectrip_be.post.dto.AccompanyPostListResponse;
-import connectripbe.connectrip_be.post.dto.AccompanyPostRequest;
-import connectripbe.connectrip_be.post.dto.AccompanyPostResponse;
+import connectripbe.connectrip_be.post.dto.*;
 import connectripbe.connectrip_be.post.entity.AccompanyPostEntity;
+import connectripbe.connectrip_be.post.exception.DuplicatedCustomUrlException;
 import connectripbe.connectrip_be.post.exception.NotFoundAccompanyPostException;
 import connectripbe.connectrip_be.post.repository.AccompanyPostRepository;
 import connectripbe.connectrip_be.post.service.AccompanyPostService;
@@ -31,18 +30,12 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
     private final AccompanyStatusJpaRepository accompanyStatusJpaRepository;
 
     @Override
-    public AccompanyPostResponse createAccompanyPost(String memberEmail, AccompanyPostRequest request) {
+    public void createAccompanyPost(String memberEmail, CreateAccompanyPostRequest request) {
         MemberEntity memberEntity = findMemberEntity(memberEmail);
 
-//        AccompanyPostEntity savedAccompanyPostEntity = accompanyPostRepository.save(new AccompanyPostEntity(
-//                memberEntity,
-//                request.title(),
-//                request.startDate(),
-//                request.endDate(),
-//                request.accompanyArea(),
-//                "temp",
-//                "temp",
-//                request.content()));
+        if (checkDuplicatedCustomUrl(request.customUrl())) {
+            throw new DuplicatedCustomUrlException();
+        }
 
         AccompanyPostEntity post = AccompanyPostEntity.builder()
                 .memberEntity(memberEntity)
@@ -53,16 +46,12 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
                 .content(request.content())
                 .accompanyArea(request.accompanyArea())
                 .urlQrPath("temp")
-                .customUrl("temp")
+                .customUrl(request.customUrl())
                 .requestStatus("DEFAULT")
                 .build();
 
         accompanyPostRepository.save(post);
         accompanyStatusJpaRepository.save(new AccompanyStatusEntity(post, AccompanyStatusEnum.PROGRESSING));
-        //accompanyStatusJpaRepository.save(new AccompanyStatusEntity(savedAccompanyPostEntity, AccompanyStatusEnum.PROGRESSING));
-
-        // 생성된 데이터를 응답으로 반환
-        return AccompanyPostResponse.fromEntity(post);
     }
 
     @Override
@@ -70,14 +59,11 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
     public AccompanyPostResponse readAccompanyPost(long id) {
         AccompanyPostEntity accompanyPostEntity = findAccompanyPostEntity(id);
 
-        // 로그 추가
-        System.out.println("AccompanyPostEntity: " + accompanyPostEntity);
-
         return AccompanyPostResponse.fromEntity(accompanyPostEntity);
     }
 
     @Override
-    public AccompanyPostResponse updateAccompanyPost(String memberEmail, long id, AccompanyPostRequest request) {
+    public AccompanyPostResponse updateAccompanyPost(String memberEmail, long id, UpdateAccompanyPostRequest request) {
         MemberEntity memberEntity = findMemberEntity(memberEmail);
 
         AccompanyPostEntity accompanyPostEntity = findAccompanyPostEntity(id);
@@ -105,21 +91,26 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
 
         validateAccompanyPostOwnership(memberEntity, accompanyPostEntity);
 
-        accompanyPostRepository.delete(accompanyPostEntity);
+        accompanyPostEntity.deleteEntity();
     }
 
     @Override
     public List<AccompanyPostListResponse> accompanyPostList() {
-        List<AccompanyPostEntity> all =  accompanyPostRepository.findAllByOrderByCreatedAtDesc();
-
-        return all.stream().map(AccompanyPostListResponse::fromEntity).toList();
+        return accompanyPostRepository.findAllByDeletedAtIsNullOrderByCreatedAtDesc().stream()
+                .map(AccompanyPostListResponse::fromEntity).toList();
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<AccompanyPostListResponse> searchByQuery(String query) {
-        return accompanyPostRepository.findAllByTitleOrContentContainingOrderByCreatedAtDesc(query).stream()
+        return accompanyPostRepository.findAllByQuery(query).stream()
                 .map(AccompanyPostListResponse::fromEntity).toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean checkDuplicatedCustomUrl(String customUrl) {
+        return accompanyPostRepository.existsByCustomUrl(customUrl);
     }
 
     private MemberEntity findMemberEntity(String email) {
@@ -127,7 +118,7 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
     }
 
     private AccompanyPostEntity findAccompanyPostEntity(long accompanyPostId) {
-        return accompanyPostRepository.findById(accompanyPostId).orElseThrow(NotFoundAccompanyPostException::new);
+        return accompanyPostRepository.findByIdAndDeletedAtIsNull(accompanyPostId).orElseThrow(NotFoundAccompanyPostException::new);
     }
 
     private void validateAccompanyPostOwnership(MemberEntity memberEntity, AccompanyPostEntity accompanyPostEntity) {

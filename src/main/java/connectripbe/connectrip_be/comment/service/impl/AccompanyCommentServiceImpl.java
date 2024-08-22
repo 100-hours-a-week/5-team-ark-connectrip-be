@@ -31,7 +31,7 @@ public class AccompanyCommentServiceImpl implements AccompanyCommentService {
      * AccompanyCommentEntity를 생성하여 데이터베이스에 저장
      *
      * @param request 댓글 생성 요청 정보 (게시물 ID, 댓글 내용 포함)
-     * @param email 댓글 작성자의 이메일
+     * @param email   댓글 작성자의 이메일
      * @return 생성된 댓글의 정보를 담은 AccompanyCommentResponse 객체
      */
     @Override
@@ -54,9 +54,9 @@ public class AccompanyCommentServiceImpl implements AccompanyCommentService {
      * 주어진 댓글 ID를 통해 AccompanyCommentEntity를 조회하고,
      * 수정 권한이 있는지 확인한 후 댓글 내용을 업데이트
      *
-     * @param request 댓글 수정 요청 정보 (수정된 댓글 내용 포함)
+     * @param request   댓글 수정 요청 정보 (수정된 댓글 내용 포함)
      * @param commentId 수정할 댓글의 ID
-     * @param email 수정하려는 사용자의 이메일
+     * @param email     수정하려는 사용자의 이메일
      * @return 수정된 댓글의 정보를 담은 AccompanyCommentResponse 객체
      */
     @Override
@@ -79,7 +79,7 @@ public class AccompanyCommentServiceImpl implements AccompanyCommentService {
      * 해당 댓글을 데이터베이스에서 삭제
      *
      * @param commentId 삭제할 댓글의 ID
-     * @param email 삭제하려는 사용자의 이메일
+     * @param email     삭제하려는 사용자의 이메일
      */
     @Override
     @Transactional
@@ -89,7 +89,7 @@ public class AccompanyCommentServiceImpl implements AccompanyCommentService {
         // 댓글 작성자와 요청한 사용자가 일치하는지 확인
         validateCommentAuthor(comment, email);
 
-        accompanyCommentRepository.delete(comment);
+        comment.deleteEntity();
     }
 
     /**
@@ -116,7 +116,7 @@ public class AccompanyCommentServiceImpl implements AccompanyCommentService {
      * @return 조회된 AccompanyCommentEntity 객체
      */
     private AccompanyCommentEntity getComment(Long commentId) {
-        return accompanyCommentRepository.findById(commentId)
+        return accompanyCommentRepository.findByIdAndDeletedAtIsNull(commentId)
                 .orElseThrow(() -> new GlobalException(ErrorCode.COMMENT_NOT_FOUND));
     }
 
@@ -128,7 +128,7 @@ public class AccompanyCommentServiceImpl implements AccompanyCommentService {
      * @return 조회된 AccompanyPostEntity 객체
      */
     private AccompanyPostEntity getPost(Long postId) {
-        return accompanyPostRepository.findById(postId)
+        return accompanyPostRepository.findByIdAndDeletedAtIsNull(postId)
                 .orElseThrow(() -> new GlobalException(ErrorCode.NOT_FOUND_ACCOMPANY_POST));
     }
 
@@ -149,7 +149,7 @@ public class AccompanyCommentServiceImpl implements AccompanyCommentService {
      * 만약 일치하지 않으면 GlobalException을 발생
      *
      * @param comment 조회된 AccompanyCommentEntity 객체
-     * @param email 요청한 사용자의 이메일
+     * @param email   요청한 사용자의 이메일
      */
     private void validateCommentAuthor(AccompanyCommentEntity comment, String email) {
         if (!comment.getMemberEntity().getEmail().equals(email)) {

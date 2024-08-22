@@ -20,6 +20,11 @@ public record ChatRoomListResponse(
 
 
       public static ChatRoomListResponse fromEntity(ChatRoomEntity chatRoom){
+            // 마지막 채팅 시간이 없을 경우 생성 시간으로 대체
+            LocalDateTime lastChatTime = chatRoom.getLastChatTime() != null
+                    ? chatRoom.getLastChatTime()
+                    : chatRoom.getCreatedAt();
+
             return ChatRoomListResponse.builder()
                     .chatRoomId(chatRoom.getId())
                     .accompanyPostId(chatRoom.getAccompanyPost().getId())
@@ -28,7 +33,7 @@ public record ChatRoomListResponse(
                     .startDate(formatToUTC(chatRoom.getAccompanyPost().getStartDate()))
                     .endDate(formatToUTC(chatRoom.getAccompanyPost().getEndDate()))
                     .lastChatMessage(chatRoom.getLastChatMessage())
-                    .lastChatMessageTime(formatToUTC(chatRoom.getLastChatTime()))
+                    .lastChatMessageTime(formatToUTC(lastChatTime))
                     .build();
       }
 

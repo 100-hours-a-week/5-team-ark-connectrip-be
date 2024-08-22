@@ -4,7 +4,6 @@ import static org.springframework.http.HttpMethod.DELETE;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.PATCH;
 import static org.springframework.http.HttpMethod.POST;
-import static org.springframework.http.HttpMethod.PUT;
 import static org.springframework.security.config.Customizer.withDefaults;
 import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
@@ -16,7 +15,6 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -71,7 +69,7 @@ public class SecurityConfig {
 
       private RequestMatcher[] requestHasRoleUser() {
             List<RequestMatcher> requestMatchers = List.of(
-                    antMatcher("/api/v1/member"),
+                    antMatcher("/api/v1/members"),
                     antMatcher(POST, "/api/v1/post"),
                     antMatcher(PATCH, "/api/v1/post"),
                     antMatcher(DELETE, "/api/v1/post"),
@@ -79,8 +77,8 @@ public class SecurityConfig {
                     antMatcher(POST,"/api/v1/comment"),
                     antMatcher(PATCH,"/api/v1/comment"),
                     antMatcher(DELETE,"/api/v1/comment"),
-                    antMatcher(GET,"/api/v1/comment")
-
+                    antMatcher(GET,"/api/v1/comment"),
+                    antMatcher(GET,"/api/v1/chatRoom")
             );
             return requestMatchers.toArray(RequestMatcher[]::new);
       }

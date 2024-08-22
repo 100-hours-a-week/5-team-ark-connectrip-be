@@ -39,6 +39,7 @@ public enum ErrorCode {
 
     // Accompany Post, 동행 게시글
     NOT_FOUND_ACCOMPANY_POST(HttpStatus.NOT_FOUND, "동행 게시글을 찾을 수 없습니다."),
+    DUPLICATED_CUSTOM_URL(HttpStatus.CONFLICT, "중복된 커스텀 URL 입니다."),
 
     //  Accompany Status, 동행 상태
     NOT_FOUND_ACCOMPANY_STATUS(HttpStatus.INTERNAL_SERVER_ERROR, "동행 상태를 찾을 수 없습니다."),

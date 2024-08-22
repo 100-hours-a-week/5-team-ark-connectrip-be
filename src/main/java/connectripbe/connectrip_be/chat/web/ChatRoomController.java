@@ -7,6 +7,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -21,5 +22,13 @@ public class ChatRoomController {
       public ResponseEntity<List<ChatRoomListResponse>> getChatRoomList(@LoginUser String email) {
             return ResponseEntity.ok(chatRoomService.getChatRoomList(email));
       }
+
+
+      // 해당 채팅방 참여자 목록 조회
+      @GetMapping("/{chatRoomId}/members")
+      public ResponseEntity<?> getChatRoomMembers(@PathVariable Long chatRoomId) {
+            return ResponseEntity.ok(chatRoomService.getChatRoomMembers(chatRoomId));
+      }
+
 
 }
