@@ -14,7 +14,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -42,8 +42,8 @@ public class ChatRoomServiceImplTest {
                     .id(1L)
                     .title("Test Title")
                     .accompanyArea(AccompanyArea.SEOUL)
-                    .startDate(LocalDate.now())
-                    .endDate(LocalDate.now().plusDays(5))
+                    .startDate(LocalDateTime.now())
+                    .endDate(LocalDateTime.now().plusDays(5))
                     .build();
 
             ChatRoomEntity chatRoom = ChatRoomEntity.builder()

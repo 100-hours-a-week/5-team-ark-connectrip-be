@@ -25,8 +25,8 @@ public record ChatRoomListResponse(
                     .accompanyPostId(chatRoom.getAccompanyPost().getId())
                     .accompanyPostTitle(chatRoom.getAccompanyPost().getTitle())
                     .accompanyArea(chatRoom.getAccompanyPost().getAccompanyArea().toString())
-                    .startDate(formatToUTC(chatRoom.getAccompanyPost().getStartDate().atStartOfDay()))
-                    .endDate(formatToUTC(chatRoom.getAccompanyPost().getEndDate().atStartOfDay()))
+                    .startDate(formatToUTC(chatRoom.getAccompanyPost().getStartDate()))
+                    .endDate(formatToUTC(chatRoom.getAccompanyPost().getEndDate()))
                     .lastChatMessage(chatRoom.getLastChatMessage())
                     .lastChatMessageTime(formatToUTC(chatRoom.getLastChatTime()))
                     .build();
