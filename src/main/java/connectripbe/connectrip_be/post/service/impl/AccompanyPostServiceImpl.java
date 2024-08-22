@@ -43,7 +43,7 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
                 .content(request.content())
                 .accompanyArea(request.accompanyArea())
                 .urlQrPath("temp")
-                .customUrl("temp")
+                .customUrl(request.customURl())
                 .requestStatus("DEFAULT")
                 .build();
 

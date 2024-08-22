@@ -9,6 +9,7 @@ public record AccompanyPostRequest(
         String content,
         AccompanyArea accompanyArea,
         LocalDateTime startDate,
-        LocalDateTime endDate
+        LocalDateTime endDate,
+        String customURl
 ) {
 }
