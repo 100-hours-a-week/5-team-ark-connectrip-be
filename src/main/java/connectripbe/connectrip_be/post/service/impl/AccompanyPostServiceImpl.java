@@ -103,7 +103,7 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
     @Override
     @Transactional(readOnly = true)
     public List<AccompanyPostListResponse> searchByQuery(String query) {
-        return accompanyPostRepository.findAllByTitleOrContentContainingOrderByCreatedAtDesc(query).stream()
+        return accompanyPostRepository.findAllByQuery(query).stream()
                 .map(AccompanyPostListResponse::fromEntity).toList();
     }
 
