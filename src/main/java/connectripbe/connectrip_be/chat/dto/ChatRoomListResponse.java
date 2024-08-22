@@ -15,7 +15,8 @@ public record ChatRoomListResponse(
         String startDate,
         String endDate,
         String lastChatMessage,
-        String lastChatMessageTime
+        String lastChatMessageTime,
+        int memberNumber
         ) {
 
 
@@ -29,11 +30,12 @@ public record ChatRoomListResponse(
                     .chatRoomId(chatRoom.getId())
                     .accompanyPostId(chatRoom.getAccompanyPost().getId())
                     .accompanyPostTitle(chatRoom.getAccompanyPost().getTitle())
-                    .accompanyArea(chatRoom.getAccompanyPost().getAccompanyArea().toString())
+                    .accompanyArea(chatRoom.getAccompanyPost().getAccompanyArea())
                     .startDate(formatToUTC(chatRoom.getAccompanyPost().getStartDate()))
                     .endDate(formatToUTC(chatRoom.getAccompanyPost().getEndDate()))
                     .lastChatMessage(chatRoom.getLastChatMessage())
                     .lastChatMessageTime(formatToUTC(lastChatTime))
+                    .memberNumber(chatRoom.getChatRoomMembers().size())
                     .build();
       }
 
