@@ -3,7 +3,6 @@ package connectripbe.connectrip_be.post.dto;
 import static org.springframework.util.StringUtils.truncate;
 
 import connectripbe.connectrip_be.post.entity.AccompanyPostEntity;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
