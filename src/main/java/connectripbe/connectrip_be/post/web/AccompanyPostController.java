@@ -3,6 +3,7 @@ package connectripbe.connectrip_be.post.web;
 import connectripbe.connectrip_be.auth.config.LoginUser;
 import connectripbe.connectrip_be.global.dto.GlobalResponse;
 import connectripbe.connectrip_be.post.dto.*;
+import connectripbe.connectrip_be.post.exception.DuplicatedCustomUrlException;
 import connectripbe.connectrip_be.post.service.AccompanyPostService;
 
 import java.util.List;
@@ -19,10 +20,10 @@ public class AccompanyPostController {
     private final AccompanyPostService accompanyPostService;
 
     @PostMapping
-    public ResponseEntity<AccompanyPostResponse> createAccompanyPost(@LoginUser String memberEmail,
-                                                                     @RequestBody CreateAccompanyPostRequest request) {
-        AccompanyPostResponse response = accompanyPostService.createAccompanyPost(memberEmail, request);
-        return ResponseEntity.ok(response);  // 데이터가 포함된 응답 반환
+    public ResponseEntity<GlobalResponse<?>> createAccompanyPost(@LoginUser String memberEmail,
+                                                                 @RequestBody CreateAccompanyPostRequest request) {
+        accompanyPostService.createAccompanyPost(memberEmail, request);
+        return ResponseEntity.ok(new GlobalResponse<>("SUCCESS", null));
     }
 
     // 게시글 조회
@@ -66,5 +67,10 @@ public class AccompanyPostController {
         boolean result = accompanyPostService.checkDuplicatedCustomUrl(customUrl);
 
         return ResponseEntity.status(result ? 409 : 200).body(new GlobalResponse<>(result ? "DUPLICATED_CUSTOM_URL" : "SUCCESS", new CheckDuplicatedCustomUrlDto(result)));
+    }
+
+    @ExceptionHandler(DuplicatedCustomUrlException.class)
+    public ResponseEntity<GlobalResponse<CheckDuplicatedCustomUrlDto>> handleException(Exception e) {
+        return ResponseEntity.status(409).body(new GlobalResponse<>("DUPLICATED_CUSTOM_URL", null));
     }
 }

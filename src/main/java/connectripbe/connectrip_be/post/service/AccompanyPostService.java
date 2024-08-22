@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface AccompanyPostService {
 
-    AccompanyPostResponse createAccompanyPost(String memberEmail, CreateAccompanyPostRequest request);
+    void createAccompanyPost(String memberEmail, CreateAccompanyPostRequest request);
 
     AccompanyPostResponse readAccompanyPost(long id);
 
