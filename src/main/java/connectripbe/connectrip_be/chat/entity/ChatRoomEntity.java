@@ -20,6 +20,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
 
 @Entity(name = "chat_room")
 @AllArgsConstructor
@@ -41,6 +42,8 @@ public class ChatRoomEntity extends BaseEntity {
 
       private String lastChatMessage;
 
+      // 마지막 채팅 시간. 정렬을 위해 기본적으로 CreatedAt 값을 사용하고, 채팅이 발생할 때마다 업데이트
+      @CreatedDate
       private LocalDateTime lastChatTime;
 
       @Builder.Default
