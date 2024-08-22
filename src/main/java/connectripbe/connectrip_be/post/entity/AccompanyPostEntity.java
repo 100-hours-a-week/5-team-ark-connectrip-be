@@ -6,7 +6,7 @@ import connectripbe.connectrip_be.post.entity.enums.AccompanyArea;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 
 @Entity
@@ -28,9 +28,9 @@ public class AccompanyPostEntity extends BaseEntity {
     @Column(nullable = false)
     private String title;
 
-    private LocalDate startDate;
+    private LocalDateTime startDate;
 
-    private LocalDate endDate;
+    private LocalDateTime endDate;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
@@ -50,7 +50,7 @@ public class AccompanyPostEntity extends BaseEntity {
     @Builder.Default
     private String requestStatus = "DEFAULT";
 
-    public AccompanyPostEntity(MemberEntity memberEntity, String title, LocalDate startDate, LocalDate endDate, AccompanyArea accompanyArea, String customUrl, String urlQrPath, String content) {
+    public AccompanyPostEntity(MemberEntity memberEntity, String title, LocalDateTime startDate, LocalDateTime endDate, AccompanyArea accompanyArea, String customUrl, String urlQrPath, String content) {
         this.memberEntity = memberEntity;
         this.title = title;
         this.startDate = startDate;
@@ -61,7 +61,7 @@ public class AccompanyPostEntity extends BaseEntity {
         this.content = content;
     }
 
-    public void updateAccompanyPost(String title, LocalDate startDate, LocalDate endDate, AccompanyArea accompanyArea, String content) {
+    public void updateAccompanyPost(String title, LocalDateTime startDate, LocalDateTime endDate, AccompanyArea accompanyArea, String content) {
         this.title = title;
         this.startDate = startDate;
         this.endDate = endDate;

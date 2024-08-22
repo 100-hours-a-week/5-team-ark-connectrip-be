@@ -3,7 +3,6 @@ package connectripbe.connectrip_be.post.dto;
 import static org.springframework.util.StringUtils.truncate;
 
 import connectripbe.connectrip_be.post.entity.AccompanyPostEntity;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -28,8 +27,8 @@ public record AccompanyPostListResponse(
                     .memberId(accompanyPost.getMemberEntity().getId())
                     .nickname(accompanyPost.getMemberEntity().getNickname())
                     .title(truncate(accompanyPost.getTitle(), 21))
-                    .startDate(formatToUTC(accompanyPost.getStartDate().atStartOfDay()))
-                    .endDate(formatToUTC(accompanyPost.getEndDate().atStartOfDay()))
+                    .startDate(formatToUTC(accompanyPost.getStartDate()))
+                    .endDate(formatToUTC(accompanyPost.getEndDate()))
                     .accompanyArea(accompanyPost.getAccompanyArea().toString())
                     .content(truncate(accompanyPost.getContent(), 36))
                     .createdAt(formatToUTC(accompanyPost.getCreatedAt()))

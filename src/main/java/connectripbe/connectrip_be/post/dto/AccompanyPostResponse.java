@@ -1,10 +1,8 @@
 package connectripbe.connectrip_be.post.dto;
 
 import connectripbe.connectrip_be.post.entity.AccompanyPostEntity;
-import connectripbe.connectrip_be.post.entity.enums.AccompanyArea;
 import lombok.Builder;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -34,8 +32,8 @@ public record AccompanyPostResponse(
                 .nickname(accompanyPost.getMemberEntity().getNickname())
                 .profileImagePath(accompanyPost.getMemberEntity().getProfileImagePath())
                 .title(accompanyPost.getTitle())
-                .startDate(formatToUTC(accompanyPost.getStartDate().atStartOfDay()))
-                .endDate(formatToUTC(accompanyPost.getEndDate().atStartOfDay()))
+                .startDate(formatToUTC(accompanyPost.getStartDate()))
+                .endDate(formatToUTC(accompanyPost.getEndDate()))
                 .accompanyArea(accompanyPost.getAccompanyArea().getDisplayName())
                 .customUrl(accompanyPost.getCustomUrl())
                 .urlQrPath(accompanyPost.getUrlQrPath())
