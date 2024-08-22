@@ -6,8 +6,9 @@ import connectripbe.connectrip_be.accompany_status.repository.AccompanyStatusJpa
 import connectripbe.connectrip_be.member.exception.MemberNotOwnerException;
 import connectripbe.connectrip_be.member.exception.NotFoundMemberException;
 import connectripbe.connectrip_be.post.dto.AccompanyPostListResponse;
-import connectripbe.connectrip_be.post.dto.AccompanyPostRequest;
+import connectripbe.connectrip_be.post.dto.CreateAccompanyPostRequest;
 import connectripbe.connectrip_be.post.dto.AccompanyPostResponse;
+import connectripbe.connectrip_be.post.dto.UpdateAccompanyPostRequest;
 import connectripbe.connectrip_be.post.entity.AccompanyPostEntity;
 import connectripbe.connectrip_be.post.exception.NotFoundAccompanyPostException;
 import connectripbe.connectrip_be.post.repository.AccompanyPostRepository;
@@ -31,7 +32,7 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
     private final AccompanyStatusJpaRepository accompanyStatusJpaRepository;
 
     @Override
-    public AccompanyPostResponse createAccompanyPost(String memberEmail, AccompanyPostRequest request) {
+    public AccompanyPostResponse createAccompanyPost(String memberEmail, CreateAccompanyPostRequest request) {
         MemberEntity memberEntity = findMemberEntity(memberEmail);
 
         AccompanyPostEntity post = AccompanyPostEntity.builder()
@@ -63,7 +64,7 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
     }
 
     @Override
-    public AccompanyPostResponse updateAccompanyPost(String memberEmail, long id, AccompanyPostRequest request) {
+    public AccompanyPostResponse updateAccompanyPost(String memberEmail, long id, UpdateAccompanyPostRequest request) {
         MemberEntity memberEntity = findMemberEntity(memberEmail);
 
         AccompanyPostEntity accompanyPostEntity = findAccompanyPostEntity(id);

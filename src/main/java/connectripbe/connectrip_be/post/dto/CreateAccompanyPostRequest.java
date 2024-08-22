@@ -4,7 +4,7 @@ import connectripbe.connectrip_be.post.entity.enums.AccompanyArea;
 
 import java.time.LocalDateTime;
 
-public record AccompanyPostRequest(
+public record CreateAccompanyPostRequest(
         String title,
         String content,
         AccompanyArea accompanyArea,

@@ -2,8 +2,9 @@ package connectripbe.connectrip_be.post.web;
 
 import connectripbe.connectrip_be.auth.config.LoginUser;
 import connectripbe.connectrip_be.post.dto.AccompanyPostListResponse;
-import connectripbe.connectrip_be.post.dto.AccompanyPostRequest;
+import connectripbe.connectrip_be.post.dto.CreateAccompanyPostRequest;
 import connectripbe.connectrip_be.post.dto.AccompanyPostResponse;
+import connectripbe.connectrip_be.post.dto.UpdateAccompanyPostRequest;
 import connectripbe.connectrip_be.post.service.AccompanyPostService;
 
 import java.util.List;
@@ -21,7 +22,7 @@ public class AccompanyPostController {
 
     @PostMapping
     public ResponseEntity<AccompanyPostResponse> createAccompanyPost(@LoginUser String memberEmail,
-                                                                     @RequestBody AccompanyPostRequest request) {
+                                                                     @RequestBody CreateAccompanyPostRequest request) {
         AccompanyPostResponse response = accompanyPostService.createAccompanyPost(memberEmail, request);
         return ResponseEntity.ok(response);  // 데이터가 포함된 응답 반환
     }
@@ -37,7 +38,7 @@ public class AccompanyPostController {
     public ResponseEntity<AccompanyPostResponse> updateAccompanyPost(
             @LoginUser String memberEmail,
             @PathVariable Long id,
-            @RequestBody AccompanyPostRequest request) {
+            @RequestBody UpdateAccompanyPostRequest request) {
         AccompanyPostResponse response = accompanyPostService.updateAccompanyPost(memberEmail, id, request);
         return ResponseEntity.ok(response);  // 수정된 데이터 반환
     }
