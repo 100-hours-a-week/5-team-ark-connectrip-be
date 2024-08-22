@@ -116,7 +116,7 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
     }
 
     private AccompanyPostEntity findAccompanyPostEntity(long accompanyPostId) {
-        return accompanyPostRepository.findById(accompanyPostId).orElseThrow(NotFoundAccompanyPostException::new);
+        return accompanyPostRepository.findByIdAndDeletedAtIsNull(accompanyPostId).orElseThrow(NotFoundAccompanyPostException::new);
     }
 
     private void validateAccompanyPostOwnership(MemberEntity memberEntity, AccompanyPostEntity accompanyPostEntity) {
