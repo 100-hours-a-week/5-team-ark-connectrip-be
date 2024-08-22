@@ -59,9 +59,6 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
     public AccompanyPostResponse readAccompanyPost(long id) {
         AccompanyPostEntity accompanyPostEntity = findAccompanyPostEntity(id);
 
-        // 로그 추가
-        System.out.println("AccompanyPostEntity: " + accompanyPostEntity);
-
         return AccompanyPostResponse.fromEntity(accompanyPostEntity);
     }
 
