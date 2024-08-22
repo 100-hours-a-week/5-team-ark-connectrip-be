@@ -1,5 +1,10 @@
 package connectripbe.connectrip_be.post.entity.enums;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@Getter
+@AllArgsConstructor
 public enum AccompanyArea {
     SEOUL("서울"),
     BUSAN("부산"),
@@ -21,20 +26,4 @@ public enum AccompanyArea {
 
     private final String displayName;
 
-    AccompanyArea(String displayName) {
-        this.displayName = displayName;
-    }
-
-    public String getDisplayName() {
-        return displayName;
-    }
-
-    public static AccompanyArea fromDisplayName(String displayName) {
-        for (AccompanyArea area : AccompanyArea.values()) {
-            if (area.getDisplayName().equals(displayName)) {
-                return area;
-            }
-        }
-        throw new IllegalArgumentException("Unknown display name: " + displayName);
-    }
 }

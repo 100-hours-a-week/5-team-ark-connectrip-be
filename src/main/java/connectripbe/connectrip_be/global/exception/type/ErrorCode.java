@@ -27,6 +27,7 @@ public enum ErrorCode {
     NICKNAME_DUPLICATION(HttpStatus.BAD_REQUEST, "이미 사용중인 닉네임입니다."),
     PASSWORD_EMPTY(HttpStatus.BAD_REQUEST, "비밀번호를 입력해주세요."),
     OVER_MAX_PARTICIPANTS(HttpStatus.BAD_REQUEST, "모임 최대 인원수를 초과했습니다."),
+    PENDING_NOT_FOUND(HttpStatus.BAD_REQUEST, "해당 신청을 찾을 수 없습니다."),
 
     // Member, 사용자
     NOT_FOUND_MEMBER(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다."),

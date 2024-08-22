@@ -29,7 +29,7 @@ public record AccompanyPostListResponse(
                     .title(truncate(accompanyPost.getTitle(), 21))
                     .startDate(formatToUTC(accompanyPost.getStartDate()))
                     .endDate(formatToUTC(accompanyPost.getEndDate()))
-                    .accompanyArea(accompanyPost.getAccompanyArea().toString())
+                    .accompanyArea(accompanyPost.getAccompanyArea())
                     .content(truncate(accompanyPost.getContent(), 36))
                     .createdAt(formatToUTC(accompanyPost.getCreatedAt()))
                     .profileImagePath(accompanyPost.getMemberEntity().getProfileImagePath())

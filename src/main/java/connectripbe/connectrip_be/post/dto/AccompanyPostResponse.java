@@ -34,7 +34,7 @@ public record AccompanyPostResponse(
                 .title(accompanyPost.getTitle())
                 .startDate(formatToUTC(accompanyPost.getStartDate()))
                 .endDate(formatToUTC(accompanyPost.getEndDate()))
-                .accompanyArea(accompanyPost.getAccompanyArea().getDisplayName())
+                .accompanyArea(accompanyPost.getAccompanyArea())
                 .customUrl(accompanyPost.getCustomUrl())
                 .urlQrPath(accompanyPost.getUrlQrPath())
                 .content(accompanyPost.getContent())

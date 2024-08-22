@@ -2,7 +2,6 @@ package connectripbe.connectrip_be.post.entity;
 
 import connectripbe.connectrip_be.global.entity.BaseEntity;
 import connectripbe.connectrip_be.member.entity.MemberEntity;
-import connectripbe.connectrip_be.post.entity.enums.AccompanyArea;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -32,9 +31,7 @@ public class AccompanyPostEntity extends BaseEntity {
 
     private LocalDateTime endDate;
 
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private AccompanyArea accompanyArea;
+    private String accompanyArea;
 
     // fixme-noah: customUrl 임시 보류
     private String customUrl;
@@ -50,7 +47,7 @@ public class AccompanyPostEntity extends BaseEntity {
     @Builder.Default
     private String requestStatus = "DEFAULT";
 
-    public AccompanyPostEntity(MemberEntity memberEntity, String title, LocalDateTime startDate, LocalDateTime endDate, AccompanyArea accompanyArea, String customUrl, String urlQrPath, String content) {
+    public AccompanyPostEntity(MemberEntity memberEntity, String title, LocalDateTime startDate, LocalDateTime endDate, String accompanyArea, String customUrl, String urlQrPath, String content) {
         this.memberEntity = memberEntity;
         this.title = title;
         this.startDate = startDate;
@@ -61,7 +58,7 @@ public class AccompanyPostEntity extends BaseEntity {
         this.content = content;
     }
 
-    public void updateAccompanyPost(String title, LocalDateTime startDate, LocalDateTime endDate, AccompanyArea accompanyArea, String content) {
+    public void updateAccompanyPost(String title, LocalDateTime startDate, LocalDateTime endDate, String accompanyArea, String content) {
         this.title = title;
         this.startDate = startDate;
         this.endDate = endDate;
