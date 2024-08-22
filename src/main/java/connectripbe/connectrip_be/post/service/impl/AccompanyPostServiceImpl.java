@@ -99,9 +99,8 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
 
     @Override
     public List<AccompanyPostListResponse> accompanyPostList() {
-        List<AccompanyPostEntity> all = accompanyPostRepository.findAllByOrderByCreatedAtDesc();
-
-        return all.stream().map(AccompanyPostListResponse::fromEntity).toList();
+        return accompanyPostRepository.findAllByDeletedAtIsNullOrderByCreatedAtDesc().stream()
+                .map(AccompanyPostListResponse::fromEntity).toList();
     }
 
     @Override
