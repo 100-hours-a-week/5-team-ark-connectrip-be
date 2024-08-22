@@ -10,6 +10,6 @@ public record CreateAccompanyPostRequest(
         AccompanyArea accompanyArea,
         LocalDateTime startDate,
         LocalDateTime endDate,
-        String customURl
+        String customUrl
 ) {
 }
