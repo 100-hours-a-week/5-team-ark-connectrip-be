@@ -34,16 +34,6 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
     public AccompanyPostResponse createAccompanyPost(String memberEmail, AccompanyPostRequest request) {
         MemberEntity memberEntity = findMemberEntity(memberEmail);
 
-//        AccompanyPostEntity savedAccompanyPostEntity = accompanyPostRepository.save(new AccompanyPostEntity(
-//                memberEntity,
-//                request.title(),
-//                request.startDate(),
-//                request.endDate(),
-//                request.accompanyArea(),
-//                "temp",
-//                "temp",
-//                request.content()));
-
         AccompanyPostEntity post = AccompanyPostEntity.builder()
                 .memberEntity(memberEntity)
                 .title(request.title())
@@ -59,7 +49,6 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
 
         accompanyPostRepository.save(post);
         accompanyStatusJpaRepository.save(new AccompanyStatusEntity(post, AccompanyStatusEnum.PROGRESSING));
-        //accompanyStatusJpaRepository.save(new AccompanyStatusEntity(savedAccompanyPostEntity, AccompanyStatusEnum.PROGRESSING));
 
         // 생성된 데이터를 응답으로 반환
         return AccompanyPostResponse.fromEntity(post);
@@ -69,9 +58,6 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
     @Transactional(readOnly = true)
     public AccompanyPostResponse readAccompanyPost(long id) {
         AccompanyPostEntity accompanyPostEntity = findAccompanyPostEntity(id);
-
-        // 로그 추가
-        System.out.println("AccompanyPostEntity: " + accompanyPostEntity);
 
         return AccompanyPostResponse.fromEntity(accompanyPostEntity);
     }
@@ -105,20 +91,19 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
 
         validateAccompanyPostOwnership(memberEntity, accompanyPostEntity);
 
-        accompanyPostRepository.delete(accompanyPostEntity);
+        accompanyPostEntity.deleteEntity();
     }
 
     @Override
     public List<AccompanyPostListResponse> accompanyPostList() {
-        List<AccompanyPostEntity> all =  accompanyPostRepository.findAllByOrderByCreatedAtDesc();
-
-        return all.stream().map(AccompanyPostListResponse::fromEntity).toList();
+        return accompanyPostRepository.findAllByDeletedAtIsNullOrderByCreatedAtDesc().stream()
+                .map(AccompanyPostListResponse::fromEntity).toList();
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<AccompanyPostListResponse> searchByQuery(String query) {
-        return accompanyPostRepository.findAllByTitleOrContentContainingOrderByCreatedAtDesc(query).stream()
+        return accompanyPostRepository.findAllByQuery(query).stream()
                 .map(AccompanyPostListResponse::fromEntity).toList();
     }
 
@@ -127,7 +112,7 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
     }
 
     private AccompanyPostEntity findAccompanyPostEntity(long accompanyPostId) {
-        return accompanyPostRepository.findById(accompanyPostId).orElseThrow(NotFoundAccompanyPostException::new);
+        return accompanyPostRepository.findByIdAndDeletedAtIsNull(accompanyPostId).orElseThrow(NotFoundAccompanyPostException::new);
     }
 
     private void validateAccompanyPostOwnership(MemberEntity memberEntity, AccompanyPostEntity accompanyPostEntity) {
