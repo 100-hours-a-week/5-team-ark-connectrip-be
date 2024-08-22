@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 public record CreateAccompanyPostRequest(
         String title,
         String content,
-        AccompanyArea accompanyArea,
+        String accompanyArea,
         LocalDateTime startDate,
         LocalDateTime endDate,
         String customUrl
