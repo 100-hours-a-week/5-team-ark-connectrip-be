@@ -22,4 +22,6 @@ public interface AccompanyPostService {
     List<AccompanyPostListResponse> accompanyPostList();
 
     List<AccompanyPostListResponse> searchByQuery(String query);
+
+    boolean checkDuplicatedCustomUrl(String customUrl);
 }

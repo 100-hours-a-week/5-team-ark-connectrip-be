@@ -19,4 +19,6 @@ public interface AccompanyPostRepository extends JpaRepository<AccompanyPostEnti
     List<AccompanyPostEntity> findAllByQuery(@Param("query") String query);
 
     List<AccompanyPostEntity> findAllByDeletedAtIsNullOrderByCreatedAtDesc();
+
+    boolean existsByCustomUrl(String customUrl);
 }

@@ -1,10 +1,8 @@
 package connectripbe.connectrip_be.post.web;
 
 import connectripbe.connectrip_be.auth.config.LoginUser;
-import connectripbe.connectrip_be.post.dto.AccompanyPostListResponse;
-import connectripbe.connectrip_be.post.dto.CreateAccompanyPostRequest;
-import connectripbe.connectrip_be.post.dto.AccompanyPostResponse;
-import connectripbe.connectrip_be.post.dto.UpdateAccompanyPostRequest;
+import connectripbe.connectrip_be.global.dto.GlobalResponse;
+import connectripbe.connectrip_be.post.dto.*;
 import connectripbe.connectrip_be.post.service.AccompanyPostService;
 
 import java.util.List;
@@ -60,5 +58,13 @@ public class AccompanyPostController {
     @GetMapping("/search")
     public ResponseEntity<List<AccompanyPostListResponse>> searchByQuery(@RequestParam String query) {
         return ResponseEntity.ok(accompanyPostService.searchByQuery(query));
+    }
+
+    // fixme-noah: 추후 다르 중복 확인 메서드 모두 이름 수정, 혼동 있음
+    @GetMapping("/check-custom-url")
+    public ResponseEntity<GlobalResponse<CheckDuplicatedCustomUrlDto>> checkDuplicatedCustomUrl(@RequestParam String customUrl) {
+        boolean result = accompanyPostService.checkDuplicatedCustomUrl(customUrl);
+
+        return ResponseEntity.status(result ? 409 : 200).body(new GlobalResponse<>(result ? "DUPLICATED_CUSTOM_URL" : "SUCCESS", new CheckDuplicatedCustomUrlDto(result)));
     }
 }
