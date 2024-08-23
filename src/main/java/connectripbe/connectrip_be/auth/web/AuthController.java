@@ -1,6 +1,5 @@
 package connectripbe.connectrip_be.auth.web;
 
-import connectripbe.connectrip_be.auth.dto.ReissueDto;
 import connectripbe.connectrip_be.auth.dto.SignInDto;
 import connectripbe.connectrip_be.auth.dto.SignUpDto;
 import connectripbe.connectrip_be.auth.jwt.dto.TokenDto;
@@ -10,9 +9,9 @@ import connectripbe.connectrip_be.global.dto.GlobalResponse;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -36,6 +35,28 @@ public class AuthController {
     private final AuthService authService;
     // private final MailService mailService;
     private final KakaoService kakaoService;
+
+    @Value("${spring.auth.success-redirect-url}")
+    private String authSuccessRedirectUrl;
+
+    @GetMapping("/redirected/kakao")
+    public void kakaoLogin(@RequestParam("code") String code, HttpServletResponse httpServletResponse) throws IOException {
+        TokenDto tokenDto = kakaoService.kakaoLogin(code);
+
+        Cookie refreshTokenCookie = new Cookie("refreshToken", tokenDto.getRefreshToken());
+        refreshTokenCookie.setPath("/");
+        refreshTokenCookie.setMaxAge(tokenDto.getRefreshTokenExpirationTime());
+
+        httpServletResponse.addCookie(refreshTokenCookie);
+
+        Cookie accessTokenCookie = new Cookie("accessToken", tokenDto.getAccessToken());
+        accessTokenCookie.setPath("/");
+        accessTokenCookie.setMaxAge(tokenDto.getAccessTokenExpirationTime());
+
+        httpServletResponse.addCookie(accessTokenCookie);
+
+        httpServletResponse.sendRedirect(authSuccessRedirectUrl);
+    }
 
     // fixme-noah: 자체 회원가입 도입 시 수정
     @PostMapping(path = "/signup", consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
@@ -64,26 +85,5 @@ public class AuthController {
         }
 
         return ResponseEntity.ok(new GlobalResponse<>("SUCCESS", null));
-    }
-
-    // fixme-noah: 임시 구현
-    @GetMapping("/redirected/kakao")
-    public void kakaoLogin(@RequestParam("code") String code, HttpServletResponse httpServletResponse) throws IOException {
-        TokenDto tokenDto = kakaoService.kakaoLogin(code);
-
-        Cookie refreshTokenCookie = new Cookie("refreshToken", tokenDto.getRefreshToken());
-        refreshTokenCookie.setPath("/");
-        refreshTokenCookie.setMaxAge(3600 * 24 * 7);
-
-        httpServletResponse.addCookie(refreshTokenCookie);
-
-        Cookie accessTokenCookie = new Cookie("accessToken", tokenDto.getAccessToken());
-        accessTokenCookie.setPath("/");
-        accessTokenCookie.setMaxAge(3600 * 24);
-
-        httpServletResponse.addCookie(accessTokenCookie);
-
-        // fixme-noah: 리다이렉트 url 환경 변수로 이동
-        httpServletResponse.sendRedirect("http://localhost:3000/accompany");
     }
 }
