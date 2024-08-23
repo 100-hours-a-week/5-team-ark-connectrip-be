@@ -1,0 +1,56 @@
+name: BE Dev Build & Deploy
+
+on:
+  push:
+    branches:
+      # master 브랜치로 merge되어 push가 트리거 된 경우 실행
+      - develop
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x ./gradlew
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'corretto'
+          java-version: '17'
+
+      - name: Build with Gradle
+        run: ./gradlew bootJar
+
+      - name: Build Docker Image
+        run: docker build -t ghcr.io/topazkang/be-dev:latest .
+
+      - name: Log in to GitHub Container Registry
+        run: echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u ${{ secrets.GIT_USER }} --password-stdin
+
+      - name: Push Docker Image to GHCR
+        run: docker push ghcr.io/topazkang/be-dev:latest
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: SSH and Deploy Backend
+        uses: appleboy/ssh-action@v0.1.8
+        with:
+          host: ${{ secrets.EC2_HOST_DEV }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.ARK_DEPLOY }}
+          port: 22
+          script: |
+            echo "${{ secrets.ENV_FILE_DEV }}" > deploy/back/.env
+            echo "${{ secrets.GHCR_TOKEN }}" | sudo docker login ghcr.io -u ${{ secrets.GIT_USER }} --password-stdin
+            cd deploy/back
+            sudo docker-compose -f docker-compose.back.yaml down
+            sudo docker-compose -f docker-compose.back.yaml pull
+            sudo docker-compose -f docker-compose.back.yaml up -d
