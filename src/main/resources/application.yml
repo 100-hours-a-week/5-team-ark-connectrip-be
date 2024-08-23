@@ -12,11 +12,6 @@ spring:
       max-file-size: 30MB
       max-request-size: 30MB
 
-  data:
-    kakao:
-      grant_type: authorization_code
-      client_id: ${KAKAO_CLIENT_ID}
-      redirect_uri: ${KAKAO_REDIRECT_URI}
   jwt:
     access-token-expiration-time: 1800000
     refresh-token-expiration-time: 604800000

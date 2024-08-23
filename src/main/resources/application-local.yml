@@ -15,3 +15,9 @@ spring:
     show-sql: true
   jwt:
     secret-key: ${LOCAL_JWT_SECRET_KEY}
+
+  auth:
+    success-redirect-url: ${LOCAL_KAKAO_SUCCESS_REDIRECT_URL}
+    kakao:
+      client-id: ${LOCAL_KAKAO_CLIENT_ID}
+      redirect-uri: ${LOCAL_KAKAO_REDIRECT_URI}
