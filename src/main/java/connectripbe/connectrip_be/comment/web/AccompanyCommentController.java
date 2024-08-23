@@ -56,7 +56,7 @@ public class AccompanyCommentController {
      * @param email 로그인한 사용자의 이메일
      * @return 204 No Content 상태 코드를 담은 ResponseEntity
      */
-    @DeleteMapping("/{id}")
+    @PostMapping("/{id}")
     public ResponseEntity<?> deleteComment(@PathVariable("id") Long commentId, @LoginUser String email) {
         accompanyCommentService.deleteComment(commentId, email);
         return ResponseEntity.noContent().build(); // 204 No Content 반환
