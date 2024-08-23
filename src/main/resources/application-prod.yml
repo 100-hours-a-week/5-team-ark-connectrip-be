@@ -11,3 +11,9 @@ spring:
           time-zone: UTC
   jwt:
     secret-key: ${PROD_JWT_SECRET_KEY}
+
+  auth:
+    success-redirect-url: ${PROD_KAKAO_SUCCESS_REDIRECT_URL}
+    kakao:
+      client-id: ${PROD_KAKAO_CLIENT_ID}
+      redirect-uri: ${PROD_KAKAO_REDIRECT_URI}

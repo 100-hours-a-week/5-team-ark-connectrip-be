@@ -14,4 +14,10 @@ spring:
           time-zone: UTC
     show-sql: true
   jwt:
-    secret-key: "최강 6팀 화이팅! 최강 6팀 화이팅! 최강 6팀 화이팅! 최강 6팀 화이팅! 최강 6팀 화이팅!"
+    secret-key: ${DEV_JWT_SECRET_KEY}
+
+  auth:
+    success-redirect-url: ${DEV_KAKAO_SUCCESS_REDIRECT_URL}
+    kakao:
+      client-id: ${DEV_KAKAO_CLIENT_ID}
+      redirect-uri: ${DEV_KAKAO_REDIRECT_URI}
