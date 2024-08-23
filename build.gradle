@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.1.8'
     id 'io.spring.dependency-management' version '1.1.4'
+    id 'com.diffplug.spotless' version '6.25.0'
 }
 
 group = 'connectrip-be'
@@ -59,6 +60,31 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
+spotless {
+    java {
+        googleJavaFormat().aosp()
+        importOrder('java', 'javax', 'jakarta', 'org', 'com')
+        removeUnusedImports()
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+}
+
+tasks.register('updateGitHooks', Copy) {
+    from './scripts/pre-commit'
+    into './.git/hooks'
+}
+
+tasks.register('makeGitHooksExecutable', Exec) {
+    commandLine 'chmod', '+x', './.git/hooks/pre-commit'
+    dependsOn updateGitHooks
+}
+
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+tasks.named('compileJava') {
+    dependsOn 'makeGitHooksExecutable'
+    dependsOn 'spotlessCheck'
 }

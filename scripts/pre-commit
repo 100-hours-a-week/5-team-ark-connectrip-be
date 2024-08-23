@@ -1,0 +1,11 @@
+#!/bin/sh
+# From https://github.com/diffplug/spotless/issues/178
+
+echo '[git hook] executing gradle spotlessCheck before commit'
+git stash -q --keep-index
+sh ./gradlew spotlessCheck --daemon
+
+RESULT=$?
+git stash pop -q
+
+exit $RESULT
