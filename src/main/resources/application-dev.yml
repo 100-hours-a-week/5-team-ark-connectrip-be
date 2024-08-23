@@ -1,0 +1,17 @@
+spring:
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+        jdbc:
+          time-zone: UTC
+    show-sql: true
+  jwt:
+    secret-key: "최강 6팀 화이팅! 최강 6팀 화이팅! 최강 6팀 화이팅! 최강 6팀 화이팅! 최강 6팀 화이팅!"

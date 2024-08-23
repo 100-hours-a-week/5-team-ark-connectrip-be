@@ -14,9 +14,5 @@ public interface AuthService {
 
       TokenDto signIn(SignInDto request);
 
-      void logout(String accessToken);
-
-      TokenDto reissue(ReissueDto request);
-
       TokenDto generateToken(String email, String roleType);
 }

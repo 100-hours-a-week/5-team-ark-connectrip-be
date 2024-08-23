@@ -1,14 +1,17 @@
 spring:
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
-    url: ${DB_URL}            # 배포용 DB 주소를 환경 변수로 관리
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
-  data:
-    redis:
-      host: ${REDIS_HOST}
-      port: 6379
-
-# .env 파일에서 로드될 변수들:
-# DB_USERNAME, DB_PASSWORD
-# AWS_ACCESS_KEY, AWS_SECRET_KEY
+    url: ${LOCAL_DATABASE_URL}
+    username: ${LOCAL_DATABASE_USERNAME}
+    password: ${LOCAL_DATABASE_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        format_sql: true
+        jdbc:
+          time-zone: UTC
+    show-sql: true
+  jwt:
+    secret-key: ${LOCAL_JWT_SECRET_KEY}

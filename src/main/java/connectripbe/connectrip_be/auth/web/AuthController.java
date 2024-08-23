@@ -37,7 +37,7 @@ public class AuthController {
     // private final MailService mailService;
     private final KakaoService kakaoService;
 
-
+    // fixme-noah: 자체 회원가입 도입 시 수정
     @PostMapping(path = "/signup", consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<SignUpDto> signUp(@RequestPart("request") SignUpDto request,
@@ -46,8 +46,7 @@ public class AuthController {
                 .body(authService.signUp(request, image));
     }
 
-    @PostMapping(path = "/signin", consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/signin")
     public ResponseEntity<TokenDto> signIn(@RequestBody SignInDto request) {
         return ResponseEntity.ok(authService.signIn(request));
     }
@@ -58,10 +57,6 @@ public class AuthController {
 
         if (cookies != null) {
             for (Cookie cookie : cookies) {
-                if ("accessToken".equals(cookie.getName())) {
-                    authService.logout(cookie.getValue());
-                }
-
                 cookie.setMaxAge(0);
                 cookie.setPath("/");
                 httpServletResponse.addCookie(cookie);
@@ -69,13 +64,6 @@ public class AuthController {
         }
 
         return ResponseEntity.ok(new GlobalResponse<>("SUCCESS", null));
-    }
-
-    @PostMapping(path = "/reissue", consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<TokenDto> reissue(@Valid @RequestBody ReissueDto request) {
-
-        return ResponseEntity.ok(authService.reissue(request));
     }
 
     // fixme-noah: 임시 구현
@@ -95,6 +83,7 @@ public class AuthController {
 
         httpServletResponse.addCookie(accessTokenCookie);
 
+        // fixme-noah: 리다이렉트 url 환경 변수로 이동
         httpServletResponse.sendRedirect("http://localhost:3000/accompany");
     }
 }
