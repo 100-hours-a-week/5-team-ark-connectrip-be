@@ -10,10 +10,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,9 +24,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 
 @RestController
-@RequiredArgsConstructor
-@Slf4j
 @RequestMapping("/api/v1/auth")
+@RequiredArgsConstructor
 public class AuthController {
 
     private final AuthService authService;
@@ -40,40 +36,50 @@ public class AuthController {
     private String authSuccessRedirectUrl;
 
     @GetMapping("/redirected/kakao")
-    public void kakaoLogin(@RequestParam("code") String code, HttpServletResponse httpServletResponse) throws IOException {
+    public void kakaoLogin(
+            HttpServletResponse httpServletResponse,
+            @RequestParam("code") String code
+    ) {
         TokenDto tokenDto = kakaoService.kakaoLogin(code);
 
-        Cookie refreshTokenCookie = new Cookie("refreshToken", tokenDto.getRefreshToken());
-        refreshTokenCookie.setPath("/");
-        refreshTokenCookie.setMaxAge(tokenDto.getRefreshTokenExpirationTime());
+        addJwtToCookie(httpServletResponse, tokenDto);
 
-        httpServletResponse.addCookie(refreshTokenCookie);
-
-        Cookie accessTokenCookie = new Cookie("accessToken", tokenDto.getAccessToken());
-        accessTokenCookie.setPath("/");
-        accessTokenCookie.setMaxAge(tokenDto.getAccessTokenExpirationTime());
-
-        httpServletResponse.addCookie(accessTokenCookie);
-
-        httpServletResponse.sendRedirect(authSuccessRedirectUrl);
-    }
-
-    // fixme-noah: 자체 회원가입 도입 시 수정
-    @PostMapping(path = "/signup", consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<SignUpDto> signUp(@RequestPart("request") SignUpDto request,
-                                            @RequestPart(name = "image", required = false) MultipartFile image) {
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(authService.signUp(request, image));
+        // fixme-noah: exception, 핸들러 추가
+        try {
+            httpServletResponse.sendRedirect(authSuccessRedirectUrl);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @PostMapping(path = "/signin")
-    public ResponseEntity<TokenDto> signIn(@RequestBody SignInDto request) {
-        return ResponseEntity.ok(authService.signIn(request));
+    public ResponseEntity<Void> signIn(
+            HttpServletResponse httpServletResponse,
+            @RequestBody SignInDto request
+    ) {
+        TokenDto tokenDto = authService.signIn(request);
+
+        addJwtToCookie(httpServletResponse, tokenDto);
+
+        return ResponseEntity.ok().build();
+    }
+
+    // fixme-noah: 엔티티에 맞게 request 필드 추가 후 이름 변경
+    @PostMapping(path = "/signup")
+    public ResponseEntity<SignUpDto> signUp(
+            SignUpDto request,
+            @RequestPart(name = "image", required = false) MultipartFile image
+    ) {
+        authService.signUp(request, image);
+
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<?> logout(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
+    public ResponseEntity<?> logout(
+            HttpServletRequest httpServletRequest,
+            HttpServletResponse httpServletResponse
+    ) {
         Cookie[] cookies = httpServletRequest.getCookies();
 
         if (cookies != null) {
@@ -85,5 +91,22 @@ public class AuthController {
         }
 
         return ResponseEntity.ok(new GlobalResponse<>("SUCCESS", null));
+    }
+
+    private void addJwtToCookie(
+            HttpServletResponse response,
+            TokenDto tokenDto
+    ) {
+        Cookie refreshTokenCookie = new Cookie("refreshToken", tokenDto.getRefreshToken());
+        refreshTokenCookie.setPath("/");
+        refreshTokenCookie.setMaxAge(tokenDto.getRefreshTokenExpirationTime());
+
+        response.addCookie(refreshTokenCookie);
+
+        Cookie accessTokenCookie = new Cookie("accessToken", tokenDto.getAccessToken());
+        accessTokenCookie.setPath("/");
+        accessTokenCookie.setMaxAge(tokenDto.getAccessTokenExpirationTime());
+
+        response.addCookie(accessTokenCookie);
     }
 }
