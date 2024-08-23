@@ -42,7 +42,7 @@ public class AccompanyPostController {
         return ResponseEntity.ok(response);  // 수정된 데이터 반환
     }
 
-    @DeleteMapping("/{id}")
+    @PostMapping("/{id}")
     public ResponseEntity<Void> deleteAccompanyPost(
             @LoginUser String memberEmail,
             @PathVariable Long id) {
@@ -66,7 +66,12 @@ public class AccompanyPostController {
     public ResponseEntity<GlobalResponse<CheckDuplicatedCustomUrlDto>> checkDuplicatedCustomUrl(@RequestParam String customUrl) {
         boolean result = accompanyPostService.checkDuplicatedCustomUrl(customUrl);
 
-        return ResponseEntity.status(result ? 409 : 200).body(new GlobalResponse<>(result ? "DUPLICATED_CUSTOM_URL" : "SUCCESS", new CheckDuplicatedCustomUrlDto(result)));
+        return ResponseEntity.ok(
+                new GlobalResponse<>(
+                        result ? "DUPLICATED_CUSTOM_URL" : "SUCCESS",
+                        new CheckDuplicatedCustomUrlDto(result)
+                )
+        );
     }
 
     @ExceptionHandler(DuplicatedCustomUrlException.class)
