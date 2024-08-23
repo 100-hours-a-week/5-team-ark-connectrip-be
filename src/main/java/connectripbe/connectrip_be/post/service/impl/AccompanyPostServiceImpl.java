@@ -30,8 +30,8 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
     private final AccompanyStatusJpaRepository accompanyStatusJpaRepository;
 
     @Override
-    public void createAccompanyPost(String memberEmail, CreateAccompanyPostRequest request) {
-        MemberEntity memberEntity = findMemberEntity(memberEmail);
+    public void createAccompanyPost(Long memberId, CreateAccompanyPostRequest request) {
+        MemberEntity memberEntity = findMemberEntity(memberId);
 
         if (request.customUrl() != null && checkDuplicatedCustomUrl(request.customUrl())) {
             throw new DuplicatedCustomUrlException();
@@ -63,8 +63,8 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
     }
 
     @Override
-    public AccompanyPostResponse updateAccompanyPost(String memberEmail, long id, UpdateAccompanyPostRequest request) {
-        MemberEntity memberEntity = findMemberEntity(memberEmail);
+    public AccompanyPostResponse updateAccompanyPost(Long memberId, long id, UpdateAccompanyPostRequest request) {
+        MemberEntity memberEntity = findMemberEntity(memberId);
 
         AccompanyPostEntity accompanyPostEntity = findAccompanyPostEntity(id);
 
@@ -84,8 +84,8 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
 
     @Override
     @Transactional
-    public void deleteAccompanyPost(String memberEmail, long id) {
-        MemberEntity memberEntity = findMemberEntity(memberEmail);
+    public void deleteAccompanyPost(Long memberId, long id) {
+        MemberEntity memberEntity = findMemberEntity(memberId);
 
         AccompanyPostEntity accompanyPostEntity = findAccompanyPostEntity(id);
 
@@ -113,8 +113,9 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
         return accompanyPostRepository.existsByCustomUrl(customUrl);
     }
 
-    private MemberEntity findMemberEntity(String email) {
-        return memberJpaRepository.findByEmail(email).orElseThrow(NotFoundMemberException::new);
+    private MemberEntity findMemberEntity(Long memberId) {
+        return memberJpaRepository.findById(memberId)
+                .orElseThrow(NotFoundMemberException::new);
     }
 
     private AccompanyPostEntity findAccompanyPostEntity(long accompanyPostId) {

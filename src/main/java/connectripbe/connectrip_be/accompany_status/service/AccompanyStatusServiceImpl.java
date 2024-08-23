@@ -39,8 +39,8 @@ public class AccompanyStatusServiceImpl implements AccompanyStatusService {
     }
 
     // fixme-noah: 코드 수정 고민 중
-    public void updateAccompanyStatus(String memberEmail, long postId) {
-        MemberEntity memberEntity = memberJpaRepository.findByEmail(memberEmail)
+    public void updateAccompanyStatus(Long memberId, long postId) {
+        MemberEntity memberEntity = memberJpaRepository.findById(memberId)
                 .orElseThrow(NotFoundMemberException::new);
 
         AccompanyPostEntity accompanyPostEntity = accompanyPostRepository.findById(postId)

@@ -30,14 +30,14 @@ public class AccompanyCommentServiceImpl implements AccompanyCommentService {
      * 사용자 이메일을 통해 MemberEntity를 조회하고, 게시물 ID를 통해 AccompanyPostEntity를 조회한 후
      * AccompanyCommentEntity를 생성하여 데이터베이스에 저장
      *
-     * @param request 댓글 생성 요청 정보 (게시물 ID, 댓글 내용 포함)
-     * @param email   댓글 작성자의 이메일
+     * @param memberId 댓글 작성자의 아이디
+     * @param request  댓글 생성 요청 정보 (게시물 ID, 댓글 내용 포함)
      * @return 생성된 댓글의 정보를 담은 AccompanyCommentResponse 객체
      */
     @Override
     @Transactional
-    public AccompanyCommentResponse createComment(AccompanyCommentRequest request, String email) {
-        MemberEntity member = getMember(email);
+    public AccompanyCommentResponse createComment(Long memberId, AccompanyCommentRequest request) {
+        MemberEntity member = getMember(memberId);
         AccompanyPostEntity post = getPost(request.getPostId());
 
         AccompanyCommentEntity comment = AccompanyCommentEntity.builder()
@@ -54,18 +54,18 @@ public class AccompanyCommentServiceImpl implements AccompanyCommentService {
      * 주어진 댓글 ID를 통해 AccompanyCommentEntity를 조회하고,
      * 수정 권한이 있는지 확인한 후 댓글 내용을 업데이트
      *
+     * @param memberId  수정하려는 사용자의 아이디
      * @param request   댓글 수정 요청 정보 (수정된 댓글 내용 포함)
      * @param commentId 수정할 댓글의 ID
-     * @param email     수정하려는 사용자의 이메일
      * @return 수정된 댓글의 정보를 담은 AccompanyCommentResponse 객체
      */
     @Override
     @Transactional
-    public AccompanyCommentResponse updateComment(AccompanyCommentRequest request, Long commentId, String email) {
+    public AccompanyCommentResponse updateComment(Long memberId, Long commentId, AccompanyCommentRequest request) {
         AccompanyCommentEntity comment = getComment(commentId);
 
         // 댓글 작성자와 요청한 사용자가 일치하는지 확인
-        validateCommentAuthor(comment, email);
+        validateCommentAuthor(memberId, comment);
 
         // 댓글 내용 업데이트
         comment.setContent(request.getContent());
@@ -78,16 +78,16 @@ public class AccompanyCommentServiceImpl implements AccompanyCommentService {
      * 주어진 댓글 ID를 통해 AccompanyCommentEntity를 조회한 후, 삭제 권한이 있는지 확인하고
      * 해당 댓글을 데이터베이스에서 삭제
      *
+     * @param memberId  삭제하려는 사용자의 아이디
      * @param commentId 삭제할 댓글의 ID
-     * @param email     삭제하려는 사용자의 이메일
      */
     @Override
     @Transactional
-    public void deleteComment(Long commentId, String email) {
+    public void deleteComment(Long memberId, Long commentId) {
         AccompanyCommentEntity comment = getComment(commentId);
 
         // 댓글 작성자와 요청한 사용자가 일치하는지 확인
-        validateCommentAuthor(comment, email);
+        validateCommentAuthor(memberId, comment);
 
         comment.deleteEntity();
     }
@@ -136,11 +136,11 @@ public class AccompanyCommentServiceImpl implements AccompanyCommentService {
      * 주어진 이메일로 회원을 조회하는 메서드.
      * 만약 해당 이메일로 등록된 회원이 존재하지 않으면 GlobalException을 발생
      *
-     * @param email 조회할 회원의 이메일
+     * @param memberId 조회할 회원의 아이디
      * @return 조회된 MemberEntity 객체
      */
-    private MemberEntity getMember(String email) {
-        return memberRepository.findByEmail(email)
+    private MemberEntity getMember(Long memberId) {
+        return memberRepository.findById(memberId)
                 .orElseThrow(() -> new GlobalException(ErrorCode.NOT_FOUND_MEMBER));
     }
 
@@ -148,11 +148,11 @@ public class AccompanyCommentServiceImpl implements AccompanyCommentService {
      * 댓글 작성자와 요청한 사용자가 일치하는지 확인하는 메서드.
      * 만약 일치하지 않으면 GlobalException을 발생
      *
-     * @param comment 조회된 AccompanyCommentEntity 객체
-     * @param email   요청한 사용자의 이메일
+     * @param memberId 요청한 사용자의 아이디
+     * @param comment  조회된 AccompanyCommentEntity 객체
      */
-    private void validateCommentAuthor(AccompanyCommentEntity comment, String email) {
-        if (!comment.getMemberEntity().getEmail().equals(email)) {
+    private void validateCommentAuthor(Long memberId, AccompanyCommentEntity comment) {
+        if (!comment.getMemberEntity().getId().equals(memberId)) {
             throw new GlobalException(ErrorCode.WRITE_NOT_YOURSELF);
         }
     }

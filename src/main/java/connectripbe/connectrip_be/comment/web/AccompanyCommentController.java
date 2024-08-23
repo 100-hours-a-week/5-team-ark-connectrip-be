@@ -1,6 +1,5 @@
 package connectripbe.connectrip_be.comment.web;
 
-import connectripbe.connectrip_be.auth.config.LoginUser;
 import connectripbe.connectrip_be.comment.dto.AccompanyCommentRequest;
 import connectripbe.connectrip_be.comment.dto.AccompanyCommentResponse;
 import connectripbe.connectrip_be.comment.service.AccompanyCommentService;
@@ -8,6 +7,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,7 +27,9 @@ public class AccompanyCommentController {
      * @return 댓글 목록을 담은 ResponseEntity<List<AccompanyCommentResponse>>
      */
     @GetMapping("/{postId}")
-    public ResponseEntity<List<AccompanyCommentResponse>> getCommentList(@PathVariable Long postId) {
+    public ResponseEntity<List<AccompanyCommentResponse>> getCommentList(
+            @PathVariable Long postId
+    ) {
         List<AccompanyCommentResponse> comments = accompanyCommentService.getCommentsByPost(postId);
         return ResponseEntity.ok(comments);
     }
@@ -37,13 +39,16 @@ public class AccompanyCommentController {
      * 주어진 요청 정보와 로그인한 사용자의 이메일을 이용해 댓글을 생성하고, 생성된 댓글을 반환합니다.
      * 로그인한 사용자만 댓글을 작성할 수 있습니다.
      *
-     * @param request 댓글 생성 요청 정보 (게시물 ID, 댓글 내용 포함)
-     * @param email   로그인한 사용자의 이메일
+     * @param request  댓글 생성 요청 정보 (게시물 ID, 댓글 내용 포함)
+     * @param memberId 로그인한 사용자의 아이디
      * @return 생성된 댓글 정보를 담은 ResponseEntity<AccompanyCommentResponse>
      */
     @PostMapping
-    public ResponseEntity<AccompanyCommentResponse> createComment(@RequestBody @Valid AccompanyCommentRequest request, @LoginUser String email) {
-        AccompanyCommentResponse response = accompanyCommentService.createComment(request, email);
+    public ResponseEntity<AccompanyCommentResponse> createComment(
+            @AuthenticationPrincipal Long memberId,
+            @RequestBody @Valid AccompanyCommentRequest request
+    ) {
+        AccompanyCommentResponse response = accompanyCommentService.createComment(memberId, request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -52,13 +57,16 @@ public class AccompanyCommentController {
      * 주어진 댓글 ID에 해당하는 댓글을 삭제합니다.
      * 로그인한 사용자만 자신의 댓글을 삭제할 수 있습니다.
      *
-     * @param commentId 삭제할 댓글의 ID
-     * @param email     로그인한 사용자의 이메일
+     * @param memberId  로그인한 사용자의 아이디
+     * @param commentId 삭제할 댓글의 아이디
      * @return 204 No Content 상태 코드를 담은 ResponseEntity
      */
     @PostMapping("/{id}")
-    public ResponseEntity<?> deleteComment(@PathVariable("id") Long commentId, @LoginUser String email) {
-        accompanyCommentService.deleteComment(commentId, email);
+    public ResponseEntity<?> deleteComment(
+            @AuthenticationPrincipal Long memberId,
+            @PathVariable("id") Long commentId
+    ) {
+        accompanyCommentService.deleteComment(memberId, commentId);
         return ResponseEntity.ok().build();
     }
 
@@ -69,16 +77,16 @@ public class AccompanyCommentController {
      *
      * @param commentId 수정할 댓글의 ID
      * @param request   댓글 수정 요청 정보 (수정된 댓글 내용 포함)
-     * @param email     로그인한 사용자의 이메일
+     * @param memberId  로그인한 사용자의 아이디
      * @return 수정된 댓글 정보를 담은 ResponseEntity<AccompanyCommentResponse>
      */
     @PutMapping("/{id}")
     public ResponseEntity<AccompanyCommentResponse> updateComment(
+            @AuthenticationPrincipal Long memberId,
             @PathVariable("id") Long commentId,
-            @RequestBody @Valid AccompanyCommentRequest request,
-            @LoginUser String email) {
-        AccompanyCommentResponse response = accompanyCommentService.updateComment(request, commentId, email);
+            @RequestBody @Valid AccompanyCommentRequest request
+    ) {
+        AccompanyCommentResponse response = accompanyCommentService.updateComment(memberId, commentId, request);
         return ResponseEntity.ok(response);
     }
-
 }

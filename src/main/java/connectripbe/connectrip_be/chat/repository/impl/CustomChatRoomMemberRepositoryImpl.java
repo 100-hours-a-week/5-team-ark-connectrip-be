@@ -24,11 +24,11 @@ public class CustomChatRoomMemberRepositoryImpl implements CustomChatRoomMemberR
      * 삭제되었거나 사용자가 나간 방은 제외.
      * 결과는 마지막 채팅 시간(lastChatTime)을 기준으로 내림차순 정렬됩니다.
      *
-     * @param email 조회할 사용자의 이메일 주소
+     * @param memberId 조회할 사용자의 아이디
      * @return 사용자가 속한 ChatRoomMemberEntity 의 리스트
      */
     @Override
-    public List<ChatRoomMemberEntity> myChatRoomList(String email) {
+    public List<ChatRoomMemberEntity> myChatRoomList(Long memberId) {
         QChatRoomMemberEntity chatRoomMember = QChatRoomMemberEntity.chatRoomMemberEntity;
         QChatRoomEntity chatRoom = QChatRoomEntity.chatRoomEntity;
 
@@ -36,7 +36,7 @@ public class CustomChatRoomMemberRepositoryImpl implements CustomChatRoomMemberR
                 .selectFrom(chatRoomMember)
                 .join(chatRoomMember.chatRoom, chatRoom)
                 .where(
-                        chatRoomMember.member.email.eq(email)
+                        chatRoomMember.member.id.eq(memberId)
                         , chatRoom.chatRoomType.ne(ChatRoomType.DELETE)
                         , chatRoomMember.status.ne(ChatRoomMemberStatus.EXIT)
                 )
