@@ -66,9 +66,13 @@ public class AccompanyPostController {
     public ResponseEntity<GlobalResponse<CheckDuplicatedCustomUrlDto>> checkDuplicatedCustomUrl(@RequestParam String customUrl) {
         boolean result = accompanyPostService.checkDuplicatedCustomUrl(customUrl);
 
-        return ResponseEntity.status(result ? 409 : 200).body(new GlobalResponse<>(result ? "DUPLICATED_CUSTOM_URL" : "SUCCESS", new CheckDuplicatedCustomUrlDto(result)));
+        return ResponseEntity.ok(
+                new GlobalResponse<>(
+                        result ? "DUPLICATED_CUSTOM_URL" : "SUCCESS",
+                        new CheckDuplicatedCustomUrlDto(result)
+                )
+        );
     }
-
     @ExceptionHandler(DuplicatedCustomUrlException.class)
     public ResponseEntity<GlobalResponse<CheckDuplicatedCustomUrlDto>> handleException(Exception e) {
         return ResponseEntity.status(409).body(new GlobalResponse<>("DUPLICATED_CUSTOM_URL", null));
