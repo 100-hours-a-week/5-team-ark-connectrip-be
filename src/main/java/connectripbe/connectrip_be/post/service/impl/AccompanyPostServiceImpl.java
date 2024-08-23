@@ -33,7 +33,7 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
     public void createAccompanyPost(String memberEmail, CreateAccompanyPostRequest request) {
         MemberEntity memberEntity = findMemberEntity(memberEmail);
 
-        if (checkDuplicatedCustomUrl(request.customUrl())) {
+        if (request.customUrl() != null && checkDuplicatedCustomUrl(request.customUrl())) {
             throw new DuplicatedCustomUrlException();
         }
 
