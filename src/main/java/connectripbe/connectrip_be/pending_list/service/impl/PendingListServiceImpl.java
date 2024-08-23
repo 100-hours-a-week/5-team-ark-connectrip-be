@@ -27,26 +27,47 @@ public class PendingListServiceImpl implements PendingListService {
      * 현재 로그인한 사용자가 특정 동행 게시물에 대해 신청한 상태를 확인
      *
      * @param accompanyPostId 조회할 게시물의 ID
-     * @param email 현재 로그인한 사용자의 이메일
+     * @param email           현재 로그인한 사용자의 이메일
      * @return PendingListResponse 사용자의 신청 상태를 반환하는 객체
      * @throws GlobalException 사용자의 신청 상태를 찾을 수 없는 경우 예외 발생
      */
     @Override
     public PendingListResponse getMyPendingStatus(Long accompanyPostId, String email) {
-        // 게시물 ID로 AccompanyPostEntity 조회
-        AccompanyPostEntity accompanyPost = getAccompanyPost(accompanyPostId);
-        // 이메일로 MemberEntity 조회
-        MemberEntity member = getMember(email);
+        try {
+            // 게시물 ID로 AccompanyPostEntity 조회
+            AccompanyPostEntity accompanyPost = getAccompanyPost(accompanyPostId);
 
-        // 게시물과 회원 정보를 바탕으로 PendingListEntity 조회
-        PendingListEntity pendingStatus = pendingListRepository.findByAccompanyPostAndMember(
-                        accompanyPost, member)
-                .orElseThrow(() -> new GlobalException(ErrorCode.PENDING_NOT_FOUND));
+            // 게시물 작성자와 현재 로그인한 사용자가 같은지 확인
+            if (accompanyPost.getMemberEntity().getEmail().equals(email)) {
+                throw new GlobalException(ErrorCode.WRITE_YOURSELF);
+            }
 
-        // 조회된 신청 상태를 반환
-        return PendingListResponse.builder()
-                .status(pendingStatus.getStatus())
-                .build();
+            // 이메일로 MemberEntity 조회
+            MemberEntity member = getMember(email);
+
+            // 게시물과 회원 정보를 바탕으로 PendingListEntity 조회
+            PendingListEntity pendingStatus = pendingListRepository.findByAccompanyPostAndMember(
+                            accompanyPost, member)
+                    .orElseThrow(() -> new GlobalException(ErrorCode.PENDING_NOT_FOUND));
+
+            // 조회된 신청 상태를 반환
+            return PendingListResponse.builder()
+                    .status(pendingStatus.getStatus().toString())
+                    .build();
+
+        } catch (GlobalException e) {
+            if (ErrorCode.PENDING_NOT_FOUND.equals(e.getErrorCode())) {
+                return PendingListResponse.builder()
+                        .status("DEFAULT")
+                        .build();
+            } else if (ErrorCode.WRITE_YOURSELF.equals(e.getErrorCode())) {
+                return PendingListResponse.builder()
+                        .status("NONE")
+                        .build();
+            } else {
+                return null;
+            }
+        }
     }
 
 
@@ -54,7 +75,7 @@ public class PendingListServiceImpl implements PendingListService {
      * 현재 로그인한 사용자가 특정 동행 게시물에 대해 새로운 동행 신청을 생성.
      *
      * @param accompanyPostId 신청할 게시물의 ID
-     * @param email 현재 로그인한 사용자의 이메일
+     * @param email           현재 로그인한 사용자의 이메일
      * @return PendingListResponse 생성된 신청 상태를 반환하는 객체
      * @throws GlobalException 사용자가 존재하지 않거나 게시물을 찾을 수 없는 경우 예외 발생
      */
@@ -64,6 +85,11 @@ public class PendingListServiceImpl implements PendingListService {
         MemberEntity member = getMember(email);
         // 게시물 ID로 AccompanyPostEntity 조회
         AccompanyPostEntity accompanyPost = getAccompanyPost(accompanyPostId);
+
+        // 게시물 작성자와 현재 로그인한 사용자가 같은지 확인
+        if (accompanyPost.getMemberEntity().getEmail().equals(email)) {
+            throw new GlobalException(ErrorCode.WRITE_YOURSELF);
+        }
 
         // 이미 신청한 사용자인지 확인
         if (pendingListRepository.existsByMemberAndAccompanyPost(member, accompanyPost)) {
@@ -82,7 +108,7 @@ public class PendingListServiceImpl implements PendingListService {
 
         // 저장된 신청 상태를 반환
         return PendingListResponse.builder()
-                .status(saved.getStatus())
+                .status(saved.getStatus().toString())
                 .build();
     }
 
