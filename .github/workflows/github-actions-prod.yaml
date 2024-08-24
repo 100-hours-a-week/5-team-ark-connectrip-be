@@ -24,7 +24,7 @@ jobs:
           java-version: '17'
 
       - name: Build with Gradle
-        run: ./gradlew bootJar
+        run: ./gradlew bootJar --args='--spring.profiles.active=prod'
 
       - name: Build Docker Image
         run: docker build -t ghcr.io/topazkang/be-prod:latest .
