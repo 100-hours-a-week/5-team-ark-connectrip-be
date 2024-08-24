@@ -5,7 +5,7 @@ import lombok.Builder;
 
 @Builder
 public record PendingListResponse(
-        PendingStatus status
+        String status
 ) {
 
 }
