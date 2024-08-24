@@ -2,6 +2,7 @@ package connectripbe.connectrip_be.auth.web;
 
 import connectripbe.connectrip_be.auth.dto.SignInDto;
 import connectripbe.connectrip_be.auth.dto.SignUpDto;
+import connectripbe.connectrip_be.auth.exception.RedirectFailureException;
 import connectripbe.connectrip_be.auth.jwt.dto.TokenDto;
 import connectripbe.connectrip_be.auth.kakao.service.KakaoService;
 import connectripbe.connectrip_be.auth.service.AuthService;
@@ -12,13 +13,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -44,11 +39,10 @@ public class AuthController {
 
         addJwtToCookie(httpServletResponse, tokenDto);
 
-        // fixme-noah: exception, 핸들러 추가
         try {
             httpServletResponse.sendRedirect(authSuccessRedirectUrl);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RedirectFailureException();
         }
     }
 
@@ -64,7 +58,6 @@ public class AuthController {
         return ResponseEntity.ok().build();
     }
 
-    // fixme-noah: 엔티티에 맞게 request 필드 추가 후 이름 변경
     @PostMapping(path = "/signup")
     public ResponseEntity<SignUpDto> signUp(
             SignUpDto request,
@@ -108,5 +101,11 @@ public class AuthController {
         accessTokenCookie.setMaxAge(tokenDto.getAccessTokenExpirationTime());
 
         response.addCookie(accessTokenCookie);
+    }
+
+    // fixme-noah, 2024-08-24: 예외에 대한 응답이 명확해지면 수정
+    @ExceptionHandler(RedirectFailureException.class)
+    public ResponseEntity<GlobalResponse<Void>> handleRedirectFailureException(RedirectFailureException e) {
+        return new ResponseEntity<>(new GlobalResponse<>("REDIRECT_FAILURE", null), e.getErrorCode().getHttpStatus());
     }
 }
