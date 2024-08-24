@@ -49,6 +49,9 @@ public enum ErrorCode {
     // Meeting error
     DUPLICATE_MEETING(HttpStatus.BAD_REQUEST, "이미 모임에 참여하셨습니다."),
 
+    // ChatRoom error
+    CHAT_ROOM_NOT_FOUND(HttpStatus.BAD_REQUEST, "해당 채팅방을 찾을 수 없습니다."),
+    ALREADY_JOINED_CHAT_ROOM(HttpStatus.BAD_REQUEST, "이미 참여한 채팅방입니다."),
     /**
      * 401 Unauthorized
      */

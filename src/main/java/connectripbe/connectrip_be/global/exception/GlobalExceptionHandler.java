@@ -26,10 +26,11 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
-    public ErrorResponse exceptionHandler(Exception e) {
+    public ResponseEntity<ErrorResponse> exceptionHandler(Exception e) {
         log.error("Exception is occurred", e);
-        return new ErrorResponse(INTERNAL_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR,
-                INTERNAL_SERVER_ERROR.getDescription());
+        return new ResponseEntity<>(
+                new ErrorResponse(INTERNAL_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR,
+                        INTERNAL_SERVER_ERROR.getDescription()).getHttpStatus());
     }
 
 }
