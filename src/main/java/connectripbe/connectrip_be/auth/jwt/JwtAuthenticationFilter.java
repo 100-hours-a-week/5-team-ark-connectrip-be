@@ -43,12 +43,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
         }
 
-        if (refreshToken == null || accessToken == null || refreshToken.isBlank() || accessToken.isBlank()) {
+        if (refreshToken == null || refreshToken.isBlank()) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        if (!jwtProvider.validateToken(accessToken)) {
+        if (accessToken == null || !jwtProvider.validateToken(accessToken)) {
             if (!jwtProvider.validateToken(refreshToken)) {
                 filterChain.doFilter(request, response);
                 return;
