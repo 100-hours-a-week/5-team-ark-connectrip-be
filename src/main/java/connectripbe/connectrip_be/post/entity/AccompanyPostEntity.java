@@ -58,12 +58,12 @@ public class AccompanyPostEntity extends BaseEntity {
         this.content = content;
     }
 
-    public void updateAccompanyPost(String title, LocalDateTime startDate, LocalDateTime endDate, String accompanyArea, String content) {
+    public void updateAccompanyPost(String title, LocalDateTime startDate, LocalDateTime endDate, String accompanyArea, String content, String customUrl) {
         this.title = title;
         this.startDate = startDate;
         this.endDate = endDate;
         this.accompanyArea = accompanyArea;
         this.content = content;
+        this.customUrl = customUrl;
     }
-
 }

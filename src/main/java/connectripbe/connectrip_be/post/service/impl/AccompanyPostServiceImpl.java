@@ -85,7 +85,8 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
                 request.startDate(),
                 request.endDate(),
                 request.accompanyArea(),
-                request.content()
+                request.content(),
+                request.customUrl()
         );
 
         // 수정된 데이터를 응답으로 반환
