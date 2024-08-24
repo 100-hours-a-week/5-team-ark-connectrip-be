@@ -19,15 +19,12 @@ import connectripbe.connectrip_be.post.repository.AccompanyPostRepository;
 import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class ChatRoomServiceImpl implements ChatRoomService {
 
-    private static final Logger log = LoggerFactory.getLogger(ChatRoomServiceImpl.class);
     private final ChatRoomRepository chatRoomRepository;
     private final ChatRoomMemberRepository chatRoomMemberRepository;
     private final AccompanyPostRepository accompanyPostRepository;
