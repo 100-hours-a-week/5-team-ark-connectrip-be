@@ -13,6 +13,7 @@ spring:
     access-token-expiration-time: 1800000
     refresh-token-expiration-time: 604800000
 
+# 추후 local, dev, prod 분리
 cloud:
   aws:
     s3:
