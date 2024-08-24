@@ -3,6 +3,7 @@ package connectripbe.connectrip_be.post.service.impl;
 import connectripbe.connectrip_be.accompany_status.entity.AccompanyStatusEntity;
 import connectripbe.connectrip_be.accompany_status.entity.AccompanyStatusEnum;
 import connectripbe.connectrip_be.accompany_status.repository.AccompanyStatusJpaRepository;
+import connectripbe.connectrip_be.chat.service.ChatRoomService;
 import connectripbe.connectrip_be.member.exception.MemberNotOwnerException;
 import connectripbe.connectrip_be.member.exception.NotFoundMemberException;
 import connectripbe.connectrip_be.post.dto.*;
@@ -29,7 +30,10 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
     private final MemberJpaRepository memberJpaRepository;
     private final AccompanyStatusJpaRepository accompanyStatusJpaRepository;
 
+    private final ChatRoomService chatRoomService;
+
     @Override
+    @Transactional
     public void createAccompanyPost(Long memberId, CreateAccompanyPostRequest request) {
         MemberEntity memberEntity = findMemberEntity(memberId);
 
@@ -51,7 +55,12 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
                 .build();
 
         accompanyPostRepository.save(post);
-        accompanyStatusJpaRepository.save(new AccompanyStatusEntity(post, AccompanyStatusEnum.PROGRESSING));
+        accompanyStatusJpaRepository.save(
+                new AccompanyStatusEntity(post, AccompanyStatusEnum.PROGRESSING));
+
+        // 채팅방 생성 및 게시물 작성자 채팅방 자동 참여 처리
+        chatRoomService.createChatRoom(post.getId(), memberId);
+
     }
 
     @Override
@@ -63,7 +72,8 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
     }
 
     @Override
-    public AccompanyPostResponse updateAccompanyPost(Long memberId, long id, UpdateAccompanyPostRequest request) {
+    public AccompanyPostResponse updateAccompanyPost(Long memberId, long id,
+            UpdateAccompanyPostRequest request) {
         MemberEntity memberEntity = findMemberEntity(memberId);
 
         AccompanyPostEntity accompanyPostEntity = findAccompanyPostEntity(id);
@@ -119,10 +129,12 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
     }
 
     private AccompanyPostEntity findAccompanyPostEntity(long accompanyPostId) {
-        return accompanyPostRepository.findByIdAndDeletedAtIsNull(accompanyPostId).orElseThrow(NotFoundAccompanyPostException::new);
+        return accompanyPostRepository.findByIdAndDeletedAtIsNull(accompanyPostId)
+                .orElseThrow(NotFoundAccompanyPostException::new);
     }
 
-    private void validateAccompanyPostOwnership(MemberEntity memberEntity, AccompanyPostEntity accompanyPostEntity) {
+    private void validateAccompanyPostOwnership(MemberEntity memberEntity,
+            AccompanyPostEntity accompanyPostEntity) {
         if (!memberEntity.getId().equals(accompanyPostEntity.getMemberEntity().getId())) {
             throw new MemberNotOwnerException();
         }

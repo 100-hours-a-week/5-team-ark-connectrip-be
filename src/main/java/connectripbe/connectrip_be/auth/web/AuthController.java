@@ -60,7 +60,7 @@ public class AuthController {
 
     @PostMapping(path = "/signup")
     public ResponseEntity<SignUpDto> signUp(
-            SignUpDto request,
+            @RequestPart(name = "request") SignUpDto request,
             @RequestPart(name = "image", required = false) MultipartFile image
     ) {
         authService.signUp(request, image);
