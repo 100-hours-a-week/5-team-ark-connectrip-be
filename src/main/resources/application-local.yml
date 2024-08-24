@@ -16,6 +16,11 @@ spring:
   jwt:
     secret-key: ${LOCAL_JWT_SECRET_KEY}
 
+  data:
+    redis:
+      host: ${LOCAL_REDIS_HOST}
+      port: ${LOCAL_REDIS_PORT}
+
   auth:
     success-redirect-url: ${LOCAL_KAKAO_SUCCESS_REDIRECT_URL}
     kakao:
