@@ -9,21 +9,24 @@ public interface AccompanyCommentService {
 
     /**
      * 댓글 생성
-     * @param request 댓글 생성 요청 정보
-     * @param email 댓글 작성자의 이메일
+     *
+     * @param memberId 댓글 작성자의 아이디
+     * @param request  댓글 생성 요청 정보
      * @return 생성된 댓글 정보
      */
-    AccompanyCommentResponse createComment(AccompanyCommentRequest request, String email);
+    AccompanyCommentResponse createComment(Long memberId, AccompanyCommentRequest request);
 
     /**
      * 댓글 삭제
+     *
+     * @param memberId  댓글을 삭제하려는 사용자의 아이디
      * @param commentId 삭제할 댓글의 ID
-     * @param email 삭제하려는 사용자의 이메일
      */
-    void deleteComment(Long commentId, String email);
+    void deleteComment(Long memberId, Long commentId);
 
     /**
      * 특정 게시물에 달린 삭제되지 않은 댓글 목록 조회
+     *
      * @param postId 조회할 게시물의 ID
      * @return 삭제되지 않은 댓글 목록
      */
@@ -31,10 +34,11 @@ public interface AccompanyCommentService {
 
     /**
      * 댓글 수정
-     * @param request 댓글 수정 요청 정보
+     *
+     * @param memberId  댓글을 수정하려는 사용자의 아이디
      * @param commentId 수정할 댓글의 ID
-     * @param email 수정하려는 사용자의 이메일
+     * @param request   댓글 수정 요청 정보
      * @return 수정된 댓글 정보
      */
-    AccompanyCommentResponse updateComment(AccompanyCommentRequest request, Long commentId, String email);
+    AccompanyCommentResponse updateComment(Long memberId, Long commentId, AccompanyCommentRequest request);
 }

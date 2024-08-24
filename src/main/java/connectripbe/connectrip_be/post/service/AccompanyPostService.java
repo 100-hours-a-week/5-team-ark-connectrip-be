@@ -10,13 +10,13 @@ import java.util.List;
 
 public interface AccompanyPostService {
 
-    void createAccompanyPost(String memberEmail, CreateAccompanyPostRequest request);
+    void createAccompanyPost(Long memberId, CreateAccompanyPostRequest request);
 
     AccompanyPostResponse readAccompanyPost(long id);
 
-    AccompanyPostResponse updateAccompanyPost(String memberEmail, long id, UpdateAccompanyPostRequest request);
+    AccompanyPostResponse updateAccompanyPost(Long memberId, long id, UpdateAccompanyPostRequest request);
 
-    void deleteAccompanyPost(String memberEmail, long id);
+    void deleteAccompanyPost(Long memberId, long id);
 
     //TODO 게시물 전체 리스트 - 페이징 처리
     List<AccompanyPostListResponse> accompanyPostList();

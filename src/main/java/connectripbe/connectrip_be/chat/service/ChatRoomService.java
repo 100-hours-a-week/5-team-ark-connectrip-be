@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface ChatRoomService {
 
-      List<ChatRoomListResponse> getChatRoomList(String email);
+      List<ChatRoomListResponse> getChatRoomList(Long memberId);
 
       List<ChatRoomMemberResponse> getChatRoomMembers(Long chatRoomId);
 }

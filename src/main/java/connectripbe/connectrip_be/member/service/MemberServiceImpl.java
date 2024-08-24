@@ -6,7 +6,6 @@ import connectripbe.connectrip_be.member.dto.CheckDuplicateNicknameDto;
 import connectripbe.connectrip_be.member.dto.FirstUpdateMemberRequest;
 import connectripbe.connectrip_be.member.dto.MemberHeaderInfoDto;
 import connectripbe.connectrip_be.member.entity.MemberEntity;
-import connectripbe.connectrip_be.member.exception.DuplicateMemberNicknameException;
 import connectripbe.connectrip_be.member.exception.NotFoundMemberException;
 import connectripbe.connectrip_be.member.repository.MemberJpaRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +21,9 @@ public class MemberServiceImpl implements MemberService {
 
     @Transactional(readOnly = true)
     @Override
-    public GlobalResponse<CheckDuplicateEmailDto> checkDuplicateEmail(String email) {
+    public GlobalResponse<CheckDuplicateEmailDto> checkDuplicateEmail(
+            String email
+    ) {
         boolean existsByEmail = memberJpaRepository.existsByEmail(email);
 
         return new GlobalResponse<>(existsByEmail ? "DUPLICATED_EMAIL" : "SUCCESS", new CheckDuplicateEmailDto(existsByEmail));
@@ -30,7 +31,9 @@ public class MemberServiceImpl implements MemberService {
 
     @Transactional(readOnly = true)
     @Override
-    public GlobalResponse<CheckDuplicateNicknameDto> checkDuplicateNickname(String nickname) {
+    public GlobalResponse<CheckDuplicateNicknameDto> checkDuplicateNickname(
+            String nickname
+    ) {
         boolean existsByNickname = memberJpaRepository.existsByNickname(nickname);
 
         return new GlobalResponse<>(existsByNickname ? "DUPLICATED_NICKNAME" : "SUCCESS", new CheckDuplicateNicknameDto(existsByNickname));
@@ -43,8 +46,10 @@ public class MemberServiceImpl implements MemberService {
      */
     @Transactional(readOnly = true)
     @Override
-    public GlobalResponse<MemberHeaderInfoDto> getMemberHeaderInfo(String email) {
-        MemberEntity memberEntity = memberJpaRepository.findByEmail(email)
+    public GlobalResponse<MemberHeaderInfoDto> getMemberHeaderInfo(
+            Long id
+    ) {
+        MemberEntity memberEntity = memberJpaRepository.findById(id)
                 .orElseThrow(NotFoundMemberException::new);
 
         return new GlobalResponse<>(memberEntity.getNickname() == null ? "FIRST_LOGIN" : "SUCCESS",
@@ -53,8 +58,11 @@ public class MemberServiceImpl implements MemberService {
 
     @Transactional
     @Override
-    public GlobalResponse<MemberHeaderInfoDto> getFirstUpdateMemberResponse(String email, FirstUpdateMemberRequest request) {
-        MemberEntity memberEntity = memberJpaRepository.findByEmail(email)
+    public GlobalResponse<MemberHeaderInfoDto> getFirstUpdateMemberResponse(
+            Long id,
+            FirstUpdateMemberRequest request
+    ) {
+        MemberEntity memberEntity = memberJpaRepository.findById(id)
                 .orElseThrow(NotFoundMemberException::new);
 
         // fixme-noah: 추후 글로벌 response가 정해지면 exception handler로 변경

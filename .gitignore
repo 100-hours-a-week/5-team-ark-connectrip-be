@@ -38,4 +38,4 @@ out/
 
 ### Exclude application.yml
 .env.DS_Store
-.env2
+.env

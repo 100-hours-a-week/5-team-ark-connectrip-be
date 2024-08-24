@@ -12,8 +12,8 @@ public interface MemberService {
 
     GlobalResponse<CheckDuplicateNicknameDto> checkDuplicateNickname(String nickname);
 
-    GlobalResponse<MemberHeaderInfoDto> getMemberHeaderInfo(String email);
+    GlobalResponse<MemberHeaderInfoDto> getMemberHeaderInfo(Long id);
 
     // fixme-noah: 추후 달라지면 response 분리
-    GlobalResponse<MemberHeaderInfoDto> getFirstUpdateMemberResponse(String email, FirstUpdateMemberRequest request);
+    GlobalResponse<MemberHeaderInfoDto> getFirstUpdateMemberResponse(Long id, FirstUpdateMemberRequest request);
 }
