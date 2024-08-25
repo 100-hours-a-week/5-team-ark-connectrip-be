@@ -1,5 +1,8 @@
 package connectripbe.connectrip_be.chat.service.impl;
 
+import connectripbe.connectrip_be.accompany_status.entity.AccompanyStatusEntity;
+import connectripbe.connectrip_be.accompany_status.entity.AccompanyStatusEnum;
+import connectripbe.connectrip_be.accompany_status.repository.AccompanyStatusJpaRepository;
 import connectripbe.connectrip_be.chat.dto.ChatRoomListResponse;
 import connectripbe.connectrip_be.chat.dto.ChatRoomMemberResponse;
 import connectripbe.connectrip_be.chat.entity.ChatRoomEntity;
@@ -15,6 +18,7 @@ import connectripbe.connectrip_be.chat.service.ChatRoomService;
 
 import connectripbe.connectrip_be.global.exception.GlobalException;
 import connectripbe.connectrip_be.global.exception.type.ErrorCode;
+import connectripbe.connectrip_be.post.exception.NotFoundAccompanyPostException;
 import connectripbe.connectrip_be.post.repository.AccompanyPostRepository;
 import jakarta.transaction.Transactional;
 import java.util.List;
@@ -31,6 +35,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     private final AccompanyPostRepository accompanyPostRepository;
 
     private final ChatRoomMemberService chatRoomMemberService;
+    private final AccompanyStatusJpaRepository accompanyStatusJpaRepository;
 
     /**
      * 사용자가 참여한 채팅방 목록을 조회하여 반환하는 메서드. 주어진 사용자의 이메일 주소를 기반으로 해당 사용자가 참여한 모든 채팅방을 조회
@@ -139,6 +144,16 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         } else {
             // 마지막 남은 멤버가 나간 경우 채팅방 상태 변경
             chatRoom.changeChatRoomType(ChatRoomType.DELETE);
+
+            // 게시물 상태 변경
+            AccompanyStatusEntity accompanyStatusEntity = accompanyStatusJpaRepository
+                    .findTopByAccompanyPostEntityOrderByCreatedAtDesc(chatRoom.getAccompanyPost())
+                    .orElseThrow(NotFoundAccompanyPostException::new);
+
+            // 채팅방이 닫히면 게시물 상태도 닫힘
+            accompanyStatusEntity.changeAccompanyStatus(AccompanyStatusEnum.CLOSED);
+
+            accompanyStatusJpaRepository.save(accompanyStatusEntity);
         }
 
         chatRoomRepository.save(chatRoom);

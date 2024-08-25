@@ -63,4 +63,6 @@ public class AccompanyPostEntity extends BaseEntity {
         this.content = content;
         this.customUrl = customUrl;
     }
+
+
 }
