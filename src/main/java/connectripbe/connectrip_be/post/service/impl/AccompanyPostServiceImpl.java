@@ -51,7 +51,6 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
                 .accompanyArea(request.accompanyArea())
                 .urlQrPath("temp")
                 .customUrl(request.customUrl())
-                .requestStatus("DEFAULT")
                 .build();
 
         accompanyPostRepository.save(post);
@@ -67,8 +66,12 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
     @Transactional(readOnly = true)
     public AccompanyPostResponse readAccompanyPost(long id) {
         AccompanyPostEntity accompanyPostEntity = findAccompanyPostEntity(id);
+        AccompanyStatusEntity accompanyStatusEntity = accompanyStatusJpaRepository
+                .findTopByAccompanyPostEntityOrderByCreatedAtDesc(accompanyPostEntity)
+                .orElseThrow(NotFoundAccompanyPostException::new);
 
-        return AccompanyPostResponse.fromEntity(accompanyPostEntity);
+        return AccompanyPostResponse.fromEntity(accompanyPostEntity,
+                accompanyStatusEntity.getAccompanyStatusEnum().toString());
     }
 
     @Override
@@ -80,6 +83,10 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
 
         validateAccompanyPostOwnership(memberEntity, accompanyPostEntity);
 
+        AccompanyStatusEntity accompanyStatusEntity = accompanyStatusJpaRepository
+                .findTopByAccompanyPostEntityOrderByCreatedAtDesc(accompanyPostEntity)
+                .orElseThrow(NotFoundAccompanyPostException::new);
+
         accompanyPostEntity.updateAccompanyPost(
                 request.title(),
                 request.startDate(),
@@ -90,7 +97,8 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
         );
 
         // 수정된 데이터를 응답으로 반환
-        return AccompanyPostResponse.fromEntity(accompanyPostEntity);
+        return AccompanyPostResponse.fromEntity(accompanyPostEntity, accompanyStatusEntity
+                .getAccompanyStatusEnum().toString());
     }
 
     @Override
