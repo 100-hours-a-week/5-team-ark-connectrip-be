@@ -75,7 +75,7 @@ public class KakaoService {
     //  나머지 형식이면 null로 받아온다.
 
     /**
-     * 카카오에서  프포필 이미지를 받아오면 k.kakaocdn.net 형식만 받아온다. 나머지 형식이면 null 반환.
+     * 카카오에서  프로필 이미지를 받아오면 k.kakaocdn.net 형식만 받아온다. 나머지 형식이면 null 반환.
      *
      * @param imagePath 카카오에서 받아온 이미지 경로
      * @return 카카오 이미지 경로
