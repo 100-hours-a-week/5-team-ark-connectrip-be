@@ -4,11 +4,6 @@ spring:
     url: ${PROD_DATABASE_URL}
     username: ${PROD_DATABASE_USERNAME}
     password: ${PROD_DATABASE_PASSWORD}
-  jpa:
-    properties:
-      hibernate:
-        jdbc:
-          time-zone: UTC
   jwt:
     secret-key: ${PROD_JWT_SECRET_KEY}
 
