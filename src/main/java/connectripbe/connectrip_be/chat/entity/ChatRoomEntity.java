@@ -37,6 +37,11 @@ public class ChatRoomEntity extends BaseEntity {
       @JoinColumn(name = "accompany_post_id")
       private AccompanyPostEntity accompanyPost;
 
+      // 방장 설정: ChatRoomMember의 ID를 참조
+      @OneToOne(fetch = FetchType.LAZY)
+      @JoinColumn(name = "leader_id")
+      private ChatRoomMemberEntity currentLeader;
+
       @Enumerated(EnumType.STRING)
       private ChatRoomType chatRoomType;
 
@@ -57,6 +62,18 @@ public class ChatRoomEntity extends BaseEntity {
       public void addChatRoomMember(ChatRoomMemberEntity chatRoomMember) {
             this.chatRoomMembers.add(chatRoomMember);
             chatRoomMember.assignChatRoom(this);
+      }
+
+      // 방장 설정 메서드 (초기 방장 설정)
+      public void setInitialLeader(ChatRoomMemberEntity leader) {
+            this.currentLeader = leader;
+            this.addChatRoomMember(leader);
+      }
+
+
+      // 채팅방 상태 변경 메서드
+      public void changeChatRoomType(ChatRoomType chatRoomType) {
+            this.chatRoomType = chatRoomType;
       }
 
       //TODO 마지막 채팅 메시지 및 시간 업데이트 메서드
