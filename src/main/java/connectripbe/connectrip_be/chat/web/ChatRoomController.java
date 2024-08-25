@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -31,5 +32,15 @@ public class ChatRoomController {
               @PathVariable Long chatRoomId
       ) {
             return ResponseEntity.ok(chatRoomService.getChatRoomMembers(chatRoomId));
+      }
+
+      // 해당 채팅방 나가기
+      @PostMapping("/{chatRoomId}/exit")
+      public ResponseEntity<?> exitChatRoom(
+              @PathVariable Long chatRoomId,
+              @AuthenticationPrincipal Long memberId
+      ) {
+            chatRoomService.exitChatRoom(chatRoomId, memberId);
+            return ResponseEntity.ok("채팅방 나가기 완료");
       }
 }
