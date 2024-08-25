@@ -29,4 +29,8 @@ public class AccompanyStatusEntity extends BaseEntity {
         this.accompanyPostEntity = accompanyPostEntity;
         this.accompanyStatusEnum = accompanyStatusEnum;
     }
+
+    public void changeAccompanyStatus(AccompanyStatusEnum AccompanyStatusEnum) {
+        this.accompanyStatusEnum = AccompanyStatusEnum;
+    }
 }
