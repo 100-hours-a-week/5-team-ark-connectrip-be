@@ -2,6 +2,19 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.1.8'
     id 'io.spring.dependency-management' version '1.1.4'
+
+    id "io.sentry.jvm.gradle" version "4.11.0"
+}
+
+sentry {
+    // Generates a JVM (Java, Kotlin, etc.) source bundle and uploads your source code to Sentry.
+    // This enables source context, allowing you to see your source
+    // code as part of your stack traces in Sentry.
+    includeSourceContext = true
+
+    org = "ark-sj"
+    projectName = "ktb-ark-connectrip-prod"
+    authToken = System.getenv("PROD_SENTRY_AUTH_TOKEN")
 }
 
 group = 'connectrip-be'
