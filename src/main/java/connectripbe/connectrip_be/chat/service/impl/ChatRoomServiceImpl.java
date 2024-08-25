@@ -16,6 +16,7 @@ import connectripbe.connectrip_be.chat.service.ChatRoomService;
 import connectripbe.connectrip_be.global.exception.GlobalException;
 import connectripbe.connectrip_be.global.exception.type.ErrorCode;
 import connectripbe.connectrip_be.post.repository.AccompanyPostRepository;
+import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
@@ -68,11 +69,12 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     }
 
     /**
-     * 특정 게시물에 대한 채팅방을 생성하고, 게시물 작성자를 해당 채팅방에 자동으로 참여시킵니다.
+     * 특정 게시물에 대한 채팅방을 생성하고, 게시물 작성자를 해당 채팅방에 자동으로 참여.
+     * 생성된 채팅방에서 게시물 작성자는 초기 방장으로 설정.
      *
-     * @param postId  채팅방을 생성할 게시물의 ID
-     * @param memberId  채팅방에 자동으로 참여시킬 게시물 작성자의 ID
-     * @throws GlobalException  게시물을 찾을 수 없는 경우 발생하는 예외
+     * @param postId   채팅방을 생성할 게시물의 ID
+     * @param memberId 채팅방에 자동으로 참여시킬 게시물 작성자의 ID
+     * @throws GlobalException 게시물을 찾을 수 없거나, 게시물 작성자를 채팅방에 참여시키는 데 문제가 발생한 경우 발생하는 예외
      */
     @Override
     public void createChatRoom(Long postId, Long memberId) {
@@ -87,8 +89,68 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         chatRoomRepository.save(chatRoom);
 
         // 채팅방에 게시물 작성자 자동 참여
-
         chatRoomMemberService.jointChatRoom(chatRoom.getId(), memberId);
 
+        // 채팅방 방장 초기 설정
+        ChatRoomMemberEntity leaderMember = chatRoomMemberRepository
+                .findByChatRoom_IdAndMember_Id(chatRoom.getId(), memberId)
+                .orElseThrow(() -> new GlobalException(ErrorCode.CHAT_ROOM_MEMBER_NOT_FOUND));
+
+        // 방장 설정
+        chatRoom.setInitialLeader(leaderMember);
+    }
+
+
+    /**
+     * 사용자가 채팅방에서 나가도록 처리.
+     * 주어진 채팅방 ID와 사용자 ID를 기반으로, 사용자가 해당 채팅방에서 나가게 하며,
+     * 방장이 나가는 경우에는 방장을 승계하고, 마지막 남은 멤버가 나가는 경우 채팅방 상태를 'DELETE'로 변경.
+     *
+     * @param chatRoomId 나가려는 사용자가 속한 채팅방의 ID
+     * @param memberId 나가려는 사용자의 ID
+     * @throws GlobalException 채팅방이나 사용자가 존재하지 않거나, 방장 승계 중 문제가 발생한 경우
+     */
+    @Override
+    @Transactional
+    public void exitChatRoom(Long chatRoomId, Long memberId) {
+
+        // 채팅방이 존재하는지 확인
+        ChatRoomEntity chatRoom = getChatRoom(chatRoomId);
+
+        // 사용자가 존재하는지 확인
+        ChatRoomMemberEntity chatRoomMember = getRoomMember(chatRoomId, memberId);
+
+        // 사용자가 채팅방에서 나가기
+        chatRoomMember.exitChatRoom();
+
+        // 현재 채팅방에 남아있는 활성 상태의 멤버 수 확인
+        int activeMemberCount = chatRoomMemberRepository
+                .countByChatRoom_IdAndStatus(chatRoomId, ChatRoomMemberStatus.ACTIVE);
+
+        if (activeMemberCount > 0) {
+            // 다른 멤버가 있는 경우 방장 승계
+            if (chatRoom.getCurrentLeader().equals(chatRoomMember)) {
+                chatRoom.setInitialLeader(chatRoomMemberRepository
+                        .findFirstByChatRoom_IdAndStatusOrderByCreatedAt(chatRoomId,
+                                ChatRoomMemberStatus.ACTIVE)
+                        .orElseThrow(
+                                () -> new GlobalException(ErrorCode.CHAT_ROOM_MEMBER_NOT_FOUND)));
+            }
+        } else {
+            // 마지막 남은 멤버가 나간 경우 채팅방 상태 변경
+            chatRoom.changeChatRoomType(ChatRoomType.DELETE);
+        }
+
+        chatRoomRepository.save(chatRoom);
+    }
+
+    private ChatRoomEntity getChatRoom(Long chatRoomId) {
+        return chatRoomRepository.findById(chatRoomId)
+                .orElseThrow(() -> new GlobalException(ErrorCode.CHAT_ROOM_NOT_FOUND));
+    }
+
+    private ChatRoomMemberEntity getRoomMember(Long chatRoomId, Long id) {
+        return chatRoomMemberRepository.findByChatRoom_IdAndMember_Id(chatRoomId, id)
+                .orElseThrow(() -> new GlobalException(ErrorCode.USER_NOT_FOUND));
     }
 }

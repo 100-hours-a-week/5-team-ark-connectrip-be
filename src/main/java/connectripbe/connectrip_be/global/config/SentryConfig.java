@@ -9,8 +9,11 @@ import org.springframework.context.annotation.Profile;
 @Configuration
 public class SentryConfig {
 
+    @Value("${sentry.dsn}")
+    private String sentryDsn;
+
     // @EnableSentry(dsn = "") 설정
-    public SentryConfig(@Value("${sentry.dsn}") String dsn) {
-        Sentry.init(options -> options.setDsn(dsn));
+    public SentryConfig() {
+        Sentry.init(options -> options.setDsn(sentryDsn));
     }
 }
