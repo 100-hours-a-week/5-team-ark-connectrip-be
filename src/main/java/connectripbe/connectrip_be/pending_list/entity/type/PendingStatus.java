@@ -8,8 +8,8 @@ import lombok.Getter;
 public enum PendingStatus {
 
     PENDING("대기중"),
-    ACCEPT("수락"),
-    REJECT("거절");
+    ACCEPTED("수락"),
+    REJECTED("거절");
 
     private final String message;
 }
