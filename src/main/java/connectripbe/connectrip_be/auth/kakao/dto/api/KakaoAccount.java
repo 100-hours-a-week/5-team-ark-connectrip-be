@@ -14,7 +14,7 @@ public class KakaoAccount {
   @JsonProperty("email")
   String email;
 
-  @JsonProperty("gender")
-  String gender;
+  @JsonProperty("profile")
+  KakaoProfile kakaoProfile;
 
 }

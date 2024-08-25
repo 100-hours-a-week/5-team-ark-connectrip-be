@@ -1,0 +1,26 @@
+spring:
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: ${DEV_DATABASE_URL}
+    username: ${DEV_DATABASE_USERNAME}
+    password: ${DEV_DATABASE_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+    show-sql: true
+  jwt:
+    secret-key: ${DEV_JWT_SECRET_KEY}
+
+  data:
+    redis:
+      host: ${DEV_REDIS_HOST}
+      port: ${DEV_REDIS_PORT}
+
+  auth:
+    success-redirect-url: ${DEV_KAKAO_SUCCESS_REDIRECT_URL}
+    kakao:
+      client-id: ${DEV_KAKAO_CLIENT_ID}
+      redirect-uri: ${DEV_KAKAO_REDIRECT_URI}

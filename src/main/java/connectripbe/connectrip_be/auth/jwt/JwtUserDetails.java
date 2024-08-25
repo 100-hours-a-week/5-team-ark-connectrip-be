@@ -9,38 +9,42 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 public record JwtUserDetails(CustomUserDto customUserDto) implements UserDetails {
 
-      @Override
-      public Collection<? extends GrantedAuthority> getAuthorities() {
-            return List.of(new SimpleGrantedAuthority(customUserDto.getRoleType()));
-      }
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority(customUserDto.getRoleType()));
+    }
 
-      @Override
-      public String getPassword() {
-            return customUserDto.getPassword();
-      }
+    public Long getId() {
+        return customUserDto.getId();
+    }
 
-      @Override
-      public String getUsername() {
-            return customUserDto.getEmail();
-      }
+    @Override
+    public String getPassword() {
+        return customUserDto.getPassword();
+    }
 
-      @Override
-      public boolean isAccountNonExpired() {
-            return true;
-      }
+    @Override
+    public String getUsername() {
+        return customUserDto.getEmail();
+    }
 
-      @Override
-      public boolean isAccountNonLocked() {
-            return true;
-      }
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
 
-      @Override
-      public boolean isCredentialsNonExpired() {
-            return true;
-      }
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
 
-      @Override
-      public boolean isEnabled() {
-            return true;
-      }
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
 }

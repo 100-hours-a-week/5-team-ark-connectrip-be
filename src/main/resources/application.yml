@@ -1,39 +1,19 @@
 spring:
+  application:
+    name: connectrip_be
   profiles:
-    active: local # 기본적으로 로컬 환경(local)을 사용. 배포 시에는 'prod'로 변경
-
-# 공통 설정
-  jpa:
-    hibernate:
-      ddl-auto: update # none, create, create-drop, update
-    properties:
-      hibernate:
-        format_sql: true
-        show_sql: true
-    database: mysql
-    defer-datasource-initialization: true
+    active: local
 
   servlet:
     multipart:
-      enabled: true
-      file-size-threshold: 0B
-      location: /usr/share/temp
-      max-file-size: 30MB
-      max-request-size: 30MB
-
-  data:
-    kakao:
-      grant_type: authorization_code
-      client_id: ${KAKAO_CLIENT_ID}
-      redirect_uri: ${KAKAO_REDIRECT_URI}
+      max-file-size: 10MB
+      max-request-size: 10MB
 
   jwt:
-    header: Authorization
-    prefix: "Bearer "
-    secret: ${JWT_SECRET}
-    access-token-expire-time: 1800000
-    refresh-token-expire-time: 432000000
+    access-token-expiration-time: 1800000
+    refresh-token-expiration-time: 604800000
 
+# 추후 local, dev, prod 분리
 cloud:
   aws:
     s3:

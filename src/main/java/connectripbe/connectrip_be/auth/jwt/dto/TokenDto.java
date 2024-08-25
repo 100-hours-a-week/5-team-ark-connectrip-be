@@ -13,8 +13,8 @@ import lombok.Setter;
 @Builder
 public class TokenDto {
 
-      private String accessToken;
-      private String refreshToken;
-      private Long accessTokenExpireTime;
-      private Long refreshTokenExpireTime;
+    private String refreshToken;
+    private int refreshTokenExpirationTime;
+    private String accessToken;
+    private int accessTokenExpirationTime;
 }
