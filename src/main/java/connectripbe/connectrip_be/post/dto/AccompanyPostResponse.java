@@ -24,7 +24,7 @@ public record AccompanyPostResponse(
         String createdAt
 ) {
 
-    public static AccompanyPostResponse fromEntity(AccompanyPostEntity accompanyPost) {
+    public static AccompanyPostResponse fromEntity(AccompanyPostEntity accompanyPost, String status) {
 
         return AccompanyPostResponse.builder()
                 .id(accompanyPost.getId())
@@ -38,7 +38,7 @@ public record AccompanyPostResponse(
                 .customUrl(accompanyPost.getCustomUrl())
                 .urlQrPath(accompanyPost.getUrlQrPath())
                 .content(accompanyPost.getContent())
-                .status(accompanyPost.getRequestStatus())
+                .status(status)
                 .createdAt(formatToUTC(accompanyPost.getCreatedAt()))
                 .build();
 
