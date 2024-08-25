@@ -31,7 +31,9 @@ public class KakaoService {
 
     public TokenDto kakaoLogin(String code) {
         // 카카오 서버로부터 액세스 토큰을 받아온다.
-        KakaoTokenApiResponse token = kakaoApi.getToken("authorization_code", clientId, redirectUri, code);
+        KakaoTokenApiResponse token = kakaoApi.getToken("authorization_code", clientId,
+                redirectUri,
+                code);
 
         String accessToken = token.getAccess_token();
 
@@ -40,17 +42,22 @@ public class KakaoService {
 
         try {
             // 이메일을 통해 기존 회원이 있는지 확인한다.
-            MemberEntity memberEntity = memberJpaRepository.findByEmail(userInfo.getKakaoAccount().getEmail())
+            MemberEntity memberEntity = memberJpaRepository.findByEmail(
+                            userInfo.getKakaoAccount().getEmail())
                     .orElseThrow(() -> new GlobalException(ErrorCode.NOT_FOUND_MEMBER));
 
             // 토큰 생성 및 반환
             return authService.generateToken(memberEntity.getId());
         } catch (GlobalException e) {
+
             // 카카오로 처음 로그인(회원가입) 하는 경우, 사용자 정보를 반환하여 추가 정보 입력을 유도한다.
+
             if (ErrorCode.NOT_FOUND_MEMBER.equals(e.getErrorCode())) {
                 MemberEntity newMemberEntity = MemberEntity.builder()
                         .email(userInfo.getKakaoAccount().getEmail())
-                        .profileImagePath(userInfo.getKakaoAccount().getKakaoProfile().getImagePath())
+                        .profileImagePath(
+                                getProfileImagePath(userInfo.getKakaoAccount().getKakaoProfile()
+                                        .getImagePath()))
                         .loginType(MemberLoginType.KAKAO)
                         .roleType(MemberRoleType.USER) // 기본 사용자 권한 설정
                         .build();
@@ -62,5 +69,21 @@ public class KakaoService {
                 throw e; // USER_NOT_FOUND 가 아닌 다른 GlobalException 은 그대로 다시 throw.
             }
         }
+    }
+
+    //  카카오에서 이미지를 받아오면 https://k.kakaocdn.net 형식만 받아온다.
+    //  나머지 형식이면 null로 받아온다.
+
+    /**
+     * 카카오에서  프포필 이미지를 받아오면 k.kakaocdn.net 형식만 받아온다. 나머지 형식이면 null 반환.
+     *
+     * @param imagePath 카카오에서 받아온 이미지 경로
+     * @return 카카오 이미지 경로
+     */
+    private String getProfileImagePath(String imagePath) {
+        if (imagePath != null && imagePath.contains("k.kakaocdn.net")) {
+            return imagePath;
+        }
+        return null;
     }
 }
