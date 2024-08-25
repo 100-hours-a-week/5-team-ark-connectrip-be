@@ -24,6 +24,8 @@ jobs:
           java-version: '17'
 
       - name: Build with Gradle
+        env:
+          PROD_SENTRY_AUTH_TOKEN:${{ secrets.PROD_SENTRY_AUTH_TOKEN }}
         run: ./gradlew bootJar
 
       - name: Build Docker Image
