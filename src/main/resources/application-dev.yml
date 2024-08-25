@@ -10,8 +10,6 @@ spring:
     properties:
       hibernate:
         format_sql: true
-        jdbc:
-          time-zone: UTC
     show-sql: true
   jwt:
     secret-key: ${DEV_JWT_SECRET_KEY}

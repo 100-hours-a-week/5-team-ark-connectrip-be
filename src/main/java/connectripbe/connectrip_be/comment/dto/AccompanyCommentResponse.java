@@ -54,7 +54,6 @@ public class AccompanyCommentResponse {
             return null;
         }
         return dateTime.atZone(ZoneId.systemDefault())
-                .withZoneSameInstant(ZoneId.of("UTC"))
                 .format(UTC_FORMATTER);
     }
 }
