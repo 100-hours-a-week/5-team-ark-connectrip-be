@@ -2,6 +2,7 @@ package connectripbe.connectrip_be.chat.dto;
 
 import connectripbe.connectrip_be.chat.entity.ChatRoomEntity;
 
+import connectripbe.connectrip_be.chat.entity.type.ChatRoomMemberStatus;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -28,6 +29,11 @@ public record ChatRoomListResponse(
                 ? chatRoom.getLastChatTime()
                 : chatRoom.getCreatedAt();
 
+        // 활성 멤버 수 계산
+        int activeMemberCnt = (int) chatRoom.getChatRoomMembers().stream()
+                .filter(member -> member.getStatus().equals(ChatRoomMemberStatus.ACTIVE))
+                .count();
+
         return ChatRoomListResponse.builder()
                 .chatRoomId(chatRoom.getId())
                 .accompanyPostId(chatRoom.getAccompanyPost().getId())
@@ -37,7 +43,7 @@ public record ChatRoomListResponse(
                 .endDate(formatToUTC(chatRoom.getAccompanyPost().getEndDate()))
                 .lastChatMessage(chatRoom.getLastChatMessage())
                 .lastChatMessageTime(formatToUTC(lastChatTime))
-                .memberNumber(chatRoom.getChatRoomMembers().size())
+                .memberNumber(activeMemberCnt)
                 .build();
     }
 

@@ -130,6 +130,9 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         // 사용자가 존재하는지 확인
         ChatRoomMemberEntity chatRoomMember = getRoomMember(chatRoomId, memberId);
 
+        // 채팅방에서 나가기 전 pendingList 업데이트
+        pendingListUpdate(chatRoomMember, chatRoom);
+
         // 사용자가 채팅방에서 나가기
         chatRoomMember.exitChatRoom();
 
@@ -163,12 +166,13 @@ public class ChatRoomServiceImpl implements ChatRoomService {
 
         chatRoomRepository.save(chatRoom);
 
+    }
+
+    private void pendingListUpdate(ChatRoomMemberEntity chatRoomMember, ChatRoomEntity chatRoom) {
         AccompanyPostEntity accompanyPost = chatRoomMember.getChatRoom().getAccompanyPost();
 
         // 방장이 아닌 경우에만 pendingList 업데이트
         if (!chatRoomMember.getMember().equals(chatRoom.getCurrentLeader().getMember())) {
-
-            // 채팅방 나가기 처리 후, 방장이 아닌 일반 사용자가 참여한 pendingList EXIT_ROOM 으로 변경
             PendingListEntity pendingMember = pendingListRepository.findByAccompanyPostAndMember(
                             accompanyPost, chatRoomMember.getMember())
                     .orElseThrow(() -> new GlobalException(ErrorCode.PENDING_LIST_NOT_FOUND));
