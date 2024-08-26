@@ -41,7 +41,7 @@ public class ChatRoomServiceImplTest {
             AccompanyPostEntity accompanyPost = AccompanyPostEntity.builder()
                     .id(1L)
                     .title("Test Title")
-                    .accompanyArea(AccompanyArea.SEOUL)
+                    .accompanyArea(AccompanyArea.SEOUL.toString())
                     .startDate(LocalDateTime.now())
                     .endDate(LocalDateTime.now().plusDays(5))
                     .build();
@@ -58,7 +58,7 @@ public class ChatRoomServiceImplTest {
             // chatRoomMemberRepository가 특정 이메일에 대한 데이터를 반환하도록 설정
             when(chatRoomMemberRepository.findByMember_Email(email)).thenReturn(List.of(memberEntity));
 
-            List<ChatRoomListResponse> result = chatRoomService.getChatRoomList(email);
+            List<ChatRoomListResponse> result = chatRoomService.getChatRoomList(1L);
 
             assertEquals(1, result.size());  // 반환된 리스트의 크기 검증
             assertEquals(1L, result.get(0).chatRoomId());  // chatRoomId 검증
@@ -73,7 +73,7 @@ public class ChatRoomServiceImplTest {
             String email = "test@example.com";
             when(chatRoomMemberRepository.findByMember_Email(email)).thenReturn(List.of());
 
-            List<ChatRoomListResponse> result = chatRoomService.getChatRoomList(email);
+            List<ChatRoomListResponse> result = chatRoomService.getChatRoomList(1L);
 
             assertEquals(0, result.size());
       }
