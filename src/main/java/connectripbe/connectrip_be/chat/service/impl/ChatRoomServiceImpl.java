@@ -18,16 +18,22 @@ import connectripbe.connectrip_be.chat.service.ChatRoomService;
 
 import connectripbe.connectrip_be.global.exception.GlobalException;
 import connectripbe.connectrip_be.global.exception.type.ErrorCode;
+import connectripbe.connectrip_be.pending_list.entity.PendingListEntity;
+import connectripbe.connectrip_be.pending_list.entity.type.PendingStatus;
+import connectripbe.connectrip_be.pending_list.repository.PendingListRepository;
+import connectripbe.connectrip_be.post.entity.AccompanyPostEntity;
 import connectripbe.connectrip_be.post.exception.NotFoundAccompanyPostException;
 import connectripbe.connectrip_be.post.repository.AccompanyPostRepository;
 import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ChatRoomServiceImpl implements ChatRoomService {
 
     private final ChatRoomRepository chatRoomRepository;
@@ -36,6 +42,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
 
     private final ChatRoomMemberService chatRoomMemberService;
     private final AccompanyStatusJpaRepository accompanyStatusJpaRepository;
+    private final PendingListRepository pendingListRepository;
 
     /**
      * 사용자가 참여한 채팅방 목록을 조회하여 반환하는 메서드. 주어진 사용자의 이메일 주소를 기반으로 해당 사용자가 참여한 모든 채팅방을 조회
@@ -74,8 +81,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     }
 
     /**
-     * 특정 게시물에 대한 채팅방을 생성하고, 게시물 작성자를 해당 채팅방에 자동으로 참여.
-     * 생성된 채팅방에서 게시물 작성자는 초기 방장으로 설정.
+     * 특정 게시물에 대한 채팅방을 생성하고, 게시물 작성자를 해당 채팅방에 자동으로 참여. 생성된 채팅방에서 게시물 작성자는 초기 방장으로 설정.
      *
      * @param postId   채팅방을 생성할 게시물의 ID
      * @param memberId 채팅방에 자동으로 참여시킬 게시물 작성자의 ID
@@ -107,12 +113,11 @@ public class ChatRoomServiceImpl implements ChatRoomService {
 
 
     /**
-     * 사용자가 채팅방에서 나가도록 처리.
-     * 주어진 채팅방 ID와 사용자 ID를 기반으로, 사용자가 해당 채팅방에서 나가게 하며,
-     * 방장이 나가는 경우에는 방장을 승계하고, 마지막 남은 멤버가 나가는 경우 채팅방 상태를 'DELETE'로 변경.
+     * 사용자가 채팅방에서 나가도록 처리. 주어진 채팅방 ID와 사용자 ID를 기반으로, 사용자가 해당 채팅방에서 나가게 하며, 방장이 나가는 경우에는 방장을 승계하고,
+     * 마지막 남은 멤버가 나가는 경우 채팅방 상태를 'DELETE'로 변경.
      *
      * @param chatRoomId 나가려는 사용자가 속한 채팅방의 ID
-     * @param memberId 나가려는 사용자의 ID
+     * @param memberId   나가려는 사용자의 ID
      * @throws GlobalException 채팅방이나 사용자가 존재하지 않거나, 방장 승계 중 문제가 발생한 경우
      */
     @Override
@@ -157,6 +162,19 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         }
 
         chatRoomRepository.save(chatRoom);
+
+        AccompanyPostEntity accompanyPost = chatRoomMember.getChatRoom().getAccompanyPost();
+
+        // 방장이 아닌 경우에만 pendingList 업데이트
+        if (!chatRoomMember.getMember().equals(chatRoom.getCurrentLeader().getMember())) {
+
+            // 채팅방 나가기 처리 후, 방장이 아닌 일반 사용자가 참여한 pendingList EXIT_ROOM 으로 변경
+            PendingListEntity pendingMember = pendingListRepository.findByAccompanyPostAndMember(
+                            accompanyPost, chatRoomMember.getMember())
+                    .orElseThrow(() -> new GlobalException(ErrorCode.PENDING_LIST_NOT_FOUND));
+
+            pendingMember.updateStatus(PendingStatus.EXIT_ROOM);
+        }
     }
 
     private ChatRoomEntity getChatRoom(Long chatRoomId) {

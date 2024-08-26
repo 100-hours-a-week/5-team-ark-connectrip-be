@@ -19,6 +19,7 @@ public class ChatRoomController {
 
       private final ChatRoomService chatRoomService;
 
+      // 채팅방 목록 조회
       @GetMapping("/list")
       public ResponseEntity<List<ChatRoomListResponse>> getChatRoomList(
               @AuthenticationPrincipal Long memberId
