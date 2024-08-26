@@ -58,7 +58,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList(
-                "http://localhost",
+                "http://localhost:3000",
                 "https://dev.connectrip.kro.kr",
                 "https://connectrip.kro.kr"
         ));
