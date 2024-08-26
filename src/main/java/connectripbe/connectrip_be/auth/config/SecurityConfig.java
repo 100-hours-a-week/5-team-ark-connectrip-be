@@ -22,6 +22,8 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.util.Arrays;
+
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -52,11 +54,14 @@ public class SecurityConfig {
         return httpSecurity.build();
     }
 
-    // fixme-noah: 추후 환경 변수로 분리
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.addAllowedOrigin("https://connectrip.kro.kr");
+        configuration.setAllowedOrigins(Arrays.asList(
+                "http://localhost",
+                "https://dev.connectrip.kro.kr",
+                "https://connectrip.kro.kr"
+        ));
         configuration.addAllowedMethod("*");
         configuration.addAllowedHeader("*");
         configuration.setAllowCredentials(true);
