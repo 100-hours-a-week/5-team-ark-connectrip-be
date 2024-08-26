@@ -3,7 +3,11 @@ package connectripbe.connectrip_be.post.service.impl;
 import connectripbe.connectrip_be.accompany_status.entity.AccompanyStatusEntity;
 import connectripbe.connectrip_be.accompany_status.entity.AccompanyStatusEnum;
 import connectripbe.connectrip_be.accompany_status.repository.AccompanyStatusJpaRepository;
+import connectripbe.connectrip_be.chat.entity.ChatRoomEntity;
+import connectripbe.connectrip_be.chat.repository.ChatRoomRepository;
 import connectripbe.connectrip_be.chat.service.ChatRoomService;
+import connectripbe.connectrip_be.global.exception.GlobalException;
+import connectripbe.connectrip_be.global.exception.type.ErrorCode;
 import connectripbe.connectrip_be.member.exception.MemberNotOwnerException;
 import connectripbe.connectrip_be.member.exception.NotFoundMemberException;
 import connectripbe.connectrip_be.post.dto.*;
@@ -31,6 +35,7 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
     private final AccompanyStatusJpaRepository accompanyStatusJpaRepository;
 
     private final ChatRoomService chatRoomService;
+    private final ChatRoomRepository chatRoomRepository;
 
     @Override
     @Transactional
@@ -66,12 +71,16 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
     @Transactional(readOnly = true)
     public AccompanyPostResponse readAccompanyPost(long id) {
         AccompanyPostEntity accompanyPostEntity = findAccompanyPostEntity(id);
+
         AccompanyStatusEntity accompanyStatusEntity = accompanyStatusJpaRepository
                 .findTopByAccompanyPostEntityOrderByCreatedAtDesc(accompanyPostEntity)
                 .orElseThrow(NotFoundAccompanyPostException::new);
 
+        ChatRoomEntity chatRoom = chatRoomRepository.findByAccompanyPost_Id(id)
+                .orElseThrow(() -> new GlobalException(ErrorCode.CHAT_ROOM_NOT_FOUND));
+
         return AccompanyPostResponse.fromEntity(accompanyPostEntity,
-                accompanyStatusEntity.getAccompanyStatusEnum().toString());
+                accompanyStatusEntity.getAccompanyStatusEnum().toString(), chatRoom);
     }
 
     @Override
@@ -96,9 +105,12 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
                 request.customUrl()
         );
 
+        ChatRoomEntity chatRoom = chatRoomRepository.findByAccompanyPost_Id(id)
+                .orElseThrow(() -> new GlobalException(ErrorCode.CHAT_ROOM_NOT_FOUND));
+
         // 수정된 데이터를 응답으로 반환
         return AccompanyPostResponse.fromEntity(accompanyPostEntity, accompanyStatusEntity
-                .getAccompanyStatusEnum().toString());
+                .getAccompanyStatusEnum().toString(), chatRoom);
     }
 
     @Override
