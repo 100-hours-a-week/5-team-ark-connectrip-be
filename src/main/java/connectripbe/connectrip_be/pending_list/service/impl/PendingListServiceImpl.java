@@ -4,7 +4,7 @@ import connectripbe.connectrip_be.global.exception.GlobalException;
 import connectripbe.connectrip_be.global.exception.type.ErrorCode;
 import connectripbe.connectrip_be.member.entity.MemberEntity;
 import connectripbe.connectrip_be.member.repository.MemberJpaRepository;
-import connectripbe.connectrip_be.pending_list.dto.PendingListResponse;
+import connectripbe.connectrip_be.pending_list.dto.PendingResponse;
 import connectripbe.connectrip_be.pending_list.entity.PendingListEntity;
 import connectripbe.connectrip_be.pending_list.entity.type.PendingStatus;
 import connectripbe.connectrip_be.pending_list.repository.PendingListRepository;
@@ -28,11 +28,11 @@ public class PendingListServiceImpl implements PendingListService {
      *
      * @param accompanyPostId 조회할 게시물의 ID
      * @param memberId        현재 로그인한 사용자의 ID
-     * @return PendingListResponse 사용자의 신청 상태를 반환하는 객체
+     * @return PendingResponse 사용자의 신청 상태를 반환하는 객체
      * @throws GlobalException 사용자의 신청 상태를 찾을 수 없는 경우 예외 발생
      */
     @Override
-    public PendingListResponse getMyPendingStatus(Long memberId, Long accompanyPostId) {
+    public PendingResponse getMyPendingStatus(Long memberId, Long accompanyPostId) {
         try {
             // 게시물 ID로 AccompanyPostEntity 조회
             AccompanyPostEntity accompanyPost = getAccompanyPost(accompanyPostId);
@@ -51,17 +51,17 @@ public class PendingListServiceImpl implements PendingListService {
                     .orElseThrow(() -> new GlobalException(ErrorCode.PENDING_NOT_FOUND));
 
             // 조회된 신청 상태를 반환
-            return PendingListResponse.builder()
+            return PendingResponse.builder()
                     .status(pendingStatus.getStatus().toString())
                     .build();
 
         } catch (GlobalException e) {
             if (ErrorCode.PENDING_NOT_FOUND.equals(e.getErrorCode())) {
-                return PendingListResponse.builder()
+                return PendingResponse.builder()
                         .status("DEFAULT")
                         .build();
             } else if (ErrorCode.WRITE_YOURSELF.equals(e.getErrorCode())) {
-                return PendingListResponse.builder()
+                return PendingResponse.builder()
                         .status("NONE")
                         .build();
             } else {
@@ -75,11 +75,11 @@ public class PendingListServiceImpl implements PendingListService {
      *
      * @param accompanyPostId 신청할 게시물의 ID
      * @param memberId        현재 로그인한 사용자의 아이디
-     * @return PendingListResponse 생성된 신청 상태를 반환하는 객체
+     * @return PendingResponse 생성된 신청 상태를 반환하는 객체
      * @throws GlobalException 사용자가 존재하지 않거나 게시물을 찾을 수 없는 경우 예외 발생
      */
     @Override
-    public PendingListResponse accompanyPending(Long memberId, Long accompanyPostId) {
+    public PendingResponse accompanyPending(Long memberId, Long accompanyPostId) {
         // 이메일로 MemberEntity 조회
         MemberEntity member = getMember(memberId);
         // 게시물 ID로 AccompanyPostEntity 조회
@@ -106,9 +106,24 @@ public class PendingListServiceImpl implements PendingListService {
         PendingListEntity saved = pendingListRepository.save(pendingListEntity);
 
         // 저장된 신청 상태를 반환
-        return PendingListResponse.builder()
+        return PendingResponse.builder()
                 .status(saved.getStatus().toString())
                 .build();
+    }
+
+    @Override
+    public PendingResponse cancelPending(Long memberId, Long accompanyPostId) {
+        return null;
+    }
+
+    @Override
+    public PendingResponse acceptPending(Long memberId, Long accompanyPostId) {
+        return null;
+    }
+
+    @Override
+    public PendingResponse rejectPending(Long memberId, Long accompanyPostId) {
+        return null;
     }
 
     /**

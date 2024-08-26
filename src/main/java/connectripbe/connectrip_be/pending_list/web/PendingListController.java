@@ -1,6 +1,6 @@
 package connectripbe.connectrip_be.pending_list.web;
 
-import connectripbe.connectrip_be.pending_list.dto.PendingListResponse;
+import connectripbe.connectrip_be.pending_list.dto.PendingResponse;
 import connectripbe.connectrip_be.pending_list.service.PendingListService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +20,7 @@ public class PendingListController {
 
     // 동행 신청 상태 조회
     @GetMapping
-    public ResponseEntity<PendingListResponse> getMyPendingStatus(
+    public ResponseEntity<PendingResponse> getMyPendingStatus(
             @AuthenticationPrincipal Long memberId,
             @PathVariable Long id) {
         return ResponseEntity.ok(pendingListService.getMyPendingStatus(memberId, id));
@@ -28,10 +28,10 @@ public class PendingListController {
 
     // 동행 신청
     @PostMapping
-    public ResponseEntity<PendingListResponse> accompanyPending(
+    public ResponseEntity<PendingResponse> accompanyPending(
             @AuthenticationPrincipal Long memberId,
             @PathVariable Long id
-            ) {
+    ) {
         return ResponseEntity.ok(pendingListService.accompanyPending(memberId, id));
     }
 }

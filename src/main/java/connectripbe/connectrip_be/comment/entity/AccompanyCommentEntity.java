@@ -17,6 +17,7 @@ public class AccompanyCommentEntity extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
     private MemberEntity memberEntity;  // 사용자 아이디 (외래키)

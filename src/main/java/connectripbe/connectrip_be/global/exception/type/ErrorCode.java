@@ -18,7 +18,6 @@ public enum ErrorCode {
     INVALID_AUTH_CODE(HttpStatus.BAD_REQUEST, "인증 코드가 일치하지 않습니다."),
     EMAIL_NOT_VERIFIED(HttpStatus.BAD_REQUEST, "이메일 인증이 완료되지 않았습니다."),
     WRITE_NOT_YOURSELF(HttpStatus.BAD_REQUEST, "본인이 작성한 글만 수정 또는 삭제할 수 있습니다."),
-    POST_NOT_FOUND(HttpStatus.BAD_REQUEST, "해당 글을 찾을 수 없습니다."),
     COMMENT_NOT_FOUND(HttpStatus.BAD_REQUEST, "해당 댓글을 찾을 수 없습니다."),
     PROFILE_IMAGE_UPLOAD_ERROR(HttpStatus.BAD_REQUEST, "프로필 이미지 업로드 중 오류가 발생했습니다."),
     POST_IMAGE_UPLOAD_ERROR(HttpStatus.BAD_REQUEST, "게시물 이미지 업로드 중 오류가 발생했습니다."),
@@ -50,7 +49,6 @@ public enum ErrorCode {
     DUPLICATE_MEETING(HttpStatus.BAD_REQUEST, "이미 모임에 참여하셨습니다."),
 
     // ChatRoom error
-    CHAT_ROOM_NOT_FOUND(HttpStatus.BAD_REQUEST, "해당 채팅방을 찾을 수 없습니다."),
     ALREADY_JOINED_CHAT_ROOM(HttpStatus.BAD_REQUEST, "이미 참여한 채팅방입니다."),
     /**
      * 401 Unauthorized
@@ -76,6 +74,9 @@ public enum ErrorCode {
     PENDING_LIST_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 신청 목록을 찾을 수 없습니다."),
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 이메일로 사용자를 찾을 수 없습니다."),
     CHAT_ROOM_MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 채팅방 참여자를 찾을 수 없습니다."),
+    CHAT_ROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 채팅방을 찾을 수 없습니다."),
+    POST_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 글을 찾을 수 없습니다."),
+
     /**
      * 409 Conflict
      */
