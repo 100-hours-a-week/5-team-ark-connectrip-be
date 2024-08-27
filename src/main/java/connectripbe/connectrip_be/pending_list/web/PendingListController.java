@@ -45,4 +45,22 @@ public class PendingListController {
     ) {
         return ResponseEntity.ok(pendingListService.getPendingList(memberId, id));
     }
+
+    // 동행 신청 수락
+    @PostMapping("/accept")
+    public ResponseEntity<PendingResponse> acceptPending(
+            @AuthenticationPrincipal Long memberId,
+            @PathVariable Long id
+    ) {
+        return ResponseEntity.ok(pendingListService.acceptPending(memberId, id));
+    }
+
+    // 동행 신청 거절
+    @PostMapping("/reject")
+    public ResponseEntity<PendingResponse> rejectPending(
+            @AuthenticationPrincipal Long memberId,
+            @PathVariable Long id
+    ) {
+        return ResponseEntity.ok(pendingListService.rejectPending(memberId, id));
+    }
 }

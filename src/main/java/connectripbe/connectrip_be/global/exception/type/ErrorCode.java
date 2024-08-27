@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 @Getter
 @AllArgsConstructor
 public enum ErrorCode {
+
     /**
      * 400 Bad Request
      */
@@ -45,8 +46,13 @@ public enum ErrorCode {
     NOT_FOUND_ACCOMPANY_STATUS(HttpStatus.INTERNAL_SERVER_ERROR, "동행 상태를 찾을 수 없습니다."),
     ALREADY_FINISHED_ACCOMPANY_STATUS_EXCEPTION(HttpStatus.BAD_REQUEST, "이미 종료된 동행압니다."),
 
+    // Pending List, 신청 목록
+    PENDING_ALREADY_ACCEPTED(HttpStatus.BAD_REQUEST, "이미 수락된 신청입니다."),
+    PENDING_ALREADY_REJECTED(HttpStatus.BAD_REQUEST, "이미 거절된 신청입니다."),
+
     // Meeting error
     DUPLICATE_MEETING(HttpStatus.BAD_REQUEST, "이미 모임에 참여하셨습니다."),
+
 
     // ChatRoom error
     ALREADY_JOINED_CHAT_ROOM(HttpStatus.BAD_REQUEST, "이미 참여한 채팅방입니다."),
