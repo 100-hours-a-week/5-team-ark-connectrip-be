@@ -1,7 +1,6 @@
 package connectripbe.connectrip_be.pending_list.service.impl;
 
 import connectripbe.connectrip_be.chat.entity.ChatRoomEntity;
-import connectripbe.connectrip_be.chat.repository.ChatRoomMemberRepository;
 import connectripbe.connectrip_be.chat.repository.ChatRoomRepository;
 import connectripbe.connectrip_be.global.exception.GlobalException;
 import connectripbe.connectrip_be.global.exception.type.ErrorCode;
@@ -28,7 +27,6 @@ public class PendingListServiceImpl implements PendingListService {
     private final MemberJpaRepository memberJpaRepository;
     private final AccompanyPostRepository accompanyPostRepository;
     private final ChatRoomRepository chatRoomRepository;
-    private final ChatRoomMemberRepository chatRoomMemberRepository;
 
 
     /**

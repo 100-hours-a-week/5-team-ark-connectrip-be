@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface PendingListService {
 
-    //TODO 게시물 작성자가 해당 게시물에 신청한 사용자들의 리스트를 조회하는 api
+    // 게시물 작성자가 해당 게시물에 신청한 사용자들의 리스트를 조회하는 api
     // - 게시물 작성자 or 채팅방 방장만 볼 수 있음, 신청 또는 수락이 된다면 리스트에 출력 X
     List<PendingListResponse> getPendingList(Long memberId, Long accompanyPostId);
 
