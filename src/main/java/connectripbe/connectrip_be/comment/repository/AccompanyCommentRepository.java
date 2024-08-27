@@ -10,6 +10,6 @@ public interface AccompanyCommentRepository extends JpaRepository<AccompanyComme
 
     Optional<AccompanyCommentEntity> findByIdAndDeletedAtIsNull(long id);
 
-    // AccompanyPostEntity의 ID로 삭제되지 않은 댓글 목록 조회
+    // AccompanyPostEntity 의 ID로 삭제되지 않은 댓글 목록 조회
     List<AccompanyCommentEntity> findByAccompanyPostEntity_IdAndDeletedAtIsNull(Long postId);
 }

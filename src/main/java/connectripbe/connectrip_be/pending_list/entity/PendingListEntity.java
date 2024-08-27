@@ -49,12 +49,8 @@ public class PendingListEntity extends BaseEntity {
         this.status = PendingStatus.PENDING;
     }
 
-    public void acceptStatus() {
-        this.status = PendingStatus.ACCEPTED;
-    }
-
-    public void rejectStatus() {
-        this.status = PendingStatus.REJECTED;
+    public void updateStatus(PendingStatus status) {
+        this.status = status;
     }
 
 }

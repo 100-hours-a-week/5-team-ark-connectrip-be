@@ -1,5 +1,6 @@
 package connectripbe.connectrip_be.post.dto;
 
+import connectripbe.connectrip_be.chat.entity.ChatRoomEntity;
 import connectripbe.connectrip_be.post.entity.AccompanyPostEntity;
 import lombok.Builder;
 
@@ -11,6 +12,7 @@ import java.time.format.DateTimeFormatter;
 public record AccompanyPostResponse(
         Long id,
         Long memberId,
+        Long leaderId,
         String nickname,
         String profileImagePath,
         String title,
@@ -24,11 +26,13 @@ public record AccompanyPostResponse(
         String createdAt
 ) {
 
-    public static AccompanyPostResponse fromEntity(AccompanyPostEntity accompanyPost, String status) {
+    public static AccompanyPostResponse fromEntity(AccompanyPostEntity accompanyPost, String status
+            , ChatRoomEntity chatRoom) {
 
         return AccompanyPostResponse.builder()
                 .id(accompanyPost.getId())
                 .memberId(accompanyPost.getMemberEntity().getId())
+                .leaderId(chatRoom.getCurrentLeader().getMember().getId())
                 .nickname(accompanyPost.getMemberEntity().getNickname())
                 .profileImagePath(accompanyPost.getMemberEntity().getProfileImagePath())
                 .title(accompanyPost.getTitle())
@@ -44,7 +48,8 @@ public record AccompanyPostResponse(
 
     }
 
-    private static final DateTimeFormatter UTC_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+    private static final DateTimeFormatter UTC_FORMATTER = DateTimeFormatter.ofPattern(
+            "yyyy-MM-dd'T'HH:mm:ss'Z'");
 
     private static String formatToUTC(LocalDateTime dateTime) {
         if (dateTime == null) {

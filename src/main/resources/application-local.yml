@@ -4,13 +4,15 @@ spring:
     url: ${LOCAL_DATABASE_URL}
     username: ${LOCAL_DATABASE_USERNAME}
     password: ${LOCAL_DATABASE_PASSWORD}
+
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     properties:
       hibernate:
         format_sql: true
     show-sql: true
+
   jwt:
     secret-key: ${LOCAL_JWT_SECRET_KEY}
 
