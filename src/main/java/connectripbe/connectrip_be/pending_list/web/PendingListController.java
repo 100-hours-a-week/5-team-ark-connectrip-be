@@ -1,7 +1,9 @@
 package connectripbe.connectrip_be.pending_list.web;
 
+import connectripbe.connectrip_be.pending_list.dto.PendingListResponse;
 import connectripbe.connectrip_be.pending_list.dto.PendingResponse;
 import connectripbe.connectrip_be.pending_list.service.PendingListService;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -33,5 +35,14 @@ public class PendingListController {
             @PathVariable Long id
     ) {
         return ResponseEntity.ok(pendingListService.accompanyPending(memberId, id));
+    }
+
+    // 신청 내역 리스트 출력
+    @GetMapping("/list")
+    public ResponseEntity<List<PendingListResponse>> getPendingList(
+            @AuthenticationPrincipal Long memberId,
+            @PathVariable Long id
+    ) {
+        return ResponseEntity.ok(pendingListService.getPendingList(memberId, id));
     }
 }

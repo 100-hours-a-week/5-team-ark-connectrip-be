@@ -29,7 +29,7 @@ public enum ErrorCode {
     PENDING_NOT_FOUND(HttpStatus.BAD_REQUEST, "해당 신청을 찾을 수 없습니다."),
     PENDING_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "이미 신청한 상태입니다."),
     WRITE_YOURSELF(HttpStatus.BAD_REQUEST, "본인이 작성한 글은 신청할 수 없습니다."),
-
+    NOT_CHATROOM_LEADER(HttpStatus.BAD_REQUEST, "채팅방 방장이 아닙니다."),
     // Member, 사용자
     NOT_FOUND_MEMBER(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다."),
     DUPLICATE_MEMBER_NICKNAME(HttpStatus.CONFLICT, "중복된 닉네임입니다."),
@@ -76,6 +76,7 @@ public enum ErrorCode {
     CHAT_ROOM_MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 채팅방 참여자를 찾을 수 없습니다."),
     CHAT_ROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 채팅방을 찾을 수 없습니다."),
     POST_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 글을 찾을 수 없습니다."),
+    CHATROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 채팅방을 찾을 수 없습니다."),
 
     /**
      * 409 Conflict
