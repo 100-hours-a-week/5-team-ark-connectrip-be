@@ -2,6 +2,7 @@ package connectripbe.connectrip_be.pending_list.service.impl;
 
 import connectripbe.connectrip_be.chat.entity.ChatRoomEntity;
 import connectripbe.connectrip_be.chat.repository.ChatRoomRepository;
+import connectripbe.connectrip_be.chat.service.ChatRoomMemberService;
 import connectripbe.connectrip_be.global.exception.GlobalException;
 import connectripbe.connectrip_be.global.exception.type.ErrorCode;
 import connectripbe.connectrip_be.member.entity.MemberEntity;
@@ -17,6 +18,7 @@ import connectripbe.connectrip_be.post.repository.AccompanyPostRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +29,8 @@ public class PendingListServiceImpl implements PendingListService {
     private final MemberJpaRepository memberJpaRepository;
     private final AccompanyPostRepository accompanyPostRepository;
     private final ChatRoomRepository chatRoomRepository;
+
+    private final ChatRoomMemberService chatRoomMemberService;
 
 
     /**
@@ -146,18 +150,76 @@ public class PendingListServiceImpl implements PendingListService {
                 .build();
     }
 
-    @Override
-    public PendingResponse cancelPending(Long memberId, Long accompanyPostId) {
-        return null;
-    }
 
+    /**
+     * 사용자의 동행 신청을 수락합니다.
+     * <p>
+     * - 신청 상태를 ACCEPTED로 변경하고, 해당 사용자를 채팅방에 추가합니다.
+     *
+     * @param memberId        수락할 사용자의 ID
+     * @param accompanyPostId 신청한 게시물의 ID
+     * @return PendingResponse 신청 상태 (ACCEPTED)
+     * @throws GlobalException 신청 상태를 찾을 수 없거나, 이미 ACCEPTED 상태이거나, 채팅방을 찾을 수 없는 경우 예외 발생
+     */
+    @Transactional
     @Override
     public PendingResponse acceptPending(Long memberId, Long accompanyPostId) {
-        return null;
+        MemberEntity member = getMember(memberId);
+        AccompanyPostEntity accompanyPost = getAccompanyPost(accompanyPostId);
+
+        PendingListEntity pending = pendingListRepository.findByAccompanyPostAndMember(accompanyPost, member)
+                .orElseThrow(() -> new GlobalException(ErrorCode.PENDING_NOT_FOUND));
+
+        if (pending.getStatus() == PendingStatus.ACCEPTED) {
+            throw new GlobalException(ErrorCode.PENDING_ALREADY_ACCEPTED);
+        }
+
+        pending.updateStatus(PendingStatus.ACCEPTED);
+        pendingListRepository.save(pending);
+
+        ChatRoomEntity chatRoom = chatRoomRepository.findByAccompanyPost_Id(accompanyPostId)
+                .orElseThrow(() -> new GlobalException(ErrorCode.CHATROOM_NOT_FOUND));
+
+        chatRoomMemberService.jointChatRoom(chatRoom.getId(), memberId);
+
+        return PendingResponse.builder()
+                .status(pending.getStatus().toString())
+                .build();
+    }
+
+    /**
+     * 사용자의 동행 신청을 거절합니다.
+     * <p>
+     * - 신청 상태를 REJECTED로 변경합니다.
+     *
+     * @param memberId        거절할 사용자의 ID
+     * @param accompanyPostId 신청한 게시물의 ID
+     * @return PendingResponse 신청 상태 (REJECTED)
+     * @throws GlobalException 신청 상태를 찾을 수 없거나, 이미 REJECTED 상태인 경우 예외 발생
+     */
+    @Override
+    public PendingResponse rejectPending(Long memberId, Long accompanyPostId) {
+        MemberEntity member = getMember(memberId);
+        AccompanyPostEntity accompanyPost = getAccompanyPost(accompanyPostId);
+
+        PendingListEntity pending = pendingListRepository.findByAccompanyPostAndMember(accompanyPost, member)
+                .orElseThrow(() -> new GlobalException(ErrorCode.PENDING_NOT_FOUND));
+
+        if (pending.getStatus() == PendingStatus.REJECTED) {
+            throw new GlobalException(ErrorCode.PENDING_ALREADY_REJECTED);
+        }
+
+        pending.updateStatus(PendingStatus.REJECTED);
+        pendingListRepository.save(pending);
+
+        return PendingResponse.builder()
+                .status(pending.getStatus().toString())
+                .build();
     }
 
     @Override
-    public PendingResponse rejectPending(Long memberId, Long accompanyPostId) {
+    public PendingResponse cancelPending(Long memberId, Long accompanyPostId) {
+
         return null;
     }
 
