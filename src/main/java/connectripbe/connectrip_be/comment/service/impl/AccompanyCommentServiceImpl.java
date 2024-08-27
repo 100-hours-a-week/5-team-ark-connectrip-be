@@ -27,8 +27,8 @@ public class AccompanyCommentServiceImpl implements AccompanyCommentService {
 
     /**
      * 댓글을 생성하는 메서드.
-     * 사용자 이메일을 통해 MemberEntity를 조회하고, 게시물 ID를 통해 AccompanyPostEntity를 조회한 후
-     * AccompanyCommentEntity를 생성하여 데이터베이스에 저장
+     * 사용자 이메일을 통해 MemberEntity 를 조회하고, 게시물 ID를 통해 AccompanyPostEntity 를 조회한 후
+     * AccompanyCommentEntity 를 생성하여 데이터베이스에 저장
      *
      * @param memberId 댓글 작성자의 아이디
      * @param request  댓글 생성 요청 정보 (게시물 ID, 댓글 내용 포함)
@@ -110,7 +110,7 @@ public class AccompanyCommentServiceImpl implements AccompanyCommentService {
 
     /**
      * 주어진 댓글 ID로 댓글을 조회하는 메서드.
-     * 만약 해당 댓글이 존재하지 않으면 GlobalException을 발생
+     * 만약 해당 댓글이 존재하지 않으면 GlobalException 을 발생
      *
      * @param commentId 조회할 댓글의 ID
      * @return 조회된 AccompanyCommentEntity 객체
