@@ -211,7 +211,7 @@ public class PendingListServiceImpl implements PendingListService {
     /**
      * 사용자의 동행 신청을 거절합니다.
      * <p>
-     * - 신청 상태를 REJECTED로 변경합니다.
+     * 신청 상태를 REJECTED로 변경합니다.
      *
      * @param memberId        거절할 사용자의 ID
      * @param accompanyPostId 신청한 게시물의 ID
@@ -238,7 +238,15 @@ public class PendingListServiceImpl implements PendingListService {
                 .build();
     }
 
-    //  신청자가 해당 신청을 취소한다면 다시 신청 가능
+
+    /**
+     * 사용자가 자신이 신청한 동행 신청을 취소 . 사용자가 현재 PENDING 상태인 동행 신청을 취소하고, 상태를 DEFAULT 로 변경. 상태가 PENDING 이 아닌 경우, 예외를 발생.
+     *
+     * @param memberId        신청을 취소할 사용자의 ID
+     * @param accompanyPostId 신청을 취소할 게시물의 ID
+     * @return PendingResponse 신청 취소 후의 상태를 반환하는 객체 (DEFAULT 상태)
+     * @throws GlobalException 신청 상태를 찾을 수 없거나, 상태가 PENDING 이 아닌 경우 예외 발생
+     */
     @Override
     public PendingResponse cancelPending(Long memberId, Long accompanyPostId) {
         MemberEntity member = getMember(memberId);
@@ -259,6 +267,7 @@ public class PendingListServiceImpl implements PendingListService {
                 .status(pending.getStatus().toString())
                 .build();
     }
+
 
     /**
      * 이메일을 통해 MemberEntity 를 조회합니다.
