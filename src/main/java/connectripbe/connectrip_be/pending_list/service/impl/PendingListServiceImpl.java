@@ -104,13 +104,13 @@ public class PendingListServiceImpl implements PendingListService {
                         .status("NONE")
                         .build();
             } else {
-                return null;
+                throw e;
             }
         }
     }
 
     /**
-     * 현재 로그인한 사용자가 특정 동행 게시물에 대해 새로운 동행 신청을 생성.
+     * 사용자가 동행 게시물에 신청합니다.
      *
      * @param accompanyPostId 신청할 게시물의 ID
      * @param memberId        현재 로그인한 사용자의 아이디
@@ -124,37 +124,58 @@ public class PendingListServiceImpl implements PendingListService {
         // 게시물 ID로 AccompanyPostEntity 조회
         AccompanyPostEntity accompanyPost = getAccompanyPost(accompanyPostId);
 
-        // 게시물 작성자와 현재 로그인한 사용자가 같은지 확인
-        if (accompanyPost.getMemberEntity().getId().equals(memberId)) {
-            throw new GlobalException(ErrorCode.WRITE_YOURSELF);
+        try {
+            // 게시물 작성자와 현재 로그인한 사용자가 같은지 확인
+            if (accompanyPost.getMemberEntity().getId().equals(memberId)) {
+                throw new GlobalException(ErrorCode.WRITE_YOURSELF);
+            }
+
+            // 이미 신청한 사용자인지 확인
+            if (pendingListRepository.existsByMemberAndAccompanyPost(member, accompanyPost)) {
+                throw new GlobalException(ErrorCode.PENDING_ALREADY_EXISTS);
+            }
+
+            // 새로운 PendingListEntity 생성
+            PendingListEntity pendingListEntity = PendingListEntity.builder()
+                    .member(member)
+                    .accompanyPost(accompanyPost)
+                    .status(PendingStatus.PENDING)
+                    .build();
+
+            // 생성된 엔티티를 저장
+            PendingListEntity saved = pendingListRepository.save(pendingListEntity);
+
+            // 저장된 신청 상태를 반환
+            return PendingResponse.builder()
+                    .status(saved.getStatus().toString())
+                    .build();
+
+        } catch (GlobalException e) {
+            if (ErrorCode.PENDING_ALREADY_EXISTS.equals(e.getErrorCode())) {
+                // 이미 존재하는 신청 상태를 조회
+                PendingListEntity existingPending = pendingListRepository.findByAccompanyPostAndMember(accompanyPost,
+                                member)
+                        .orElseThrow(() -> new GlobalException(ErrorCode.PENDING_NOT_FOUND));
+
+                // 상태가 DEFAULT라면 PENDING으로 업데이트
+                if (existingPending.getStatus().equals(PendingStatus.DEFAULT)) {
+                    existingPending.updateStatus(PendingStatus.PENDING);
+                    pendingListRepository.save(existingPending);
+                }
+
+                // 현재 상태를 반환
+                return PendingResponse.builder()
+                        .status(existingPending.getStatus().toString())
+                        .build();
+            } else {
+                throw e;
+            }
         }
-
-        // 이미 신청한 사용자인지 확인
-        if (pendingListRepository.existsByMemberAndAccompanyPost(member, accompanyPost)) {
-            throw new GlobalException(ErrorCode.PENDING_ALREADY_EXISTS);
-        }
-
-        // 새로운 PendingListEntity 생성
-        PendingListEntity pendingListEntity = PendingListEntity.builder()
-                .member(member)
-                .accompanyPost(accompanyPost)
-                .status(PendingStatus.PENDING)
-                .build();
-
-        // 생성된 엔티티를 저장
-        PendingListEntity saved = pendingListRepository.save(pendingListEntity);
-
-        // 저장된 신청 상태를 반환
-        return PendingResponse.builder()
-                .status(saved.getStatus().toString())
-                .build();
     }
 
 
     /**
-     * 사용자의 동행 신청을 수락합니다.
-     * <p>
-     * - 신청 상태를 ACCEPTED로 변경하고, 해당 사용자를 채팅방에 추가합니다.
+     * 사용자의 동행 신청을 수락. - 신청 상태를 ACCEPTE D로 변경하고, 해당 사용자를 채팅방에 추가.
      *
      * @param memberId        수락할 사용자의 ID
      * @param accompanyPostId 신청한 게시물의 ID
@@ -190,7 +211,7 @@ public class PendingListServiceImpl implements PendingListService {
     /**
      * 사용자의 동행 신청을 거절합니다.
      * <p>
-     * - 신청 상태를 REJECTED로 변경합니다.
+     * 신청 상태를 REJECTED로 변경합니다.
      *
      * @param memberId        거절할 사용자의 ID
      * @param accompanyPostId 신청한 게시물의 ID
@@ -217,11 +238,36 @@ public class PendingListServiceImpl implements PendingListService {
                 .build();
     }
 
+
+    /**
+     * 사용자가 자신이 신청한 동행 신청을 취소 . 사용자가 현재 PENDING 상태인 동행 신청을 취소하고, 상태를 DEFAULT 로 변경. 상태가 PENDING 이 아닌 경우, 예외를 발생.
+     *
+     * @param memberId        신청을 취소할 사용자의 ID
+     * @param accompanyPostId 신청을 취소할 게시물의 ID
+     * @return PendingResponse 신청 취소 후의 상태를 반환하는 객체 (DEFAULT 상태)
+     * @throws GlobalException 신청 상태를 찾을 수 없거나, 상태가 PENDING 이 아닌 경우 예외 발생
+     */
     @Override
     public PendingResponse cancelPending(Long memberId, Long accompanyPostId) {
+        MemberEntity member = getMember(memberId);
+        AccompanyPostEntity accompanyPost = getAccompanyPost(accompanyPostId);
 
-        return null;
+        PendingListEntity pending = pendingListRepository.findByAccompanyPostAndMember(accompanyPost, member)
+                .orElseThrow(() -> new GlobalException(ErrorCode.PENDING_NOT_FOUND));
+
+        // 상태가 PENDING 인 경우에만 취소 가능
+        if (!pending.getStatus().equals(PendingStatus.PENDING)) {
+            throw new GlobalException(ErrorCode.PENDING_NOT_FOUND);
+        }
+
+        pending.updateStatus(PendingStatus.DEFAULT);
+        pendingListRepository.save(pending);
+
+        return PendingResponse.builder()
+                .status(pending.getStatus().toString())
+                .build();
     }
+
 
     /**
      * 이메일을 통해 MemberEntity 를 조회합니다.
