@@ -10,8 +10,4 @@ public record S3ImageDto(
         String fileName,
         Long size
 ) {
-
-
-
-
 }
