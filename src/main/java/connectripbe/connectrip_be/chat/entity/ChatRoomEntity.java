@@ -29,54 +29,59 @@ import org.springframework.data.annotation.CreatedDate;
 @Builder
 public class ChatRoomEntity extends BaseEntity {
 
-      @Id
-      @GeneratedValue(strategy = GenerationType.IDENTITY)
-      private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-      @OneToOne(fetch = FetchType.LAZY)
-      @JoinColumn(name = "accompany_post_id")
-      private AccompanyPostEntity accompanyPost;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "accompany_post_id")
+    private AccompanyPostEntity accompanyPost;
 
-      // 방장 설정: ChatRoomMember의 ID를 참조
-      @OneToOne(fetch = FetchType.LAZY)
-      @JoinColumn(name = "leader_id")
-      private ChatRoomMemberEntity currentLeader;
+    // 방장 설정: ChatRoomMember의 ID를 참조
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "leader_id")
+    private ChatRoomMemberEntity currentLeader;
 
-      @Enumerated(EnumType.STRING)
-      private ChatRoomType chatRoomType;
+    @Enumerated(EnumType.STRING)
+    private ChatRoomType chatRoomType;
 
-      private String lastChatMessage;
+    private String lastChatMessage;
 
-      // 마지막 채팅 시간. 정렬을 위해 기본적으로 CreatedAt 값을 사용하고, 채팅이 발생할 때마다 업데이트
-      @CreatedDate
-      private LocalDateTime lastChatTime;
+    // 마지막 채팅 시간. 정렬을 위해 기본적으로 CreatedAt 값을 사용하고, 채팅이 발생할 때마다 업데이트
+    @CreatedDate
+    private LocalDateTime lastChatTime;
 
-      @Builder.Default
-      @OneToMany(mappedBy = "chatRoom")
-      private List<ChatRoomMemberEntity> chatRoomMembers = new ArrayList<>();
+    @Builder.Default
+    @OneToMany(mappedBy = "chatRoom")
+    private List<ChatRoomMemberEntity> chatRoomMembers = new ArrayList<>();
 
-      /**
-       *  ChatRoomMember 추가 및 양방향 관계 설정 메서드
-       * @param chatRoomMember 채팅참여자 객체
-       */
-      public void addChatRoomMember(ChatRoomMemberEntity chatRoomMember) {
-            this.chatRoomMembers.add(chatRoomMember);
-            chatRoomMember.assignChatRoom(this);
-      }
+    /**
+     * ChatRoomMember 추가 및 양방향 관계 설정 메서드
+     *
+     * @param chatRoomMember 채팅참여자 객체
+     */
+    public void addChatRoomMember(ChatRoomMemberEntity chatRoomMember) {
+        this.chatRoomMembers.add(chatRoomMember);
+        chatRoomMember.assignChatRoom(this);
+    }
 
-      // 방장 설정 메서드 (초기 방장 설정)
-      public void setInitialLeader(ChatRoomMemberEntity leader) {
-            this.currentLeader = leader;
-            this.addChatRoomMember(leader);
-      }
+    // 방장 설정 메서드 (초기 방장 설정)
+    public void setInitialLeader(ChatRoomMemberEntity leader) {
+        this.currentLeader = leader;
+        this.addChatRoomMember(leader);
+    }
 
 
-      // 채팅방 상태 변경 메서드
-      public void changeChatRoomType(ChatRoomType chatRoomType) {
-            this.chatRoomType = chatRoomType;
-      }
+    // 채팅방 상태 변경 메서드
+    public void changeChatRoomType(ChatRoomType chatRoomType) {
+        this.chatRoomType = chatRoomType;
+    }
 
-      //TODO 마지막 채팅 메시지 및 시간 업데이트 메서드
+    //마지막 채팅 메시지 및 시간 업데이트 메서드
+    public void updateLastChatMessage(String message, LocalDateTime time) {
+        this.lastChatMessage = message;
+        this.lastChatTime = time;
+    }
 
 
 }
