@@ -52,8 +52,6 @@ public enum ErrorCode {
     PENDING_ALREADY_ACCEPTED(HttpStatus.BAD_REQUEST, "이미 수락된 신청입니다."),
     PENDING_ALREADY_REJECTED(HttpStatus.BAD_REQUEST, "이미 거절된 신청입니다."),
 
-    // Meeting error
-    DUPLICATE_MEETING(HttpStatus.BAD_REQUEST, "이미 모임에 참여하셨습니다."),
     // ChatRoom error
     ALREADY_JOINED_CHAT_ROOM(HttpStatus.BAD_REQUEST, "이미 참여한 채팅방입니다."),
     ALREADY_EXITED_CHAT_ROOM(HttpStatus.BAD_REQUEST, "이미 나간 채팅방입니다."),
