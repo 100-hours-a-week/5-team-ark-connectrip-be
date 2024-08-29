@@ -8,19 +8,20 @@ import connectripbe.connectrip_be.chat.repository.ChatRoomRepository;
 import connectripbe.connectrip_be.chat.service.ChatRoomService;
 import connectripbe.connectrip_be.global.exception.GlobalException;
 import connectripbe.connectrip_be.global.exception.type.ErrorCode;
+import connectripbe.connectrip_be.member.entity.MemberEntity;
 import connectripbe.connectrip_be.member.exception.MemberNotOwnerException;
 import connectripbe.connectrip_be.member.exception.NotFoundMemberException;
-import connectripbe.connectrip_be.post.dto.*;
+import connectripbe.connectrip_be.member.repository.MemberJpaRepository;
+import connectripbe.connectrip_be.post.dto.AccompanyPostListResponse;
+import connectripbe.connectrip_be.post.dto.AccompanyPostResponse;
+import connectripbe.connectrip_be.post.dto.CreateAccompanyPostRequest;
+import connectripbe.connectrip_be.post.dto.UpdateAccompanyPostRequest;
 import connectripbe.connectrip_be.post.entity.AccompanyPostEntity;
-import connectripbe.connectrip_be.post.exception.DuplicatedCustomUrlException;
 import connectripbe.connectrip_be.post.exception.NotFoundAccompanyPostException;
 import connectripbe.connectrip_be.post.repository.AccompanyPostRepository;
 import connectripbe.connectrip_be.post.service.AccompanyPostService;
-import connectripbe.connectrip_be.member.entity.MemberEntity;
-import connectripbe.connectrip_be.member.repository.MemberJpaRepository;
-
 import java.util.List;
-
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,7 +34,6 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
     private final AccompanyPostRepository accompanyPostRepository;
     private final MemberJpaRepository memberJpaRepository;
     private final AccompanyStatusJpaRepository accompanyStatusJpaRepository;
-
     private final ChatRoomService chatRoomService;
     private final ChatRoomRepository chatRoomRepository;
 
@@ -42,9 +42,7 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
     public void createAccompanyPost(Long memberId, CreateAccompanyPostRequest request) {
         MemberEntity memberEntity = findMemberEntity(memberId);
 
-        if (request.customUrl() != null && checkDuplicatedCustomUrl(request.customUrl())) {
-            throw new DuplicatedCustomUrlException();
-        }
+        String customUrl = generateUniqueUrl();
 
         AccompanyPostEntity post = AccompanyPostEntity.builder()
                 .memberEntity(memberEntity)
@@ -55,7 +53,7 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
                 .content(request.content())
                 .accompanyArea(request.accompanyArea())
                 .urlQrPath("temp")
-                .customUrl(request.customUrl())
+                .customUrl(customUrl)
                 .build();
 
         accompanyPostRepository.save(post);
@@ -85,7 +83,7 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
 
     @Override
     public AccompanyPostResponse updateAccompanyPost(Long memberId, long id,
-            UpdateAccompanyPostRequest request) {
+                                                     UpdateAccompanyPostRequest request) {
         MemberEntity memberEntity = findMemberEntity(memberId);
 
         AccompanyPostEntity accompanyPostEntity = findAccompanyPostEntity(id);
@@ -102,7 +100,7 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
                 request.endDate(),
                 request.accompanyArea(),
                 request.content(),
-                request.customUrl()
+                accompanyPostEntity.getCustomUrl()
         );
 
         ChatRoomEntity chatRoom = chatRoomRepository.findByAccompanyPost_Id(id)
@@ -144,6 +142,14 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
         return accompanyPostRepository.existsByCustomUrl(customUrl);
     }
 
+    private String generateUniqueUrl() {
+        String newUrl;
+        do {
+            newUrl = UUID.randomUUID().toString();
+        } while (checkDuplicatedCustomUrl(newUrl));  // 중복된 URL이 없을 때까지 생성
+        return newUrl;
+    }
+
     private MemberEntity findMemberEntity(Long memberId) {
         return memberJpaRepository.findById(memberId)
                 .orElseThrow(NotFoundMemberException::new);
@@ -155,7 +161,7 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
     }
 
     private void validateAccompanyPostOwnership(MemberEntity memberEntity,
-            AccompanyPostEntity accompanyPostEntity) {
+                                                AccompanyPostEntity accompanyPostEntity) {
         if (!memberEntity.getId().equals(accompanyPostEntity.getMemberEntity().getId())) {
             throw new MemberNotOwnerException();
         }
