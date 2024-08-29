@@ -37,10 +37,11 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     private final ChatRoomRepository chatRoomRepository;
     private final ChatRoomMemberRepository chatRoomMemberRepository;
     private final AccompanyPostRepository accompanyPostRepository;
-
-    private final ChatRoomMemberService chatRoomMemberService;
     private final AccompanyStatusJpaRepository accompanyStatusJpaRepository;
     private final PendingListRepository pendingListRepository;
+
+    private final ChatRoomMemberService chatRoomMemberService;
+
 
     /**
      * 사용자가 참여한 채팅방 목록을 조회하여 반환하는 메서드. 주어진 사용자의 이메일 주소를 기반으로 해당 사용자가 참여한 모든 채팅방을 조회
@@ -184,11 +185,15 @@ public class ChatRoomServiceImpl implements ChatRoomService {
             throw new GlobalException(ErrorCode.ALREADY_EXITED_CHAT_ROOM);
         }
 
-        return ChatRoomEnterDto.builder()
-                .accompanyPostId(chatRoom.getAccompanyPost().getId())
-                .chatRoomId(chatRoom.getId())
-                .leaderId(chatRoom.getCurrentLeader().getMember().getId())
-                .build();
+        // 해당 게시물 상태
+        AccompanyStatusEntity status = accompanyStatusJpaRepository.findTopByAccompanyPostEntityOrderByCreatedAtDesc(
+                        chatRoom.getAccompanyPost())
+                .orElseThrow(NotFoundAccompanyPostException::new);
+
+        // 게시물이 삭제 되었는지
+        boolean isPostDeleted = chatRoom.getAccompanyPost().getDeletedAt() != null;
+
+        return ChatRoomEnterDto.fromEntity(chatRoom, status.toString(), isPostDeleted);
     }
 
     private void pendingListUpdate(ChatRoomMemberEntity chatRoomMember, ChatRoomEntity chatRoom) {
