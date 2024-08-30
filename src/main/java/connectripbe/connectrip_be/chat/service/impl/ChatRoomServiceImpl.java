@@ -193,7 +193,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         // 게시물이 삭제 되었는지
         boolean isPostDeleted = chatRoom.getAccompanyPost().getDeletedAt() != null;
 
-        return ChatRoomEnterDto.fromEntity(chatRoom, status.toString(), isPostDeleted);
+        return ChatRoomEnterDto.fromEntity(chatRoom, status.getAccompanyStatusEnum().toString(), isPostDeleted);
     }
 
     private void pendingListUpdate(ChatRoomMemberEntity chatRoomMember, ChatRoomEntity chatRoom) {
