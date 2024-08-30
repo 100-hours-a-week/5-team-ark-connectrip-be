@@ -21,9 +21,6 @@ import org.springframework.data.mongodb.core.mapping.FieldType;
 @Builder
 public class ChatMessage {
 
-    /**
-     * 몽고디비 설정해서 연결 확인 1. application.properties에 몽고디비 설정 추가 2. MognoDBConfig 클래스 생성
-     */
     @Id
     @Field(value = "_id", targetType = FieldType.OBJECT_ID)
     private String id;

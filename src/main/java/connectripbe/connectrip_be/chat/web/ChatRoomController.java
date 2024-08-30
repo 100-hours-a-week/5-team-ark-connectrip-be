@@ -1,7 +1,9 @@
 package connectripbe.connectrip_be.chat.web;
 
+import connectripbe.connectrip_be.chat.dto.ChatRoomEnterDto;
 import connectripbe.connectrip_be.chat.dto.ChatRoomListResponse;
 import connectripbe.connectrip_be.chat.service.ChatRoomService;
+import connectripbe.connectrip_be.global.dto.GlobalResponse;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -47,10 +49,15 @@ public class ChatRoomController {
 
     // 채팅방 입장
     @GetMapping("/{chatRoomId}/enter")
-    public ResponseEntity<?> enterChatRoom(
+    public ResponseEntity<GlobalResponse<ChatRoomEnterDto>> enterChatRoom(
             @PathVariable Long chatRoomId,
             @AuthenticationPrincipal Long memberId
     ) {
-        return ResponseEntity.ok(chatRoomService.enterChatRoom(chatRoomId, memberId));
+        return
+                ResponseEntity
+                        .ok()
+                        .body(new GlobalResponse<>("SUCCESS", chatRoomService.enterChatRoom(chatRoomId, memberId)));
+
+
     }
 }
