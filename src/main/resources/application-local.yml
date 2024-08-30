@@ -21,6 +21,14 @@ spring:
       host: ${LOCAL_REDIS_HOST}
       port: ${LOCAL_REDIS_PORT}
 
+    mongodb:
+      host: ${LOCAL_MONGODB_HOST}
+      port: ${LOCAL_MONGODB_PORT}
+      database: ${LOCAL_MONGODB_DATABASE}
+      username: ${LOCAL_MONGODB_USERNAME}
+      password: ${LOCAL_MONGODB_PASSWORD}
+
+
   auth:
     success-redirect-url: ${LOCAL_KAKAO_SUCCESS_REDIRECT_URL}
     kakao:
