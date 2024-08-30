@@ -15,7 +15,7 @@ public class UrlRedirectController {
 
     private final AccompanyPostRepository accompanyPostRepository;
 
-    @GetMapping("/u/{customUrl}")
+    @GetMapping("/api/v1/accompany/{customUrl}")
     public RedirectView redirectToPostDetailPage(@PathVariable String customUrl) {
         // 단축 URL로 게시글을 조회
         AccompanyPostEntity post = accompanyPostRepository.findByCustomUrl(customUrl)
