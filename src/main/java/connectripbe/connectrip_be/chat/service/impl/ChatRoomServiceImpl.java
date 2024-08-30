@@ -191,9 +191,9 @@ public class ChatRoomServiceImpl implements ChatRoomService {
                 .orElseThrow(NotFoundAccompanyPostException::new);
 
         // 게시물이 삭제 되었는지
-        boolean isPostDeleted = chatRoom.getAccompanyPost().getDeletedAt() != null;
+        boolean isPostExists = chatRoom.getAccompanyPost().getDeletedAt() == null;
 
-        return ChatRoomEnterDto.fromEntity(chatRoom, status.getAccompanyStatusEnum().toString(), isPostDeleted);
+        return ChatRoomEnterDto.fromEntity(chatRoom, status.getAccompanyStatusEnum().toString(), isPostExists);
     }
 
     private void pendingListUpdate(ChatRoomMemberEntity chatRoomMember, ChatRoomEntity chatRoom) {

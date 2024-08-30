@@ -9,16 +9,16 @@ public record ChatRoomEnterDto(
         Long chatRoomId,
         Long leaderId,
         String status,
-        boolean isPostDeleted
+        boolean isPostExists
 ) {
 
-    public static ChatRoomEnterDto fromEntity(ChatRoomEntity chatRoom, String status, boolean isPostDeleted) {
+    public static ChatRoomEnterDto fromEntity(ChatRoomEntity chatRoom, String status, boolean isPostExists) {
         return ChatRoomEnterDto.builder()
                 .accompanyPostId(chatRoom.getAccompanyPost().getId())
                 .chatRoomId(chatRoom.getId())
                 .leaderId(chatRoom.getCurrentLeader().getMember().getId())
                 .status(status)
-                .isPostDeleted(isPostDeleted)
+                .isPostExists(isPostExists)
                 .build();
     }
 }
