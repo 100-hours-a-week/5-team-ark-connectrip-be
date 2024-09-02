@@ -1,7 +1,5 @@
 package connectripbe.connectrip_be.post.dto;
 
-import connectripbe.connectrip_be.post.entity.enums.AccompanyArea;
-
 import java.time.LocalDateTime;
 
 public record CreateAccompanyPostRequest(
@@ -9,7 +7,6 @@ public record CreateAccompanyPostRequest(
         String content,
         String accompanyArea,
         LocalDateTime startDate,
-        LocalDateTime endDate,
-        String customUrl
+        LocalDateTime endDate
 ) {
 }
