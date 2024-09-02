@@ -6,6 +6,8 @@ import connectripbe.connectrip_be.accompany_status.exception.AlreadyFinishedAcco
 import connectripbe.connectrip_be.accompany_status.exception.NotFoundAccompanyStatusException;
 import connectripbe.connectrip_be.accompany_status.repository.AccompanyStatusJpaRepository;
 import connectripbe.connectrip_be.accompany_status.response.AccompanyStatusResponse;
+import connectripbe.connectrip_be.chat.entity.ChatRoomEntity;
+import connectripbe.connectrip_be.chat.repository.ChatRoomRepository;
 import connectripbe.connectrip_be.member.entity.MemberEntity;
 import connectripbe.connectrip_be.member.exception.MemberNotOwnerException;
 import connectripbe.connectrip_be.member.exception.NotFoundMemberException;
@@ -25,6 +27,7 @@ public class AccompanyStatusServiceImpl implements AccompanyStatusService {
     private final AccompanyPostRepository accompanyPostRepository;
     private final AccompanyStatusJpaRepository accompanyStatusJpaRepository;
     private final MemberJpaRepository memberJpaRepository;
+    private final ChatRoomRepository chatRoomRepository;
 
     // fixme-noah: 최적화 고민 중
     @Transactional(readOnly = true)
@@ -32,7 +35,8 @@ public class AccompanyStatusServiceImpl implements AccompanyStatusService {
         AccompanyPostEntity accompanyPostEntity = accompanyPostRepository.findById(AccompanyPostId)
                 .orElseThrow(NotFoundAccompanyPostException::new);
 
-        AccompanyStatusEntity accompanyStatusEntity = accompanyStatusJpaRepository.findTopByAccompanyPostEntityOrderByCreatedAtDesc(accompanyPostEntity)
+        AccompanyStatusEntity accompanyStatusEntity = accompanyStatusJpaRepository.findTopByAccompanyPostEntityOrderByCreatedAtDesc(
+                        accompanyPostEntity)
                 .orElseThrow(NotFoundAccompanyStatusException::new);
 
         return new AccompanyStatusResponse(accompanyPostEntity.getId(), accompanyStatusEntity.getAccompanyStatusEnum());
@@ -46,22 +50,28 @@ public class AccompanyStatusServiceImpl implements AccompanyStatusService {
         AccompanyPostEntity accompanyPostEntity = accompanyPostRepository.findById(postId)
                 .orElseThrow(NotFoundAccompanyPostException::new);
 
-        validateAccompanyPostOwnership(memberEntity, accompanyPostEntity);
+        ChatRoomEntity chatRoom = chatRoomRepository.findByAccompanyPost_Id(postId)
+                .orElseThrow(NotFoundAccompanyPostException::new);
 
-        AccompanyStatusEntity accompanyStatusEntity = accompanyStatusJpaRepository.findTopByAccompanyPostEntityOrderByCreatedAtDesc(accompanyPostEntity)
+        validateAccompanyPostOwnership(memberEntity, chatRoom);
+
+        AccompanyStatusEntity accompanyStatusEntity = accompanyStatusJpaRepository.findTopByAccompanyPostEntityOrderByCreatedAtDesc(
+                        accompanyPostEntity)
                 .orElseThrow(NotFoundAccompanyPostException::new);
 
         if (accompanyStatusEntity.getAccompanyStatusEnum() == AccompanyStatusEnum.PROGRESSING) {
-            accompanyStatusJpaRepository.save(new AccompanyStatusEntity(accompanyPostEntity, AccompanyStatusEnum.CLOSED));
+            accompanyStatusJpaRepository.save(
+                    new AccompanyStatusEntity(accompanyPostEntity, AccompanyStatusEnum.CLOSED));
         } else if (accompanyStatusEntity.getAccompanyStatusEnum() == AccompanyStatusEnum.CLOSED) {
-            accompanyStatusJpaRepository.save(new AccompanyStatusEntity(accompanyPostEntity, AccompanyStatusEnum.FINISHED));
+            accompanyStatusJpaRepository.save(
+                    new AccompanyStatusEntity(accompanyPostEntity, AccompanyStatusEnum.FINISHED));
         } else {
             throw new AlreadyFinishedAccompanyStatusException();
         }
     }
 
-    private void validateAccompanyPostOwnership(MemberEntity memberEntity, AccompanyPostEntity accompanyPostEntity) {
-        if (!memberEntity.getId().equals(accompanyPostEntity.getMemberEntity().getId())) {
+    private void validateAccompanyPostOwnership(MemberEntity memberEntity, ChatRoomEntity chatRoom) {
+        if (!memberEntity.getId().equals(chatRoom.getCurrentLeader().getMember().getId())) {
             throw new MemberNotOwnerException();
         }
     }
