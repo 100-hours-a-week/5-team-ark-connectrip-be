@@ -1,11 +1,12 @@
 package connectripbe.connectrip_be.chat.service;
 
-import connectripbe.connectrip_be.chat.dto.ChatMessageDto;
+import connectripbe.connectrip_be.chat.dto.ChatMessageRequest;
+import connectripbe.connectrip_be.chat.dto.ChatMessageResponse;
 import java.util.List;
 
 public interface ChatMessageService {
 
-    ChatMessageDto saveMessage(ChatMessageDto chatMessage);
+    ChatMessageResponse saveMessage(ChatMessageRequest chatMessage);
 
-    List<ChatMessageDto> getMessages(Long chatRoomId);
+    List<ChatMessageResponse> getMessages(Long chatRoomId);
 }

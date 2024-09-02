@@ -1,13 +1,17 @@
 package connectripbe.connectrip_be.chat.service.impl;
 
-import connectripbe.connectrip_be.chat.dto.ChatMessageDto;
+import connectripbe.connectrip_be.chat.dto.ChatMessageRequest;
+import connectripbe.connectrip_be.chat.dto.ChatMessageResponse;
 import connectripbe.connectrip_be.chat.entity.ChatMessage;
 import connectripbe.connectrip_be.chat.entity.ChatRoomEntity;
+import connectripbe.connectrip_be.chat.entity.type.MessageType;
 import connectripbe.connectrip_be.chat.repository.ChatMessageRepository;
 import connectripbe.connectrip_be.chat.repository.ChatRoomRepository;
 import connectripbe.connectrip_be.chat.service.ChatMessageService;
 import connectripbe.connectrip_be.global.exception.GlobalException;
 import connectripbe.connectrip_be.global.exception.type.ErrorCode;
+import connectripbe.connectrip_be.member.entity.MemberEntity;
+import connectripbe.connectrip_be.member.repository.MemberJpaRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,19 +22,22 @@ public class ChatMessageServiceImpl implements ChatMessageService {
 
     private final ChatMessageRepository chatMessageRepository;
     private final ChatRoomRepository chatRoomRepository;
+    private final MemberJpaRepository memberJpaRepository;
 
     @Override
-    public ChatMessageDto saveMessage(ChatMessageDto chatMessageDto) {
+    public ChatMessageResponse saveMessage(ChatMessageRequest request) {
+        // 채팅 수신 유저 정보 조회
+        MemberEntity member = memberJpaRepository.findById(request.senderId())
+                .orElseThrow(() -> new GlobalException(ErrorCode.USER_NOT_FOUND));
+
         ChatMessage chatMessage =
                 ChatMessage.builder()
-                        .id(chatMessageDto.id())
-                        .type(chatMessageDto.type())
-                        .chatRoomId(chatMessageDto.chatRoomId())
-                        .senderId(chatMessageDto.senderId())
-                        .senderNickname(chatMessageDto.senderNickname())
-                        .senderProfileImage(chatMessageDto.senderProfileImage())
-                        .content(chatMessageDto.content())
-                        .createdAt(chatMessageDto.createdAt())
+                        .type(MessageType.TALK)
+                        .chatRoomId(request.chatRoomId())
+                        .senderId(request.senderId())
+                        .senderNickname(member.getNickname())
+                        .senderProfileImage(member.getProfileImagePath())
+                        .content(request.content())
                         .build();
 
         ChatMessage saved = chatMessageRepository.save(chatMessage);
@@ -42,15 +49,15 @@ public class ChatMessageServiceImpl implements ChatMessageService {
         chatRoom.updateLastChatMessage(saved.getContent(), saved.getCreatedAt());
         chatRoomRepository.save(chatRoom);
 
-        return ChatMessageDto.fromEntity(saved);
+        return ChatMessageResponse.fromEntity(saved);
     }
 
     @Override
-    public List<ChatMessageDto> getMessages(Long chatRoomId) {
+    public List<ChatMessageResponse> getMessages(Long chatRoomId) {
         List<ChatMessage> chatMessages = chatMessageRepository.findByChatRoomId(chatRoomId);
 
         return chatMessages.stream()
-                .map(ChatMessageDto::fromEntity)
+                .map(ChatMessageResponse::fromEntity)
                 .toList();
     }
 }

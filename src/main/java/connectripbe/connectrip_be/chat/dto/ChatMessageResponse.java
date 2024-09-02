@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 import lombok.Builder;
 
 @Builder
-public record ChatMessageDto(
+public record ChatMessageResponse(
         String id,
         MessageType type,
         Long chatRoomId,
@@ -16,8 +16,8 @@ public record ChatMessageDto(
         String content,
         LocalDateTime createdAt
 ) {
-    public static ChatMessageDto fromEntity(ChatMessage chatMessage) {
-        return ChatMessageDto.builder()
+    public static ChatMessageResponse fromEntity(ChatMessage chatMessage) {
+        return ChatMessageResponse.builder()
                 .id(chatMessage.getId())
                 .type(chatMessage.getType())
                 .chatRoomId(chatMessage.getChatRoomId())
