@@ -2,11 +2,10 @@ package connectripbe.connectrip_be.auth.config;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
-
 import connectripbe.connectrip_be.auth.jwt.JwtAccessDeniedHandler;
 import connectripbe.connectrip_be.auth.jwt.JwtAuthenticationEntryPoint;
 import connectripbe.connectrip_be.auth.jwt.JwtAuthenticationFilter;
-
+import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,8 +20,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-import java.util.Arrays;
 
 @Configuration
 @EnableWebSecurity
@@ -59,8 +56,8 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList(
                 "http://localhost:3000",
-                "https://dev.connectrip.kro.kr",
-                "https://connectrip.kro.kr"
+                "https://dev.connectrip.travel/",
+                "https://connectrip.travel/"
         ));
         configuration.addAllowedMethod("*");
         configuration.addAllowedHeader("*");
