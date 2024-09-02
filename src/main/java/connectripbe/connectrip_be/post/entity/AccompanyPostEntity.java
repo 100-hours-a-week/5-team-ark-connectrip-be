@@ -9,7 +9,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+
 import jakarta.persistence.Lob;
+
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
@@ -45,7 +47,6 @@ public class AccompanyPostEntity extends BaseEntity {
 
     private String accompanyArea;
 
-    // fixme-noah: customUrl 임시 보류
     private String customUrl;
 
     // fixme-noah: urlQrPath 임시 보류
@@ -70,7 +71,7 @@ public class AccompanyPostEntity extends BaseEntity {
     }
 
     public void updateAccompanyPost(String title, LocalDateTime startDate, LocalDateTime endDate, String accompanyArea,
-                                    String content, String customUrl) {
+                                    String content) {
         this.title = title;
         this.startDate = startDate;
         this.endDate = endDate;
