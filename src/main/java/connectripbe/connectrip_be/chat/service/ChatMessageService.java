@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface ChatMessageService {
 
-    ChatMessageResponse saveMessage(ChatMessageRequest chatMessage);
+    ChatMessageResponse saveMessage(ChatMessageRequest chatMessage, Long chatRoomId);
 
     List<ChatMessageResponse> getMessages(Long chatRoomId);
 }
