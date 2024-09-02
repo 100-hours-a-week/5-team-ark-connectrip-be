@@ -1,6 +1,7 @@
 package connectripbe.connectrip_be.chat.web;
 
-import connectripbe.connectrip_be.chat.dto.ChatMessageDto;
+import connectripbe.connectrip_be.chat.dto.ChatMessageRequest;
+import connectripbe.connectrip_be.chat.dto.ChatMessageResponse;
 import connectripbe.connectrip_be.chat.service.ChatMessageService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -20,13 +21,13 @@ public class ChatMessageController {
     private final SimpMessagingTemplate simpMessagingTemplate;
 
     @MessageMapping("/chat/message")
-    public void senMessage(@Payload ChatMessageDto chatMessage) {
-        ChatMessageDto savedMessage = chatMessageService.saveMessage(chatMessage);
+    public void senMessage(@Payload ChatMessageRequest chatMessage) {
+        ChatMessageResponse savedMessage = chatMessageService.saveMessage(chatMessage);
         simpMessagingTemplate.convertAndSend("/sub/chat/room/" + savedMessage.chatRoomId(), savedMessage);
     }
 
     @GetMapping("/api/v1/chatRoom/{chatRoomId}/messages")
-    public ResponseEntity<List<ChatMessageDto>> getChatRoomMessages(@PathVariable Long chatRoomId) {
+    public ResponseEntity<List<ChatMessageResponse>> getChatRoomMessages(@PathVariable Long chatRoomId) {
         return ResponseEntity.ok(chatMessageService.getMessages(chatRoomId));
     }
 }

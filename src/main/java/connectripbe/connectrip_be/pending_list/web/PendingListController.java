@@ -67,7 +67,7 @@ public class PendingListController {
     }
 
     // 사용자가 본인이 신청한 동행 신청 취소
-    @PostMapping("/cancel/{memberId}")
+    @PostMapping("/cancel")
     public ResponseEntity<PendingResponse> cancelPending(
             @AuthenticationPrincipal Long memberId,
             @PathVariable Long id
