@@ -41,7 +41,9 @@ public class SecurityConfig {
                         sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry ->
-                        authorizationManagerRequestMatcherRegistry.anyRequest().permitAll())
+                        authorizationManagerRequestMatcherRegistry
+                                .requestMatchers("/ws/**").permitAll()
+                                .anyRequest().permitAll())
                 .exceptionHandling(httpSecurityExceptionHandlingConfigurer -> {
                     httpSecurityExceptionHandlingConfigurer.authenticationEntryPoint(jwtAuthenticationEntryPoint);
                     httpSecurityExceptionHandlingConfigurer.accessDeniedHandler(jwtAccessDeniedHandler);
@@ -57,7 +59,10 @@ public class SecurityConfig {
         configuration.setAllowedOrigins(Arrays.asList(
                 "http://localhost:3000",
                 "https://dev.connectrip.travel/",
-                "https://connectrip.travel/"
+                "https://connectrip.travel/",
+                "ws://localhost:3000",  // WebSocket for local development
+                "wss://dev.connectrip.travel/",  // Secure WebSocket for development environment
+                "wss://connectrip.travel/"  // Secure WebSocket for production environment
         ));
         configuration.addAllowedMethod("*");
         configuration.addAllowedHeader("*");
