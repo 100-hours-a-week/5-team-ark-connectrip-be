@@ -9,9 +9,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-
-import jakarta.persistence.Lob;
-
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
@@ -52,8 +49,7 @@ public class AccompanyPostEntity extends BaseEntity {
     // fixme-noah: urlQrPath 임시 보류
     private String urlQrPath;
 
-    @Lob
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
     // fixme-eric 동행 요청 상태 임시보류
