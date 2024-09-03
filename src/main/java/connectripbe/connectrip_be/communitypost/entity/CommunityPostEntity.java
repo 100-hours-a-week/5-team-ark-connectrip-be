@@ -11,12 +11,12 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
 
 @Entity
 @Table(name = "Community_post")
@@ -28,7 +28,7 @@ public class CommunityPostEntity extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member__id", nullable = false)
@@ -39,5 +39,8 @@ public class CommunityPostEntity extends BaseEntity {
 
     @Column(nullable = false)
     private String content;
+
+    @Column
+    private LocalDateTime deletedAt;
 
 }
