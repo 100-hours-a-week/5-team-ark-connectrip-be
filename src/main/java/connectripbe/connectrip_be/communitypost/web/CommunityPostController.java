@@ -36,7 +36,7 @@ public class CommunityPostController {
             @AuthenticationPrincipal Long memberId,
             @RequestBody CreateCommunityPostRequest request) {
         CommunityPostResponse response = communityPostService.createPost(request, memberId);
-        return ResponseEntity.status(201).body(response);
+        return ResponseEntity.status(200).body(response);
     }
 
     /**
