@@ -5,6 +5,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
 import connectripbe.connectrip_be.auth.jwt.JwtAccessDeniedHandler;
 import connectripbe.connectrip_be.auth.jwt.JwtAuthenticationEntryPoint;
 import connectripbe.connectrip_be.auth.jwt.JwtAuthenticationFilter;
+import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,6 +17,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
@@ -49,25 +53,25 @@ public class SecurityConfig {
         return httpSecurity.build();
     }
 
-//    @Bean
-//    public CorsConfigurationSource corsConfigurationSource() {
-//        CorsConfiguration configuration = new CorsConfiguration();
-//        configuration.setAllowedOrigins(Arrays.asList(
-//                "http://localhost:3000",
-//                "https://dev.connectrip.travel/",
-//                "https://connectrip.travel/",
-//                "ws://localhost:3000",  // WebSocket for local development
-//                "wss://dev.connectrip.travel/",  // Secure WebSocket for development environment
-//                "wss://connectrip.travel/"  // Secure WebSocket for production environment
-//        ));
-//        configuration.addAllowedMethod("*");
-//        configuration.addAllowedHeader("*");
-//        configuration.setAllowCredentials(true);
-//
-//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-//        source.registerCorsConfiguration("/**", configuration);
-//        return source;
-//    }
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(Arrays.asList(
+                "http://localhost:3000",
+                "https://dev.connectrip.travel/",
+                "https://connectrip.travel/",
+                "ws://localhost:3000",  // WebSocket for local development
+                "wss://dev.connectrip.travel/",  // Secure WebSocket for development environment
+                "wss://connectrip.travel/"  // Secure WebSocket for production environment
+        ));
+        configuration.addAllowedMethod("*");
+        configuration.addAllowedHeader("*");
+        configuration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
