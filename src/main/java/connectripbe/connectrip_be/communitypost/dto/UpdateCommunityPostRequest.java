@@ -1,5 +1,6 @@
 package connectripbe.connectrip_be.communitypost.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,6 +10,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class UpdateCommunityPostRequest {
 
+    @NotBlank
     private String title;
+
+    @NotBlank
     private String content;
 }
