@@ -32,8 +32,7 @@ public class CommunityPostServiceImpl implements CommunityPostService {
      */
     @Override
     public CommunityPostResponse createPost(CreateCommunityPostRequest request, Long memberId) {
-        MemberEntity memberEntity = memberJpaRepository.findById(memberId)
-                .orElseThrow(() -> new GlobalException(ErrorCode.NOT_FOUND_MEMBER));
+        MemberEntity memberEntity = findMemberByIdAndValidate(memberId);
 
         CommunityPostEntity post = CommunityPostEntity.builder()
                 .memberEntity(memberEntity)
@@ -56,11 +55,8 @@ public class CommunityPostServiceImpl implements CommunityPostService {
      */
     @Override
     public CommunityPostResponse updatePost(Long memberId, Long postId, UpdateCommunityPostRequest request) {
-        MemberEntity memberEntity = memberJpaRepository.findById(memberId)
-                .orElseThrow(() -> new GlobalException(ErrorCode.NOT_FOUND_MEMBER));
-
-        CommunityPostEntity postEntity = communityPostRepository.findByIdAndDeletedAtIsNull(postId)
-                .orElseThrow(() -> new GlobalException(ErrorCode.POST_NOT_FOUND));
+        MemberEntity memberEntity = findMemberByIdAndValidate(memberId);
+        CommunityPostEntity postEntity = findPostByIdAndValidate(postId);
 
         // 게시글 작성자와 요청한 사용자가 일치하는지 확인
         validatePostOwnership(memberEntity, postEntity);
@@ -87,11 +83,8 @@ public class CommunityPostServiceImpl implements CommunityPostService {
      */
     @Override
     public void deletePost(Long memberId, Long postId) {
-        MemberEntity memberEntity = memberJpaRepository.findById(memberId)
-                .orElseThrow(() -> new GlobalException(ErrorCode.NOT_FOUND_MEMBER));
-
-        CommunityPostEntity postEntity = communityPostRepository.findByIdAndDeletedAtIsNull(postId)
-                .orElseThrow(() -> new GlobalException(ErrorCode.POST_NOT_FOUND));
+        MemberEntity memberEntity = findMemberByIdAndValidate(memberId);
+        CommunityPostEntity postEntity = findPostByIdAndValidate(postId);
 
         // 게시글 작성자와 요청한 사용자가 일치하는지 확인
         validatePostOwnership(memberEntity, postEntity);
@@ -116,9 +109,7 @@ public class CommunityPostServiceImpl implements CommunityPostService {
      */
     @Override
     public CommunityPostResponse readPost(Long postId) {
-        CommunityPostEntity postEntity = communityPostRepository.findByIdAndDeletedAtIsNull(postId)
-                .orElseThrow(() -> new GlobalException(ErrorCode.POST_NOT_FOUND));
-
+        CommunityPostEntity postEntity = findPostByIdAndValidate(postId);
         return CommunityPostResponse.fromEntity(postEntity);
     }
 
@@ -145,5 +136,27 @@ public class CommunityPostServiceImpl implements CommunityPostService {
         if (!postEntity.getMemberEntity().getId().equals(memberEntity.getId())) {
             throw new GlobalException(ErrorCode.MEMBER_NOT_OWNER_EXCEPTION);
         }
+    }
+
+    /**
+     * memberId로 MemberEntity를 조회하고, 존재하지 않으면 예외를 발생시키는 메서드.
+     *
+     * @param memberId 조회할 사용자의 ID
+     * @return 조회된 MemberEntity 객체
+     */
+    private MemberEntity findMemberByIdAndValidate(Long memberId) {
+        return memberJpaRepository.findById(memberId)
+                .orElseThrow(() -> new GlobalException(ErrorCode.NOT_FOUND_MEMBER));
+    }
+
+    /**
+     * postId로 CommunityPostEntity를 조회하고, 존재하지 않으면 예외를 발생시키는 메서드.
+     *
+     * @param postId 조회할 게시글의 ID
+     * @return 조회된 CommunityPostEntity 객체
+     */
+    private CommunityPostEntity findPostByIdAndValidate(Long postId) {
+        return communityPostRepository.findByIdAndDeletedAtIsNull(postId)
+                .orElseThrow(() -> new GlobalException(ErrorCode.POST_NOT_FOUND));
     }
 }
