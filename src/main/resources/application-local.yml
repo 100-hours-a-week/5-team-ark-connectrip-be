@@ -22,12 +22,12 @@ spring:
       port: ${LOCAL_REDIS_PORT}
 
     mongodb:
+      uri: mongodb://${LOCAL_MONGODB_USERNAME}:${LOCAL_MONGODB_PASSWORD}@${LOCAL_MONGODB_HOST}:${LOCAL_MONGODB_PORT}/${LOCAL_MONGODB_DATABASE}?authSource=admin
       host: ${LOCAL_MONGODB_HOST}
       port: ${LOCAL_MONGODB_PORT}
       database: ${LOCAL_MONGODB_DATABASE}
-      username: ${LOCAL_MONGODB_USERNAME}
-      password: ${LOCAL_MONGODB_PASSWORD}
-
+      auto-index-creation: true
+      authentication-database: admin
 
   auth:
     success-redirect-url: ${LOCAL_KAKAO_SUCCESS_REDIRECT_URL}
