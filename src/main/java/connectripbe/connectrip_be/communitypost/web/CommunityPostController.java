@@ -8,7 +8,6 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -63,7 +62,7 @@ public class CommunityPostController {
      * @param postId   삭제할 게시글의 ID
      * @return 삭제 결과로 빈 응답을 반환
      */
-    @DeleteMapping("/{postId}")
+    @PostMapping("/{postId}/delete")
     public ResponseEntity<Void> deletePost(
             @AuthenticationPrincipal Long memberId,
             @PathVariable Long postId) {
