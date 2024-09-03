@@ -3,6 +3,7 @@ package connectripbe.connectrip_be.communitypost.service;
 import connectripbe.connectrip_be.communitypost.dto.CommunityPostResponse;
 import connectripbe.connectrip_be.communitypost.dto.CreateCommunityPostRequest;
 import connectripbe.connectrip_be.communitypost.dto.UpdateCommunityPostRequest;
+import java.util.List;
 
 public interface CommunityPostService {
 
@@ -13,4 +14,7 @@ public interface CommunityPostService {
     void deletePost(Long memberId, Long postId);
 
     CommunityPostResponse readPost(Long postId);
+
+    List<CommunityPostResponse> getAllPosts();
+
 }

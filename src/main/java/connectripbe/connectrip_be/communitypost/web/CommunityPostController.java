@@ -4,11 +4,12 @@ import connectripbe.connectrip_be.communitypost.dto.CommunityPostResponse;
 import connectripbe.connectrip_be.communitypost.dto.CreateCommunityPostRequest;
 import connectripbe.connectrip_be.communitypost.dto.UpdateCommunityPostRequest;
 import connectripbe.connectrip_be.communitypost.service.CommunityPostService;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -35,7 +36,7 @@ public class CommunityPostController {
             @AuthenticationPrincipal Long memberId,
             @RequestBody CreateCommunityPostRequest request) {
         CommunityPostResponse response = communityPostService.createPost(request, memberId);
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
+        return ResponseEntity.status(201).body(response);
     }
 
     /**
@@ -68,5 +69,28 @@ public class CommunityPostController {
             @PathVariable Long postId) {
         communityPostService.deletePost(memberId, postId);
         return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * 특정 게시글을 조회하는 엔드포인트. 주어진 게시글 ID에 해당하는 게시글을 반환합니다.
+     *
+     * @param postId 조회할 게시글의 ID
+     * @return 조회된 게시글의 정보를 담은 CommunityPostResponse 객체
+     */
+    @GetMapping("/{postId}")
+    public ResponseEntity<CommunityPostResponse> readPost(@PathVariable Long postId) {
+        CommunityPostResponse response = communityPostService.readPost(postId);
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * 모든 게시글을 조회하는 엔드포인트. 삭제되지 않은 모든 게시글을 리스트로 반환합니다.
+     *
+     * @return 모든 게시글의 정보를 담은 List<CommunityPostResponse> 객체
+     */
+    @GetMapping
+    public ResponseEntity<List<CommunityPostResponse>> getAllPosts() {
+        List<CommunityPostResponse> response = communityPostService.getAllPosts();
+        return ResponseEntity.ok(response);
     }
 }

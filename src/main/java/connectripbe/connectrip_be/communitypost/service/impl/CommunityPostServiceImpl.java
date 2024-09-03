@@ -11,6 +11,8 @@ import connectripbe.connectrip_be.global.exception.type.ErrorCode;
 import connectripbe.connectrip_be.member.entity.MemberEntity;
 import connectripbe.connectrip_be.member.repository.MemberJpaRepository;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -112,7 +114,7 @@ public class CommunityPostServiceImpl implements CommunityPostService {
     }
 
     /**
-     * 주어진 게시글 ID로 게시글을 조회하는 메서드. 만약 해당 게시글이 존재하지 않거나 삭제된 경우 GlobalException을 발생시킵니다.
+     * 특정 게시글을 조회하는 메서드. 게시글 ID를 통해 게시글을 조회하고, 존재하지 않거나 삭제된 경우 예외를 발생시킵니다.
      *
      * @param postId 조회할 게시글의 ID
      * @return 조회된 게시글의 정보를 담은 CommunityPostResponse 객체
@@ -124,6 +126,20 @@ public class CommunityPostServiceImpl implements CommunityPostService {
                 .orElseThrow(() -> new GlobalException(ErrorCode.POST_NOT_FOUND));
 
         return CommunityPostResponse.fromEntity(postEntity);
+    }
+
+    /**
+     * 모든 게시글을 조회하는 메서드. 삭제되지 않은 모든 게시글을 조회하여 반환합니다.
+     *
+     * @return 모든 게시글의 정보를 담은 List<CommunityPostResponse> 객체
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List<CommunityPostResponse> getAllPosts() {
+        List<CommunityPostEntity> posts = communityPostRepository.findAllByDeletedAtIsNullOrderByCreatedAtDesc();
+        return posts.stream()
+                .map(CommunityPostResponse::fromEntity)
+                .collect(Collectors.toList());
     }
 
     /**
