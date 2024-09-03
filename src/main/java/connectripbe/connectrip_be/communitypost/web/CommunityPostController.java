@@ -35,7 +35,7 @@ public class CommunityPostController {
             @AuthenticationPrincipal Long memberId,
             @RequestBody CreateCommunityPostRequest request) {
         CommunityPostResponse response = communityPostService.createPost(request, memberId);
-        return ResponseEntity.status(200).body(response);
+        return ResponseEntity.ok(response);
     }
 
     /**
@@ -67,7 +67,7 @@ public class CommunityPostController {
             @AuthenticationPrincipal Long memberId,
             @PathVariable Long postId) {
         communityPostService.deletePost(memberId, postId);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().build();
     }
 
     /**
