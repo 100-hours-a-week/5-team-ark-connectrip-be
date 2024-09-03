@@ -15,10 +15,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class CommunityPostServiceImpl implements CommunityPostService {
 
@@ -33,7 +31,6 @@ public class CommunityPostServiceImpl implements CommunityPostService {
      * @return 생성된 게시글의 정보를 담은 CommunityPostResponse 객체
      */
     @Override
-    @Transactional
     public CommunityPostResponse createPost(CreateCommunityPostRequest request, Long memberId) {
         MemberEntity memberEntity = memberJpaRepository.findById(memberId)
                 .orElseThrow(() -> new GlobalException(ErrorCode.NOT_FOUND_MEMBER));
@@ -58,7 +55,6 @@ public class CommunityPostServiceImpl implements CommunityPostService {
      * @return 수정된 게시글의 정보를 담은 CommunityPostResponse 객체
      */
     @Override
-    @Transactional
     public CommunityPostResponse updatePost(Long memberId, Long postId, UpdateCommunityPostRequest request) {
         MemberEntity memberEntity = memberJpaRepository.findById(memberId)
                 .orElseThrow(() -> new GlobalException(ErrorCode.NOT_FOUND_MEMBER));
@@ -90,7 +86,6 @@ public class CommunityPostServiceImpl implements CommunityPostService {
      * @param postId   삭제할 게시글의 ID
      */
     @Override
-    @Transactional
     public void deletePost(Long memberId, Long postId) {
         MemberEntity memberEntity = memberJpaRepository.findById(memberId)
                 .orElseThrow(() -> new GlobalException(ErrorCode.NOT_FOUND_MEMBER));
@@ -120,7 +115,6 @@ public class CommunityPostServiceImpl implements CommunityPostService {
      * @return 조회된 게시글의 정보를 담은 CommunityPostResponse 객체
      */
     @Override
-    @Transactional(readOnly = true)
     public CommunityPostResponse readPost(Long postId) {
         CommunityPostEntity postEntity = communityPostRepository.findByIdAndDeletedAtIsNull(postId)
                 .orElseThrow(() -> new GlobalException(ErrorCode.POST_NOT_FOUND));
@@ -134,7 +128,6 @@ public class CommunityPostServiceImpl implements CommunityPostService {
      * @return 모든 게시글의 정보를 담은 List<CommunityPostResponse> 객체
      */
     @Override
-    @Transactional(readOnly = true)
     public List<CommunityPostResponse> getAllPosts() {
         List<CommunityPostEntity> posts = communityPostRepository.findAllByDeletedAtIsNullOrderByCreatedAtDesc();
         return posts.stream()
