@@ -7,6 +7,6 @@ public record ChatMessageRequest(
         Long chatRoomId,
         Long senderId,
         String content,
-        Boolean messageFlag
+        Boolean infoFlag
 ) {
 }

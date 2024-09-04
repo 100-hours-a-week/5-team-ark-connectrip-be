@@ -31,7 +31,7 @@ public class ChatMessageServiceImpl implements ChatMessageService {
                 .orElseThrow(() -> new GlobalException(ErrorCode.USER_NOT_FOUND));
 
         // 유저가 보낸 메세지 전송 여부
-        boolean messageFlag = (request.messageFlag() != null) ? request.messageFlag() : true;
+        boolean infoFlag = (request.infoFlag() != null) ? request.infoFlag() : false;
 
         ChatMessage chatMessage =
                 ChatMessage.builder()
@@ -41,7 +41,7 @@ public class ChatMessageServiceImpl implements ChatMessageService {
                         .senderNickname(member.getNickname())
                         .senderProfileImage(member.getProfileImagePath())
                         .content(request.content())
-                        .messageFlag(messageFlag)
+                        .infoFlag(infoFlag)
                         .build();
 
         ChatMessage saved = chatMessageRepository.save(chatMessage);
