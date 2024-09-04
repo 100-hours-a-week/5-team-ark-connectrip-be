@@ -49,7 +49,7 @@ public class CommunityCommentController {
             @RequestBody @Valid CommunityCommentRequest request
     ) {
         CommunityCommentResponse response = communityCommentService.createComment(memberId, request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     /**
