@@ -127,7 +127,19 @@ public class CommunityPostServiceImpl implements CommunityPostService {
     }
 
     /**
-     * 게시글 작성자와 요청한 사용자가 일치하는지 확인하는 메서드. 일치하지 않으면 GlobalException을 발생.
+     * 단어를 통해 모든 게시글을 조회하는 메서드. 삭제되지 않은 모든 게시글을 조회하여 반환합니다.
+     *
+     * @param query 검색할 단어
+     * @return 모든 게시글의 정보를 담은 List<CommunityPostResponse> 객체
+     */
+    @Override
+    public List<CommunityPostResponse> getAllPostsByQuery(String query) {
+        return communityPostRepository.findAllByQuery(query).stream()
+                .map(CommunityPostResponse::fromEntity).toList();
+    }
+
+    /**
+     * 게시글 작성자와 요청한 사용자가 일치하는지 확인하는 메서드. 만약 일치하지 않으면 GlobalException을 발생시킵니다.
      *
      * @param memberEntity 요청한 사용자의 MemberEntity 객체
      * @param postEntity   조회된 CommunityPostEntity 객체

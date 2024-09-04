@@ -17,4 +17,5 @@ public interface CommunityPostService {
 
     List<CommunityPostResponse> getAllPosts();
 
+    List<CommunityPostResponse> getAllPostsByQuery(String query);
 }
