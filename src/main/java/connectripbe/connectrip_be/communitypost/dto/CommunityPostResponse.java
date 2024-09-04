@@ -1,47 +1,32 @@
 package connectripbe.connectrip_be.communitypost.dto;
 
 import connectripbe.connectrip_be.communitypost.entity.CommunityPostEntity;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
 public class CommunityPostResponse {
 
-    private Long id;
-    private Long memberId;
-    private String title;
-    private String content;
+    private Long id;                // 게시글의 ID
+    private Long memberId;           // 작성자의 ID
+    private String nickname;         // 작성자의 닉네임
+    private String title;            // 게시글 제목
+    private String content;          // 게시글 내용
+    private String createdAt;        // 생성 일시
+    private String profileImagePath; // 작성자의 프로필 이미지 경로 (nullable)
 
-    private String createdAt;
-    private String updatedAt;
-
-    private static final DateTimeFormatter UTC_FORMATTER = DateTimeFormatter.ofPattern(
-            "yyyy-MM-dd'T'HH:mm:ss'Z'");
-
-    private static String formatToUTC(LocalDateTime dateTime) {
-        if (dateTime == null) {
-            return null;
-        }
-        return dateTime.atZone(ZoneId.systemDefault())
-                .format(UTC_FORMATTER);
-    }
-
-    public static CommunityPostResponse fromEntity(CommunityPostEntity entity) {
+    public static CommunityPostResponse fromEntity(CommunityPostEntity post) {
         return CommunityPostResponse.builder()
-                .id(entity.getId())
-                .memberId(entity.getMemberEntity().getId())
-                .title(entity.getTitle())
-                .content(entity.getContent())
-                .createdAt(formatToUTC(entity.getCreatedAt()))
-                .updatedAt(formatToUTC(entity.getUpdatedAt()))
+                .id(post.getId())
+                .memberId(post.getMemberEntity().getId())
+                .nickname(post.getMemberEntity().getNickname())  // MemberEntity에서 가져옴
+                .title(post.getTitle())
+                .content(post.getContent())
+                .createdAt(post.getCreatedAt().toString())       // 필요 시 포맷 조정 가능
+                .profileImagePath(post.getMemberEntity().getProfileImagePath()) // MemberEntity에서 가져옴
                 .build();
     }
 }
