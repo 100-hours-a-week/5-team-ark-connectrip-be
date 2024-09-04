@@ -32,7 +32,7 @@ public class AccompanyPostEntity extends BaseEntity {
     private long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member__id", nullable = false)
+    @JoinColumn(name = "member_id", nullable = false)
     private MemberEntity memberEntity;
 
     @Column(nullable = false)

@@ -8,8 +8,6 @@ import connectripbe.connectrip_be.auth.service.AuthService;
 import connectripbe.connectrip_be.global.exception.GlobalException;
 import connectripbe.connectrip_be.global.exception.type.ErrorCode;
 import connectripbe.connectrip_be.member.entity.MemberEntity;
-import connectripbe.connectrip_be.member.entity.type.MemberLoginType;
-import connectripbe.connectrip_be.member.entity.type.MemberRoleType;
 import connectripbe.connectrip_be.member.repository.MemberJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -53,18 +51,11 @@ public class KakaoService {
             // 카카오로 처음 로그인(회원가입) 하는 경우, 사용자 정보를 반환하여 추가 정보 입력을 유도한다.
 
             if (ErrorCode.NOT_FOUND_MEMBER.equals(e.getErrorCode())) {
-                MemberEntity newMemberEntity = MemberEntity.builder()
-                        .email(userInfo.getKakaoAccount().getEmail())
-                        .profileImagePath(
-                                getProfileImagePath(userInfo.getKakaoAccount().getKakaoProfile()
-                                        .getImagePath()))
-                        .loginType(MemberLoginType.KAKAO)
-                        .roleType(MemberRoleType.USER) // 기본 사용자 권한 설정
-                        .build();
-                memberJpaRepository.save(newMemberEntity);
+                String memberEmail = userInfo.getKakaoAccount().getEmail();
+                String memberProfileImagePath = getProfileImagePath(
+                        userInfo.getKakaoAccount().getKakaoProfile().getImagePath());
 
-                // 토큰 생성 및 반환
-                return authService.generateToken(newMemberEntity.getId());
+                return authService.generateKaKaoTempToken(memberEmail, memberProfileImagePath);
             } else {
                 throw e; // USER_NOT_FOUND 가 아닌 다른 GlobalException 은 그대로 다시 throw.
             }

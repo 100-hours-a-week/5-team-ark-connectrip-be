@@ -9,7 +9,13 @@ import connectripbe.connectrip_be.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/v1/members")
@@ -42,11 +48,14 @@ public class MemberController {
     // fixme-noah: 2024-08-21, 엉망 코드
     @PostMapping("/first")
     public ResponseEntity<GlobalResponse<MemberHeaderInfoDto>> firstUpdateMember(
-            @AuthenticationPrincipal Long id,
+            @CookieValue(value = "tempToken") String tempTokenCookie,
             @RequestBody FirstUpdateMemberRequest request
     ) {
-        GlobalResponse<MemberHeaderInfoDto> firstUpdateMemberResponse = memberService.getFirstUpdateMemberResponse(id, request);
+        GlobalResponse<MemberHeaderInfoDto> firstUpdateMemberResponse = memberService.getFirstUpdateMemberResponse(
+                tempTokenCookie,
+                request);
 
-        return ResponseEntity.status(firstUpdateMemberResponse.message().equals("SUCCESS") ? 200 : 409).body(firstUpdateMemberResponse);
+        return ResponseEntity.status(firstUpdateMemberResponse.message().equals("SUCCESS") ? 200 : 409)
+                .body(firstUpdateMemberResponse);
     }
 }
