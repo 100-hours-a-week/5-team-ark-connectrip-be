@@ -85,7 +85,6 @@ public class CommunityPostServiceImpl implements CommunityPostService {
                 .memberEntity(postEntity.getMemberEntity())  // 작성자 정보 유지
                 .title(postEntity.getTitle())  // 제목 유지
                 .content(postEntity.getContent())  // 내용 유지
-                .deletedAt(LocalDateTime.now())  // 소프트 삭제 처리
                 .build();
 
         communityPostRepository.save(postEntity);
