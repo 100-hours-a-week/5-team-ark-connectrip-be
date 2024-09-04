@@ -59,10 +59,10 @@ public class CommunityCommentController {
      * @param commentId 삭제할 댓글의 ID
      * @return 204 No Content 상태 코드를 담은 ResponseEntity
      */
-    @PostMapping("/{id}")
+    @PostMapping("/{commentId}/delete")
     public ResponseEntity<?> deleteComment(
             @AuthenticationPrincipal Long memberId,
-            @PathVariable("id") Long commentId
+            @PathVariable("commentId") Long commentId
     ) {
         communityCommentService.deleteComment(memberId, commentId);
         return ResponseEntity.ok().build();
