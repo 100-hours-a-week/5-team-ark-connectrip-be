@@ -31,6 +31,7 @@ spring:
 
   auth:
     success-redirect-url: ${LOCAL_KAKAO_SUCCESS_REDIRECT_URL}
+    first-login-redirect-url: ${LOCAL_KAKAO_FIRST_LOGIN_REDIRECT_URL}
     kakao:
       client-id: ${LOCAL_KAKAO_CLIENT_ID}
       redirect-uri: ${LOCAL_KAKAO_REDIRECT_URI}
