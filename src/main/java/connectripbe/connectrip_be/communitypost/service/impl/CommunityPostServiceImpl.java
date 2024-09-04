@@ -10,7 +10,6 @@ import connectripbe.connectrip_be.global.exception.GlobalException;
 import connectripbe.connectrip_be.global.exception.type.ErrorCode;
 import connectripbe.connectrip_be.member.entity.MemberEntity;
 import connectripbe.connectrip_be.member.repository.MemberJpaRepository;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -61,15 +60,7 @@ public class CommunityPostServiceImpl implements CommunityPostService {
         // 게시글 작성자와 요청한 사용자가 일치하는지 확인
         validatePostOwnership(memberEntity, postEntity);
 
-        // 게시글 내용 업데이트
-        postEntity = CommunityPostEntity.builder()
-                .id(postEntity.getId())  // 기존 게시글의 ID 유지
-                .memberEntity(memberEntity)  // 작성자 정보 유지
-                .title(request.getTitle())   // 제목 업데이트
-                .content(request.getContent()) // 내용 업데이트
-                .deletedAt(postEntity.getDeletedAt())  // 기존 삭제 상태 유지
-                .build();
-
+        postEntity.updateCommunityPost(request);
         communityPostRepository.save(postEntity);
 
         return CommunityPostResponse.fromEntity(postEntity);
@@ -88,7 +79,6 @@ public class CommunityPostServiceImpl implements CommunityPostService {
 
         // 게시글 작성자와 요청한 사용자가 일치하는지 확인
         validatePostOwnership(memberEntity, postEntity);
-
         // 소프트 딜리트 처리: deletedAt 필드를 현재 시간으로 설정
         postEntity = CommunityPostEntity.builder()
                 .id(postEntity.getId())  // 기존 게시글의 ID 유지
