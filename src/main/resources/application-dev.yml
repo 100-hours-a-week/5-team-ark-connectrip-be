@@ -18,6 +18,13 @@ spring:
     redis:
       host: ${DEV_REDIS_HOST}
       port: ${DEV_REDIS_PORT}
+    mongodb:
+      uri: mongodb://${DEV_MONGODB_USERNAME}:${DEV_MONGODB_PASSWORD}@${DEV_MONGODB_HOST}:${DEV_MONGODB_PORT}/${DEV_MONGODB_DATABASE}?authSource=admin
+      host: ${DEV_MONGODB_HOST}
+      port: ${DEV_MONGODB_PORT}
+      database: ${DEV_MONGODB_DATABASE}
+      auto-index-creation: true
+      authentication-database: admin
 
   auth:
     success-redirect-url: ${DEV_KAKAO_SUCCESS_REDIRECT_URL}
