@@ -15,5 +15,7 @@ public interface MemberService {
     GlobalResponse<MemberHeaderInfoDto> getMemberHeaderInfo(Long id);
 
     // fixme-noah: 추후 달라지면 response 분리
-    GlobalResponse<MemberHeaderInfoDto> getFirstUpdateMemberResponse(Long id, FirstUpdateMemberRequest request);
+    GlobalResponse<MemberHeaderInfoDto> getFirstUpdateMemberResponse(
+            String tempTokenCookie,
+            FirstUpdateMemberRequest request);
 }

@@ -1,5 +1,6 @@
 package connectripbe.connectrip_be.auth.jwt;
 
+import connectripbe.connectrip_be.auth.jwt.dto.MemberEmailAndProfileImagePathDto;
 import connectripbe.connectrip_be.global.exception.GlobalException;
 import connectripbe.connectrip_be.global.exception.type.ErrorCode;
 import io.jsonwebtoken.Claims;
@@ -9,12 +10,10 @@ import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.Keys;
-
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Base64;
 import java.util.Date;
-
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -32,6 +31,10 @@ public class JwtProvider {
     @Value("${spring.jwt.access-token-expiration-time}")
     @Getter
     private int accessTokenExpirationTime;
+
+    // 5분
+    @Getter
+    private final int kakaoTempTokenExpirationTime = 300000;
 
     public String generateRefreshToken(long memberId) {
         Date now = new Date();
@@ -65,6 +68,23 @@ public class JwtProvider {
         return accessToken;
     }
 
+    public String generateKakaoTempToken(String memberEmail, String memberProfileImagePath) {
+        Date now = new Date();
+
+        Date kakaoTempTokenExpirationTime = new Date(now.getTime() + this.kakaoTempTokenExpirationTime);
+
+        String kakaoTempToken = Jwts.builder()
+                .setSubject("kakaoTempToken")
+                .claim("memberEmail", memberEmail)
+                .claim("memberProfileImagePath", memberProfileImagePath)
+                .setIssuedAt(now)
+                .setExpiration(kakaoTempTokenExpirationTime)
+                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+                .compact();
+
+        return kakaoTempToken;
+    }
+
     public boolean validateToken(String token) {
         try {
             Claims claims = this.parseClaims(token);
@@ -84,6 +104,14 @@ public class JwtProvider {
         Claims claims = parseClaims(token);
 
         return Long.parseLong(claims.getSubject());
+    }
+
+    public MemberEmailAndProfileImagePathDto getMemberProfileImagePathDtoFromToken(String token) {
+        Claims claims = parseClaims(token);
+        String memberEmail = claims.get("memberEmail", String.class);
+        String memberProfileImagePath = claims.get("memberProfileImagePath", String.class);
+
+        return new MemberEmailAndProfileImagePathDto(memberEmail, memberProfileImagePath);
     }
 
     private Claims parseClaims(String token) {
