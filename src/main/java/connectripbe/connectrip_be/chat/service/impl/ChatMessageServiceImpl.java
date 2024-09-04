@@ -30,6 +30,9 @@ public class ChatMessageServiceImpl implements ChatMessageService {
         MemberEntity member = memberJpaRepository.findById(request.senderId())
                 .orElseThrow(() -> new GlobalException(ErrorCode.USER_NOT_FOUND));
 
+        // 유저가 보낸 메세지 전송 여부
+        boolean messageFlag = (request.messageFlag() != null) ? request.messageFlag() : true;
+
         ChatMessage chatMessage =
                 ChatMessage.builder()
                         .type(MessageType.TALK)
@@ -38,6 +41,7 @@ public class ChatMessageServiceImpl implements ChatMessageService {
                         .senderNickname(member.getNickname())
                         .senderProfileImage(member.getProfileImagePath())
                         .content(request.content())
+                        .messageFlag(messageFlag)
                         .build();
 
         ChatMessage saved = chatMessageRepository.save(chatMessage);
