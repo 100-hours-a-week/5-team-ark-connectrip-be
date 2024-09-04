@@ -1,11 +1,15 @@
 package connectripbe.connectrip_be.member.web;
 
+import connectripbe.connectrip_be.auth.jwt.dto.TokenDto;
 import connectripbe.connectrip_be.global.dto.GlobalResponse;
 import connectripbe.connectrip_be.member.dto.CheckDuplicateEmailDto;
 import connectripbe.connectrip_be.member.dto.CheckDuplicateNicknameDto;
 import connectripbe.connectrip_be.member.dto.FirstUpdateMemberRequest;
 import connectripbe.connectrip_be.member.dto.MemberHeaderInfoDto;
+import connectripbe.connectrip_be.member.dto.TokenAndHeaderInfoDto;
 import connectripbe.connectrip_be.member.service.MemberService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -49,13 +53,35 @@ public class MemberController {
     @PostMapping("/first")
     public ResponseEntity<GlobalResponse<MemberHeaderInfoDto>> firstUpdateMember(
             @CookieValue(value = "tempToken") String tempTokenCookie,
-            @RequestBody FirstUpdateMemberRequest request
+            @RequestBody FirstUpdateMemberRequest request,
+            HttpServletResponse response
     ) {
-        GlobalResponse<MemberHeaderInfoDto> firstUpdateMemberResponse = memberService.getFirstUpdateMemberResponse(
-                tempTokenCookie,
+        TokenAndHeaderInfoDto tokenAndHeaderInfoDto = memberService.getFirstUpdateMemberResponse(tempTokenCookie,
                 request);
 
-        return ResponseEntity.status(firstUpdateMemberResponse.message().equals("SUCCESS") ? 200 : 409)
-                .body(firstUpdateMemberResponse);
+        addJwtToCookie(response, tokenAndHeaderInfoDto.tokenDto());
+
+        return ResponseEntity
+                .status(200)
+                .body(new GlobalResponse<>("SUCCESS", tokenAndHeaderInfoDto.memberHeaderInfoDto()));
+    }
+
+    private void addJwtToCookie(
+            HttpServletResponse response,
+            TokenDto tokenDto
+    ) {
+        Cookie refreshTokenCookie = new Cookie("refreshToken", tokenDto.getRefreshToken());
+        refreshTokenCookie.setPath("/");
+        refreshTokenCookie.setMaxAge(tokenDto.getRefreshTokenExpirationTime());
+        refreshTokenCookie.setHttpOnly(true);
+
+        response.addCookie(refreshTokenCookie);
+
+        Cookie accessTokenCookie = new Cookie("accessToken", tokenDto.getAccessToken());
+        accessTokenCookie.setPath("/");
+        accessTokenCookie.setMaxAge(tokenDto.getAccessTokenExpirationTime());
+        accessTokenCookie.setHttpOnly(true);
+
+        response.addCookie(accessTokenCookie);
     }
 }
