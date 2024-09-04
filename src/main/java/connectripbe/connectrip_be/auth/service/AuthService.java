@@ -13,4 +13,6 @@ public interface AuthService {
     TokenDto signIn(SignInDto request);
 
     TokenDto generateToken(long memberId);
+
+    TokenDto generateKaKaoTempToken(String memberEmail, String memberProfileImagePath);
 }

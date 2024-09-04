@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -92,4 +93,10 @@ public class CommunityPostController {
         List<CommunityPostResponse> response = communityPostService.getAllPosts();
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<CommunityPostResponse>> searchByQuery(@RequestParam String query) {
+        return ResponseEntity.ok(communityPostService.getAllPostsByQuery(query));
+    }
+
 }

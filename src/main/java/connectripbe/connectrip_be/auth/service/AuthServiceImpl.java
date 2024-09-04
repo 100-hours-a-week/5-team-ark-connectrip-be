@@ -9,7 +9,6 @@ import connectripbe.connectrip_be.global.exception.type.ErrorCode;
 import connectripbe.connectrip_be.global.util.aws.service.AwsS3Service;
 import connectripbe.connectrip_be.member.entity.MemberEntity;
 import connectripbe.connectrip_be.member.repository.MemberJpaRepository;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -64,6 +63,7 @@ public class AuthServiceImpl implements AuthService {
         return generateToken(memberEntity.getId());
     }
 
+    // fixme-noah, 2024-09-04: 로직 분리 필요
     @Override
     public TokenDto generateToken(long memberId) {
         String refreshToken = jwtProvider.generateRefreshToken(memberId);
@@ -75,6 +75,17 @@ public class AuthServiceImpl implements AuthService {
                 .refreshTokenExpirationTime(jwtProvider.getRefreshTokenExpirationTime() / 1000)
                 .accessToken(accessToken)
                 .accessTokenExpirationTime(jwtProvider.getAccessTokenExpirationTime() / 1000)
+                .build();
+    }
+
+    @Override
+    public TokenDto generateKaKaoTempToken(String memberEmail, String memberProfileImagePath) {
+        String kakaoTempToken = jwtProvider.generateKakaoTempToken(memberEmail, memberProfileImagePath);
+
+        return TokenDto.builder()
+                .isFirstLogin(true)
+                .tempToken(kakaoTempToken)
+                .tempTokenExpirationTime(jwtProvider.getKakaoTempTokenExpirationTime() / 1000)
                 .build();
     }
 
