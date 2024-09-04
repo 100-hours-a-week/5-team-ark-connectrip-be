@@ -14,7 +14,6 @@ import connectripbe.connectrip_be.member.repository.MemberJpaRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -34,7 +33,6 @@ public class CommunityCommentServiceImpl implements CommunityCommentService {
      * @return 생성된 댓글 정보를 담은 CommunityCommentResponse 객체
      */
     @Override
-    @Transactional
     public CommunityCommentResponse createComment(Long memberId, CommunityCommentRequest request) {
         MemberEntity member = getMember(memberId);
 
@@ -54,7 +52,6 @@ public class CommunityCommentServiceImpl implements CommunityCommentService {
      * @return 수정된 댓글 정보를 담은 CommunityCommentResponse 객체
      */
     @Override
-    @Transactional
     public CommunityCommentResponse updateComment(Long memberId, Long commentId, CommunityCommentRequest request) {
         CommunityCommentEntity comment = getComment(commentId);
 
@@ -72,13 +69,14 @@ public class CommunityCommentServiceImpl implements CommunityCommentService {
      * @param commentId 삭제할 댓글의 ID
      */
     @Override
-    @Transactional
     public void deleteComment(Long memberId, Long commentId) {
         CommunityCommentEntity comment = getComment(commentId);
 
         validateCommentAuthor(memberId, comment);
 
         comment.deleteEntity();
+
+        communityCommentRepository.save(comment);
     }
 
     /**
@@ -88,7 +86,6 @@ public class CommunityCommentServiceImpl implements CommunityCommentService {
      * @return 조회된 댓글 목록을 담은 List<CommunityCommentResponse> 객체
      */
     @Override
-    @Transactional(readOnly = true)
     public List<CommunityCommentResponse> getCommentsByPost(Long postId) {
         List<CommunityCommentEntity> comments = communityCommentRepository.findByCommunityPostEntity_IdAndDeletedAtIsNull(
                 postId);
