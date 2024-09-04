@@ -14,7 +14,7 @@ public record ChatMessageResponse(
         String senderNickname,
         String senderProfileImage,
         String content,
-        Boolean messageFlag,
+        Boolean infoFlag,
         LocalDateTime createdAt
 ) {
     public static ChatMessageResponse fromEntity(ChatMessage chatMessage) {
@@ -26,7 +26,7 @@ public record ChatMessageResponse(
                 .senderNickname(chatMessage.getSenderNickname())
                 .senderProfileImage(chatMessage.getSenderProfileImage())
                 .content(chatMessage.getContent())
-                .messageFlag(chatMessage.isMessageFlag())
+                .infoFlag(chatMessage.isInfoFlag())
                 .createdAt(chatMessage.getCreatedAt())
                 .build();
     }
