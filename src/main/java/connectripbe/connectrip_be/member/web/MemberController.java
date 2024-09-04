@@ -9,6 +9,7 @@ import connectripbe.connectrip_be.member.dto.MemberHeaderInfoDto;
 import connectripbe.connectrip_be.member.dto.TokenAndHeaderInfoDto;
 import connectripbe.connectrip_be.member.service.MemberService;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -54,12 +55,24 @@ public class MemberController {
     public ResponseEntity<GlobalResponse<MemberHeaderInfoDto>> firstUpdateMember(
             @CookieValue(value = "tempToken") String tempTokenCookie,
             @RequestBody FirstUpdateMemberRequest request,
-            HttpServletResponse response
+            HttpServletRequest httpServletRequest,
+            HttpServletResponse httpServletResponse
     ) {
         TokenAndHeaderInfoDto tokenAndHeaderInfoDto = memberService.getFirstUpdateMemberResponse(tempTokenCookie,
                 request);
 
-        addJwtToCookie(response, tokenAndHeaderInfoDto.tokenDto());
+        // tempToken 만료
+        Cookie[] cookies = httpServletRequest.getCookies();
+
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                cookie.setMaxAge(0);
+                cookie.setPath("/");
+                httpServletResponse.addCookie(cookie);
+            }
+        }
+
+        addJwtToCookie(httpServletResponse, tokenAndHeaderInfoDto.tokenDto());
 
         return ResponseEntity
                 .status(200)
