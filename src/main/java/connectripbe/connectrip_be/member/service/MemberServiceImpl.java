@@ -90,6 +90,8 @@ public class MemberServiceImpl implements MemberService {
         MemberEntity newMemberEntity = MemberEntity.builder()
                 .email(memberProfileImagePathDto.memberEmail())
                 .profileImagePath(memberProfileImagePathDto.memberProfileImagePath())
+                .nickname(request.nickname())
+                .birthDate(request.birthDate())
                 .loginType(MemberLoginType.KAKAO)
                 .roleType(MemberRoleType.USER) // 기본 사용자 권한 설정
                 .build();
