@@ -1,5 +1,6 @@
 package connectripbe.connectrip_be.chat.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
@@ -10,11 +11,14 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
+    @Value("${allowed.origins}")
+    private String allowedOrigins;
+
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         // 클라이언트가 WebSocket에 연결할 수 있는 엔드포인트를 등록.
         registry.addEndpoint("/ws/init")  // 클라이언트가 "/ws" 엔드포인트로 WebSocket 연결을 시도할 수 있도록 설정.
-                .setAllowedOrigins("http://localhost:3000")  // 허용할 도메인을 설정.
+                .setAllowedOrigins(allowedOrigins)  // 허용할 도메인을 설정.
                 .withSockJS();
     }
 

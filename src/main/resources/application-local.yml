@@ -34,3 +34,6 @@ spring:
     kakao:
       client-id: ${LOCAL_KAKAO_CLIENT_ID}
       redirect-uri: ${LOCAL_KAKAO_REDIRECT_URI}
+
+allowed:
+  origins: http://localhost:3000  # 허용할 오리진 설정

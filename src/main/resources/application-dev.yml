@@ -24,3 +24,6 @@ spring:
     kakao:
       client-id: ${DEV_KAKAO_CLIENT_ID}
       redirect-uri: ${DEV_KAKAO_REDIRECT_URI}
+
+allowed:
+  origins: ${DEV_ALLOWED_ORIGIN} # 허용할 오리진 설정
