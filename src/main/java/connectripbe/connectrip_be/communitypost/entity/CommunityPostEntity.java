@@ -1,5 +1,6 @@
 package connectripbe.connectrip_be.communitypost.entity;
 
+import connectripbe.connectrip_be.communitypost.dto.UpdateCommunityPostRequest;
 import connectripbe.connectrip_be.global.entity.BaseEntity;
 import connectripbe.connectrip_be.member.entity.MemberEntity;
 import jakarta.persistence.Column;
@@ -11,7 +12,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -40,7 +40,8 @@ public class CommunityPostEntity extends BaseEntity {
     @Column(nullable = false)
     private String content;
 
-    @Column
-    private LocalDateTime deletedAt;
-
+    public void updateCommunityPost(UpdateCommunityPostRequest request) {
+        this.title = request.getTitle();
+        this.content = request.getContent();
+    }
 }
