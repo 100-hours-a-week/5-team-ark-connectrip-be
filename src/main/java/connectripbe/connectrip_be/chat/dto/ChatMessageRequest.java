@@ -6,6 +6,7 @@ import lombok.Builder;
 public record ChatMessageRequest(
         Long chatRoomId,
         Long senderId,
-        String content
+        String content,
+        Boolean messageFlag
 ) {
 }
