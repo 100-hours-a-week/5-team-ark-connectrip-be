@@ -6,7 +6,6 @@ import connectripbe.connectrip_be.communitycomment.service.CommunityCommentServi
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -49,7 +48,7 @@ public class CommunityCommentController {
             @RequestBody @Valid CommunityCommentRequest request
     ) {
         CommunityCommentResponse response = communityCommentService.createComment(memberId, request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        return ResponseEntity.ok(response);
     }
 
     /**
@@ -59,7 +58,7 @@ public class CommunityCommentController {
      * @param commentId 삭제할 댓글의 ID
      * @return 204 No Content 상태 코드를 담은 ResponseEntity
      */
-    @PostMapping("/{id}")
+    @PostMapping("/{id}/delete")
     public ResponseEntity<?> deleteComment(
             @AuthenticationPrincipal Long memberId,
             @PathVariable("id") Long commentId
