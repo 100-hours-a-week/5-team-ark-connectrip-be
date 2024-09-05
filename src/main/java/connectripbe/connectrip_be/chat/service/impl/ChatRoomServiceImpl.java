@@ -119,7 +119,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
                 .senderId(memberId)
                 .senderNickname(leaderMember.getMember().getNickname())
                 .senderProfileImage(leaderMember.getMember().getProfileImagePath())
-                .content(leaderMember.getMember().getNickname() + "님이 채팅방에 입장하셨습니다.")
+                .content(leaderMember.getMember().getNickname() + "님이 입장하셨습니다.")
                 .infoFlag(true)
                 .build();
 
