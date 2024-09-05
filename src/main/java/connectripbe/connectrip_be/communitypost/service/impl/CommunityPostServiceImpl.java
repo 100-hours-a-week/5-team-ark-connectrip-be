@@ -79,13 +79,8 @@ public class CommunityPostServiceImpl implements CommunityPostService {
 
         // 게시글 작성자와 요청한 사용자가 일치하는지 확인
         validatePostOwnership(memberEntity, postEntity);
-        // 소프트 딜리트 처리: deletedAt 필드를 현재 시간으로 설정
-        postEntity = CommunityPostEntity.builder()
-                .id(postEntity.getId())  // 기존 게시글의 ID 유지
-                .memberEntity(postEntity.getMemberEntity())  // 작성자 정보 유지
-                .title(postEntity.getTitle())  // 제목 유지
-                .content(postEntity.getContent())  // 내용 유지
-                .build();
+
+        postEntity.deleteEntity();
 
         communityPostRepository.save(postEntity);
     }
