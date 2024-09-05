@@ -1,6 +1,9 @@
 package connectripbe.connectrip_be.communitypost.dto;
 
 import connectripbe.connectrip_be.communitypost.entity.CommunityPostEntity;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -25,8 +28,19 @@ public class CommunityPostResponse {
                 .nickname(post.getMemberEntity().getNickname())  // MemberEntity에서 가져옴
                 .title(post.getTitle())
                 .content(post.getContent())
-                .createdAt(post.getCreatedAt().toString())       // 필요 시 포맷 조정 가능
+                .createdAt(formatToUTC(post.getCreatedAt()))
                 .profileImagePath(post.getMemberEntity().getProfileImagePath()) // MemberEntity에서 가져옴
                 .build();
+    }
+
+    private static final DateTimeFormatter UTC_FORMATTER = DateTimeFormatter.ofPattern(
+            "yyyy-MM-dd'T'HH:mm:ss'Z'");
+
+    private static String formatToUTC(LocalDateTime dateTime) {
+        if (dateTime == null) {
+            return null;
+        }
+        return dateTime.atZone(ZoneId.systemDefault())
+                .format(UTC_FORMATTER);
     }
 }
