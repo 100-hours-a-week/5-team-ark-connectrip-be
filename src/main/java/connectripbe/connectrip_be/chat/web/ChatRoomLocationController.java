@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+// fixme-noah: 메서드명 수정 필요
+
 @RestController
 @RequestMapping("/api/v1/chatRoom")
 @RequiredArgsConstructor
@@ -68,5 +70,17 @@ public class ChatRoomLocationController {
         );
 
         return ResponseEntity.ok(searchChatRoomWithToggleResponse);
+    }
+
+    // 채팅방 내 위치 전송(갱신) API
+    @PatchMapping("/{chatRoomId}/locations/me")
+    public ResponseEntity<Void> updateChatRoomLocationsMe(
+            @AuthenticationPrincipal Long memberId,
+            @PathVariable Long chatRoomId,
+            @RequestBody UpdateChatRoomSharingRequest request
+    ) {
+        chatRoomLocationService.updateMyLocation(memberId, chatRoomId, request.lat(), request.lng());
+
+        return ResponseEntity.ok().build();
     }
 }

@@ -17,4 +17,10 @@ public interface ChatRoomLocationService {
             Long memberId,
             Double latitude,
             Double longitude);
+
+    void updateMyLocation(
+            Long memberId,
+            Long chatRoomId,
+            Double latitude,
+            Double longitude);
 }

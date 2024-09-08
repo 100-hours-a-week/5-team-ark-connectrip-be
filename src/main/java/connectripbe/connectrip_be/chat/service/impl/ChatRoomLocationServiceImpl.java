@@ -97,6 +97,17 @@ public class ChatRoomLocationServiceImpl implements ChatRoomLocationService {
         return searchChatRoomWithToggleResponse;
     }
 
+    @Override
+    public void updateMyLocation(Long memberId, Long chatRoomId, Double latitude, Double longitude) {
+        // 1. 채팅방 id와 사용자 id를 통해 채팅방에 소속된 사용자 정보를 찾는다.
+        ChatRoomMemberEntity chatRoomMemberEntity = getChatRoomMemberEntity(chatRoomId, memberId);
+
+        chatRoomMemberEntity.enableLocationSharing();
+
+        // 2. 내 마지막 위치 갱신
+        chatRoomMemberEntity.updateLocation(latitude, longitude);
+    }
+
     private ChatRoomMemberEntity getChatRoomMemberEntity(
             Long chatRoomId,
             Long memberId
