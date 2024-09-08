@@ -39,7 +39,7 @@ public class ChatRoomMemberEntity extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private ChatRoomMemberStatus status;
 
-    private boolean isLocationTrackingEnabled;
+    private boolean isLocationSharingEnabled;
 
     private Double lastLatitude;
 
@@ -62,16 +62,16 @@ public class ChatRoomMemberEntity extends BaseEntity {
         this.status = ChatRoomMemberStatus.ACTIVE;
     }
 
-    public boolean isLocationTrackingEnabled() {
-        return isLocationTrackingEnabled;
+    public boolean isLocationSharingEnabled() {
+        return isLocationSharingEnabled;
     }
 
     public void enableLocationSharing() {
-        isLocationTrackingEnabled = true;
+        isLocationSharingEnabled = true;
     }
 
     public void disableLocationSharing() {
-        isLocationTrackingEnabled = false;
+        isLocationSharingEnabled = false;
     }
 
     public void updateLocation(Double latitude, Double longitude) {

@@ -15,13 +15,10 @@ public interface ChatRoomMemberRepository extends JpaRepository<ChatRoomMemberEn
 
     List<ChatRoomMemberEntity> findByChatRoom_Id(Long chatRoomId);
 
-//    List<ChatRoomMemberEntity> findAllByChatRoom_IdAndStatus(Long chatRoomId, ChatRoomMemberStatus status);
-
-    List<ChatRoomMemberEntity> findAllByChatRoom_IdAndStatusAndIsLocationTrackingEnabled(
+    List<ChatRoomMemberEntity> findAllByChatRoom_IdAndStatusAndIsLocationSharingEnabled(
             Long chatRoomId,
             ChatRoomMemberStatus status,
             boolean isLocationTrackingEnabled);
-
 
     Optional<ChatRoomMemberEntity> findByChatRoom_IdAndMember_Id(Long id, Long memberId);
 

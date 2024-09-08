@@ -30,13 +30,13 @@ public class ChatRoomLocationServiceImpl implements ChatRoomLocationService {
         ChatRoomMemberEntity chatRoomMemberEntity = getChatRoomMemberEntity(chatRoomId, memberId);
 
         // 2-1. 내 위치 공유를 허용하지 않는다면 false와 빈 리스트를 전달한다.
-        if (!chatRoomMemberEntity.isLocationTrackingEnabled()) {
+        if (!chatRoomMemberEntity.isLocationSharingEnabled()) {
             return new SearchChatRoomWithToggleResponse(false);
         }
 
         // 2-2. 내 위치 공유를 허용한다면 true와 현 채팅방에서 활동 중이며, 위치 공유를 허용하는 동행자들의 정보를 리스트에 저장한다.
 
-        List<ChatRoomMemberEntity> chatRoomMemberEntities = chatRoomMemberRepository.findAllByChatRoom_IdAndStatusAndIsLocationTrackingEnabled(
+        List<ChatRoomMemberEntity> chatRoomMemberEntities = chatRoomMemberRepository.findAllByChatRoom_IdAndStatusAndIsLocationSharingEnabled(
                 chatRoomId,
                 ChatRoomMemberStatus.ACTIVE,
                 true
@@ -61,7 +61,7 @@ public class ChatRoomLocationServiceImpl implements ChatRoomLocationService {
 
         chatRoomMemberEntity.disableLocationSharing();
 
-        return new SearchChatRoomWithToggleResponse(chatRoomMemberEntity.isLocationTrackingEnabled());
+        return new SearchChatRoomWithToggleResponse(chatRoomMemberEntity.isLocationSharingEnabled());
     }
 
     @Override
@@ -81,10 +81,10 @@ public class ChatRoomLocationServiceImpl implements ChatRoomLocationService {
         chatRoomMemberEntity.updateLocation(latitude, longitude);
 
         // 2-2-2. 정보 조회
-        List<ChatRoomMemberEntity> chatRoomMemberEntities = chatRoomMemberRepository.findAllByChatRoom_IdAndStatusAndIsLocationTrackingEnabled(
+        List<ChatRoomMemberEntity> chatRoomMemberEntities = chatRoomMemberRepository.findAllByChatRoom_IdAndStatusAndIsLocationSharingEnabled(
                 chatRoomId,
                 ChatRoomMemberStatus.ACTIVE,
-                chatRoomMemberEntity.isLocationTrackingEnabled()
+                chatRoomMemberEntity.isLocationSharingEnabled()
         );
 
         SearchChatRoomWithToggleResponse searchChatRoomWithToggleResponse = new SearchChatRoomWithToggleResponse(true);
