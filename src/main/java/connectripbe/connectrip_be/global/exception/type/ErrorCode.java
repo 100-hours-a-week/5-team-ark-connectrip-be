@@ -55,6 +55,7 @@ public enum ErrorCode {
     // ChatRoom error
     ALREADY_JOINED_CHAT_ROOM(HttpStatus.BAD_REQUEST, "이미 참여한 채팅방입니다."),
     ALREADY_EXITED_CHAT_ROOM(HttpStatus.BAD_REQUEST, "이미 나간 채팅방입니다."),
+    USER_NOT_IN_CHAT_ROOM(HttpStatus.BAD_REQUEST, "사용자가 채팅방에 참여하지 않았습니다."),
     /**
      * 401 Unauthorized
      */

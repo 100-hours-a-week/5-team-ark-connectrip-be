@@ -6,6 +6,7 @@ import connectripbe.connectrip_be.chat.service.ChatMessageService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -20,10 +21,11 @@ public class ChatMessageController {
     private final ChatMessageService chatMessageService;
     private final SimpMessagingTemplate simpMessagingTemplate;
 
-    @MessageMapping("/chat/message")
-    public void senMessage(@Payload ChatMessageRequest chatMessage) {
-        ChatMessageResponse savedMessage = chatMessageService.saveMessage(chatMessage);
-        simpMessagingTemplate.convertAndSend("/sub/chat/room/" + savedMessage.chatRoomId(), savedMessage);
+    @MessageMapping("/chat/room/{chatRoomId}")
+    public void sendMessage(@Payload ChatMessageRequest chatMessage,
+                            @DestinationVariable("chatRoomId") Long chatRoomId) {
+        ChatMessageResponse savedMessage = chatMessageService.saveMessage(chatMessage, chatRoomId);
+        simpMessagingTemplate.convertAndSend("/sub/chat/room/" + chatRoomId, savedMessage);
     }
 
     @GetMapping("/api/v1/chatRoom/{chatRoomId}/messages")

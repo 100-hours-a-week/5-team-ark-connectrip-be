@@ -25,19 +25,23 @@ public class ChatMessageServiceImpl implements ChatMessageService {
     private final MemberJpaRepository memberJpaRepository;
 
     @Override
-    public ChatMessageResponse saveMessage(ChatMessageRequest request) {
+    public ChatMessageResponse saveMessage(ChatMessageRequest request, Long chatRoomId) {
         // 채팅 수신 유저 정보 조회
         MemberEntity member = memberJpaRepository.findById(request.senderId())
                 .orElseThrow(() -> new GlobalException(ErrorCode.USER_NOT_FOUND));
 
+        // 유저가 보낸 메세지 전송 여부
+        boolean infoFlag = (request.infoFlag() != null) ? request.infoFlag() : false;
+
         ChatMessage chatMessage =
                 ChatMessage.builder()
                         .type(MessageType.TALK)
-                        .chatRoomId(request.chatRoomId())
+                        .chatRoomId(chatRoomId)
                         .senderId(request.senderId())
                         .senderNickname(member.getNickname())
                         .senderProfileImage(member.getProfileImagePath())
                         .content(request.content())
+                        .infoFlag(infoFlag)
                         .build();
 
         ChatMessage saved = chatMessageRepository.save(chatMessage);

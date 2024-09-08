@@ -10,13 +10,19 @@ import connectripbe.connectrip_be.global.dto.GlobalResponse;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -30,6 +36,9 @@ public class AuthController {
     @Value("${spring.auth.success-redirect-url}")
     private String authSuccessRedirectUrl;
 
+    @Value("${spring.auth.first-login-redirect-url}")
+    private String kakaoFirstLoginRedirectUrl;
+
     @GetMapping("/redirected/kakao")
     public void kakaoLogin(
             HttpServletResponse httpServletResponse,
@@ -37,10 +46,21 @@ public class AuthController {
     ) {
         TokenDto tokenDto = kakaoService.kakaoLogin(code);
 
-        addJwtToCookie(httpServletResponse, tokenDto);
-
         try {
-            httpServletResponse.sendRedirect(authSuccessRedirectUrl);
+            if (tokenDto.isFirstLogin()) {
+                Cookie tempTokenCookie = new Cookie("tempToken", tokenDto.getTempToken());
+                tempTokenCookie.setPath("/");
+                tempTokenCookie.setMaxAge(tokenDto.getTempTokenExpirationTime());
+                tempTokenCookie.setHttpOnly(true);
+
+                httpServletResponse.addCookie(tempTokenCookie);
+
+                httpServletResponse.sendRedirect(kakaoFirstLoginRedirectUrl);
+            } else {
+                addJwtToCookie(httpServletResponse, tokenDto);
+
+                httpServletResponse.sendRedirect(authSuccessRedirectUrl);
+            }
         } catch (IOException e) {
             throw new RedirectFailureException();
         }

@@ -15,8 +15,20 @@ spring:
       host: ${PROD_REDIS_HOST}
       port: ${PROD_REDIS_PORT}
 
+    mongodb:
+      uri: mongodb://${PROD_MONGODB_USERNAME}:${PROD_MONGODB_PASSWORD}@${PROD_MONGODB_HOST}:${PROD_MONGODB_PORT}/${PROD_MONGODB_DATABASE}?authSource=admin&ssl=true
+      host: ${PROD_MONGODB_HOST}
+      port: ${PROD_MONGODB_PORT}
+      database: ${PROD_MONGODB_DATABASE}
+      auto-index-creation: false
+      authentication-database: admin
+
   auth:
     success-redirect-url: ${PROD_KAKAO_SUCCESS_REDIRECT_URL}
+    first-login-redirect-url: ${PROD_KAKAO_FIRST_LOGIN_REDIRECT_URL}
     kakao:
       client-id: ${PROD_KAKAO_CLIENT_ID}
       redirect-uri: ${PROD_KAKAO_REDIRECT_URI}
+
+allowed:
+  origins: ${PROD_ALLOWED_ORIGIN} # 허용할 오리진 설정

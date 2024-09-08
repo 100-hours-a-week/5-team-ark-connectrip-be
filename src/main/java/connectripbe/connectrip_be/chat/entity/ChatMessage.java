@@ -48,5 +48,8 @@ public class ChatMessage {
     @CreatedDate
     private LocalDateTime createdAt;
 
+    @Field("info_flag")
+    private boolean infoFlag;
+
 
 }

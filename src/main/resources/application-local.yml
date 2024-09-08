@@ -22,15 +22,19 @@ spring:
       port: ${LOCAL_REDIS_PORT}
 
     mongodb:
+      uri: mongodb://${LOCAL_MONGODB_USERNAME}:${LOCAL_MONGODB_PASSWORD}@${LOCAL_MONGODB_HOST}:${LOCAL_MONGODB_PORT}/${LOCAL_MONGODB_DATABASE}?authSource=admin
       host: ${LOCAL_MONGODB_HOST}
       port: ${LOCAL_MONGODB_PORT}
       database: ${LOCAL_MONGODB_DATABASE}
-      username: ${LOCAL_MONGODB_USERNAME}
-      password: ${LOCAL_MONGODB_PASSWORD}
-
+      auto-index-creation: true
+      authentication-database: admin
 
   auth:
     success-redirect-url: ${LOCAL_KAKAO_SUCCESS_REDIRECT_URL}
+    first-login-redirect-url: ${LOCAL_KAKAO_FIRST_LOGIN_REDIRECT_URL}
     kakao:
       client-id: ${LOCAL_KAKAO_CLIENT_ID}
       redirect-uri: ${LOCAL_KAKAO_REDIRECT_URI}
+
+allowed:
+  origins: http://localhost:3000  # 허용할 오리진 설정

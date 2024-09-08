@@ -6,10 +6,13 @@ import connectripbe.connectrip_be.accompany_status.repository.AccompanyStatusJpa
 import connectripbe.connectrip_be.chat.dto.ChatRoomEnterDto;
 import connectripbe.connectrip_be.chat.dto.ChatRoomListResponse;
 import connectripbe.connectrip_be.chat.dto.ChatRoomMemberResponse;
+import connectripbe.connectrip_be.chat.entity.ChatMessage;
 import connectripbe.connectrip_be.chat.entity.ChatRoomEntity;
 import connectripbe.connectrip_be.chat.entity.ChatRoomMemberEntity;
 import connectripbe.connectrip_be.chat.entity.type.ChatRoomMemberStatus;
 import connectripbe.connectrip_be.chat.entity.type.ChatRoomType;
+import connectripbe.connectrip_be.chat.entity.type.MessageType;
+import connectripbe.connectrip_be.chat.repository.ChatMessageRepository;
 import connectripbe.connectrip_be.chat.repository.ChatRoomMemberRepository;
 import connectripbe.connectrip_be.chat.repository.ChatRoomRepository;
 import connectripbe.connectrip_be.chat.service.ChatRoomMemberService;
@@ -39,6 +42,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     private final AccompanyPostRepository accompanyPostRepository;
     private final AccompanyStatusJpaRepository accompanyStatusJpaRepository;
     private final PendingListRepository pendingListRepository;
+    private final ChatMessageRepository chatMessageRepository;
 
     private final ChatRoomMemberService chatRoomMemberService;
 
@@ -108,6 +112,18 @@ public class ChatRoomServiceImpl implements ChatRoomService {
 
         // 방장 설정
         chatRoom.setInitialLeader(leaderMember);
+
+        ChatMessage chatMessage = ChatMessage.builder()
+                .type(MessageType.ENTER)
+                .chatRoomId(chatRoom.getId())
+                .senderId(memberId)
+                .senderNickname(leaderMember.getMember().getNickname())
+                .senderProfileImage(leaderMember.getMember().getProfileImagePath())
+                .content(leaderMember.getMember().getNickname() + "님이 입장하셨습니다.")
+                .infoFlag(true)
+                .build();
+
+        chatMessageRepository.save(chatMessage);
     }
 
 
