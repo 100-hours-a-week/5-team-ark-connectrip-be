@@ -52,4 +52,21 @@ public class ChatRoomLocationController {
             return ResponseEntity.ok(searchChatRoomWithToggleResponse);
         }
     }
+
+    // 채팅방 새로고침 버튼 API
+    @PatchMapping("/{chatRoomId}/locations")
+    public ResponseEntity<SearchChatRoomWithToggleResponse> updateChatRoomLocations(
+            @AuthenticationPrincipal Long memberId,
+            @PathVariable Long chatRoomId,
+            @RequestBody UpdateChatRoomSharingRequest request
+    ) {
+        SearchChatRoomWithToggleResponse searchChatRoomWithToggleResponse = chatRoomLocationService.updateShareLocation(
+                chatRoomId,
+                memberId,
+                request.lat(),
+                request.lng()
+        );
+
+        return ResponseEntity.ok(searchChatRoomWithToggleResponse);
+    }
 }
