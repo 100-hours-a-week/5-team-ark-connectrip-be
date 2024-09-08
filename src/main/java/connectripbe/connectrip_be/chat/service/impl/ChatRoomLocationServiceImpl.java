@@ -59,9 +59,9 @@ public class ChatRoomLocationServiceImpl implements ChatRoomLocationService {
         // 1. 채팅방 id와 사용자 id를 통해 채팅방에 소속된 사용자 정보를 찾는다.
         ChatRoomMemberEntity chatRoomMemberEntity = getChatRoomMemberEntity(chatRoomId, memberId);
 
-        chatRoomMemberEntity.toggleLocationTracking();
+        chatRoomMemberEntity.disableLocationSharing();
 
-        return new SearchChatRoomWithToggleResponse(false);
+        return new SearchChatRoomWithToggleResponse(chatRoomMemberEntity.isLocationTrackingEnabled());
     }
 
     @Override
@@ -73,7 +73,7 @@ public class ChatRoomLocationServiceImpl implements ChatRoomLocationService {
         // 1. 채팅방 id와 사용자 id를 통해 채팅방에 소속된 사용자 정보를 찾는다.
         ChatRoomMemberEntity chatRoomMemberEntity = getChatRoomMemberEntity(chatRoomId, memberId);
 
-        chatRoomMemberEntity.toggleLocationTracking();
+        chatRoomMemberEntity.enableLocationSharing();
 
         // 2-2. 위치 공유를 허용하는 동행자들의 정보를 리스트에 저장한다.
 
@@ -84,7 +84,7 @@ public class ChatRoomLocationServiceImpl implements ChatRoomLocationService {
         List<ChatRoomMemberEntity> chatRoomMemberEntities = chatRoomMemberRepository.findAllByChatRoom_IdAndStatusAndIsLocationTrackingEnabled(
                 chatRoomId,
                 ChatRoomMemberStatus.ACTIVE,
-                true
+                chatRoomMemberEntity.isLocationTrackingEnabled()
         );
 
         SearchChatRoomWithToggleResponse searchChatRoomWithToggleResponse = new SearchChatRoomWithToggleResponse(true);

@@ -66,8 +66,12 @@ public class ChatRoomMemberEntity extends BaseEntity {
         return isLocationTrackingEnabled;
     }
 
-    public void toggleLocationTracking() {
-        isLocationTrackingEnabled = !isLocationTrackingEnabled;
+    public void enableLocationSharing() {
+        isLocationTrackingEnabled = true;
+    }
+
+    public void disableLocationSharing() {
+        isLocationTrackingEnabled = false;
     }
 
     public void updateLocation(Double latitude, Double longitude) {
