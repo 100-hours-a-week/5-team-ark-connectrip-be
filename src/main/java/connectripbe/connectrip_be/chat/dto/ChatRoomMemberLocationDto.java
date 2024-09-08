@@ -1,5 +1,6 @@
 package connectripbe.connectrip_be.chat.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import connectripbe.connectrip_be.chat.entity.ChatRoomMemberEntity;
 import lombok.Builder;
 
@@ -8,7 +9,7 @@ public record ChatRoomMemberLocationDto(
         Long memberId,
         String profileImagePath,
         String nickname,
-        LastLocationDto lastLocationDto
+        @JsonProperty("lastLocation") LastLocationDto lastLocationDto
 ) {
 
     // info-noah: 1+N 문제 또는 쿼리가 여러개 발생하는지 확인 필요
