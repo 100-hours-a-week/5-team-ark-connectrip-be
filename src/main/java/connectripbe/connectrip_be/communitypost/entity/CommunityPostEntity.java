@@ -17,7 +17,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
 @Table(name = "Community_post")
@@ -38,8 +37,7 @@ public class CommunityPostEntity extends BaseEntity {
     @Column(nullable = false)
     private String title;
 
-    @Setter
-    @Column(nullable = false, length = 256)
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
     public void updateCommunityPost(UpdateCommunityPostRequest request) {
