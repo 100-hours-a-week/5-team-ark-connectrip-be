@@ -211,9 +211,7 @@ public class PendingListServiceImpl implements PendingListService {
     }
 
     /**
-     * 사용자의 동행 신청을 거절합니다.
-     * <p>
-     * 신청 상태를 REJECTED로 변경합니다.
+     * 사용자의 동행 신청을 거절합니다. 신청 상태를 REJECTED로 변경합니다.
      *
      * @param memberId        거절할 사용자의 ID
      * @param accompanyPostId 신청한 게시물의 ID

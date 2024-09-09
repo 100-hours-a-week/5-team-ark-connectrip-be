@@ -22,14 +22,11 @@ public class ChatRoomMemberServiceImpl implements ChatRoomMemberService {
     private final MemberJpaRepository memberRepository;
 
     /**
-     * 사용자를 특정 채팅방에 참여
-     * 채팅방과 사용자가 존재하는지 확인한 후, 사용자가 이미 채팅방에 참여 중인지 확인
-     * 참여하지 않은 경우 채팅방에 사용자를 추가하고, 참여한 경우 예외를 발생
+     * 사용자를 특정 채팅방에 참여 채팅방과 사용자가 존재하는지 확인한 후, 사용자가 이미 채팅방에 참여 중인지 확인 참여하지 않은 경우 채팅방에 사용자를 추가하고, 참여한 경우 예외를 발생
      *
-     * @param chatRoomId  참여할 채팅방의 ID
-     * @param memberId  참여할 사용자의 ID
-     * @throws GlobalException  채팅방이 존재하지 않거나, 사용자가 존재하지 않거나,
-     *                          사용자가 이미 채팅방에 참여한 경우 발생하는 예외
+     * @param chatRoomId 참여할 채팅방의 ID
+     * @param memberId   참여할 사용자의 ID
+     * @throws GlobalException 채팅방이 존재하지 않거나, 사용자가 존재하지 않거나, 사용자가 이미 채팅방에 참여한 경우 발생하는 예외
      */
     @Override
     public void jointChatRoom(Long chatRoomId, Long memberId) {
@@ -43,8 +40,7 @@ public class ChatRoomMemberServiceImpl implements ChatRoomMemberService {
                 .orElseThrow(() -> new GlobalException(ErrorCode.USER_NOT_FOUND));
 
         // 이미 채팅방에 참여중인지 확인
-        boolean isMemberAlreadyInRoom = chatRoom.getChatRoomMembers().stream()
-                .anyMatch(members -> members.getId().equals(memberId));
+        boolean isMemberAlreadyInRoom = chatRoomMemberRepository.existsByChatRoomIdAndMemberId(chatRoomId, memberId);
 
         if (isMemberAlreadyInRoom) {
             throw new GlobalException(ErrorCode.ALREADY_JOINED_CHAT_ROOM);
