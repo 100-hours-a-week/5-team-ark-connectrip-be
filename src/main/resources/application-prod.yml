@@ -16,7 +16,7 @@ spring:
       port: ${PROD_REDIS_PORT}
 
     mongodb:
-      uri: mongodb://${PROD_MONGODB_USERNAME}:${PROD_MONGODB_PASSWORD}@${PROD_MONGODB_HOST}:${PROD_MONGODB_PORT}/${PROD_MONGODB_DATABASE}?authSource=admin&ssl=true
+      uri: mongodb://${PROD_MONGODB_USERNAME}:${PROD_MONGODB_PASSWORD}@${PROD_MONGODB_HOST}:${PROD_MONGODB_PORT}/${PROD_MONGODB_DATABASE}?authSource=admin
       host: ${PROD_MONGODB_HOST}
       port: ${PROD_MONGODB_PORT}
       database: ${PROD_MONGODB_DATABASE}
