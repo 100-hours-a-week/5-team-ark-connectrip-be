@@ -123,9 +123,7 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
     public AccompanyPostResponse readAccompanyPost(long id) {
         AccompanyPostEntity accompanyPostEntity = findAccompanyPostEntity(id);
 
-        AccompanyStatusEntity accompanyStatusEntity = accompanyStatusJpaRepository
-                .findTopByAccompanyPostEntityOrderByCreatedAtDesc(accompanyPostEntity)
-                .orElseThrow(NotFoundAccompanyPostException::new);
+        AccompanyStatusEntity accompanyStatusEntity = getAccompanyStatusEntity(accompanyPostEntity);
 
         ChatRoomEntity chatRoom = chatRoomRepository.findByAccompanyPost_Id(id)
                 .orElseThrow(() -> new GlobalException(ErrorCode.CHAT_ROOM_NOT_FOUND));
@@ -143,9 +141,7 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
 
         validateAccompanyPostOwnership(memberEntity, accompanyPostEntity);
 
-        AccompanyStatusEntity accompanyStatusEntity = accompanyStatusJpaRepository
-                .findTopByAccompanyPostEntityOrderByCreatedAtDesc(accompanyPostEntity)
-                .orElseThrow(NotFoundAccompanyPostException::new);
+        AccompanyStatusEntity accompanyStatusEntity = getAccompanyStatusEntity(accompanyPostEntity);
 
         accompanyPostEntity.updateAccompanyPost(
                 request.title(),
@@ -172,7 +168,16 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
 
         validateAccompanyPostOwnership(memberEntity, accompanyPostEntity);
 
+        // 동행 게시글 삭제 시 동행 상태를 CLOSED 로 변경
+        getAccompanyStatusEntity(accompanyPostEntity).changeAccompanyStatus(AccompanyStatusEnum.CLOSED);
+
         accompanyPostEntity.deleteEntity();
+    }
+
+    private AccompanyStatusEntity getAccompanyStatusEntity(AccompanyPostEntity accompanyPostEntity) {
+        return accompanyStatusJpaRepository
+                .findTopByAccompanyPostEntityOrderByCreatedAtDesc(accompanyPostEntity)
+                .orElseThrow(NotFoundAccompanyPostException::new);
     }
 
     @Override
