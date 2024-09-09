@@ -45,4 +45,33 @@ public class PendingListController {
     ) {
         return ResponseEntity.ok(pendingListService.getPendingList(memberId, id));
     }
+
+    // 동행 신청 수락
+    @PostMapping("/accept/{memberId}")
+    public ResponseEntity<PendingResponse> acceptPending(
+            @PathVariable Long id,
+            @PathVariable Long memberId
+
+    ) {
+        return ResponseEntity.ok(pendingListService.acceptPending(memberId, id));
+    }
+
+    // 동행 신청 거절
+    @PostMapping("/reject/{memberId}")
+    public ResponseEntity<PendingResponse> rejectPending(
+            @PathVariable Long id,
+            @PathVariable Long memberId
+
+    ) {
+        return ResponseEntity.ok(pendingListService.rejectPending(memberId, id));
+    }
+
+    // 사용자가 본인이 신청한 동행 신청 취소
+    @PostMapping("/cancel")
+    public ResponseEntity<PendingResponse> cancelPending(
+            @AuthenticationPrincipal Long memberId,
+            @PathVariable Long id
+    ) {
+        return ResponseEntity.ok(pendingListService.cancelPending(memberId, id));
+    }
 }

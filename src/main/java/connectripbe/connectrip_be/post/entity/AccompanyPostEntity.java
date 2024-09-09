@@ -32,7 +32,7 @@ public class AccompanyPostEntity extends BaseEntity {
     private long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member__id", nullable = false)
+    @JoinColumn(name = "member_id", nullable = false)
     private MemberEntity memberEntity;
 
     @Column(nullable = false)
@@ -44,7 +44,6 @@ public class AccompanyPostEntity extends BaseEntity {
 
     private String accompanyArea;
 
-    // fixme-noah: customUrl 임시 보류
     private String customUrl;
 
     // fixme-noah: urlQrPath 임시 보류
@@ -68,7 +67,7 @@ public class AccompanyPostEntity extends BaseEntity {
     }
 
     public void updateAccompanyPost(String title, LocalDateTime startDate, LocalDateTime endDate, String accompanyArea,
-                                    String content, String customUrl) {
+                                    String content) {
         this.title = title;
         this.startDate = startDate;
         this.endDate = endDate;

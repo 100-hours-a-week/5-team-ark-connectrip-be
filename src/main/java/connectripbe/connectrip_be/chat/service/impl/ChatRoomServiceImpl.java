@@ -3,19 +3,20 @@ package connectripbe.connectrip_be.chat.service.impl;
 import connectripbe.connectrip_be.accompany_status.entity.AccompanyStatusEntity;
 import connectripbe.connectrip_be.accompany_status.entity.AccompanyStatusEnum;
 import connectripbe.connectrip_be.accompany_status.repository.AccompanyStatusJpaRepository;
+import connectripbe.connectrip_be.chat.dto.ChatRoomEnterDto;
 import connectripbe.connectrip_be.chat.dto.ChatRoomListResponse;
 import connectripbe.connectrip_be.chat.dto.ChatRoomMemberResponse;
+import connectripbe.connectrip_be.chat.entity.ChatMessage;
 import connectripbe.connectrip_be.chat.entity.ChatRoomEntity;
 import connectripbe.connectrip_be.chat.entity.ChatRoomMemberEntity;
-
 import connectripbe.connectrip_be.chat.entity.type.ChatRoomMemberStatus;
 import connectripbe.connectrip_be.chat.entity.type.ChatRoomType;
+import connectripbe.connectrip_be.chat.entity.type.MessageType;
+import connectripbe.connectrip_be.chat.repository.ChatMessageRepository;
 import connectripbe.connectrip_be.chat.repository.ChatRoomMemberRepository;
 import connectripbe.connectrip_be.chat.repository.ChatRoomRepository;
 import connectripbe.connectrip_be.chat.service.ChatRoomMemberService;
 import connectripbe.connectrip_be.chat.service.ChatRoomService;
-
-
 import connectripbe.connectrip_be.global.exception.GlobalException;
 import connectripbe.connectrip_be.global.exception.type.ErrorCode;
 import connectripbe.connectrip_be.pending_list.entity.PendingListEntity;
@@ -39,10 +40,12 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     private final ChatRoomRepository chatRoomRepository;
     private final ChatRoomMemberRepository chatRoomMemberRepository;
     private final AccompanyPostRepository accompanyPostRepository;
-
-    private final ChatRoomMemberService chatRoomMemberService;
     private final AccompanyStatusJpaRepository accompanyStatusJpaRepository;
     private final PendingListRepository pendingListRepository;
+    private final ChatMessageRepository chatMessageRepository;
+
+    private final ChatRoomMemberService chatRoomMemberService;
+
 
     /**
      * 사용자가 참여한 채팅방 목록을 조회하여 반환하는 메서드. 주어진 사용자의 이메일 주소를 기반으로 해당 사용자가 참여한 모든 채팅방을 조회
@@ -109,12 +112,24 @@ public class ChatRoomServiceImpl implements ChatRoomService {
 
         // 방장 설정
         chatRoom.setInitialLeader(leaderMember);
+
+        ChatMessage chatMessage = ChatMessage.builder()
+                .type(MessageType.ENTER)
+                .chatRoomId(chatRoom.getId())
+                .senderId(memberId)
+                .senderNickname(leaderMember.getMember().getNickname())
+                .senderProfileImage(leaderMember.getMember().getProfileImagePath())
+                .content(leaderMember.getMember().getNickname() + "님이 입장하셨습니다.")
+                .infoFlag(true)
+                .build();
+
+        chatMessageRepository.save(chatMessage);
     }
 
 
     /**
-     * 사용자가 채팅방에서 나가도록 처리. 주어진 채팅방 ID와 사용자 ID를 기반으로, 사용자가 해당 채팅방에서 나가게 하며, 방장이 나가는 경우에는 방장을 승계하고,
-     * 마지막 남은 멤버가 나가는 경우 채팅방 상태를 'DELETE'로 변경.
+     * 사용자가 채팅방에서 나가도록 처리. 주어진 채팅방 ID와 사용자 ID를 기반으로, 사용자가 해당 채팅방에서 나가게 하며, 방장이 나가는 경우에는 방장을 승계하고, 마지막 남은 멤버가 나가는 경우 채팅방
+     * 상태를 'DELETE'로 변경.
      *
      * @param chatRoomId 나가려는 사용자가 속한 채팅방의 ID
      * @param memberId   나가려는 사용자의 ID
@@ -166,6 +181,35 @@ public class ChatRoomServiceImpl implements ChatRoomService {
 
         chatRoomRepository.save(chatRoom);
 
+    }
+
+
+    @Override
+    public ChatRoomEnterDto enterChatRoom(Long chatRoomId, Long memberId) {
+
+        // 채팅방이 존재하는지 확인
+        ChatRoomEntity chatRoom = chatRoomRepository.findById(chatRoomId)
+                .orElseThrow(() -> new GlobalException(ErrorCode.CHAT_ROOM_NOT_FOUND));
+
+        // 사용자가 존재하는지 확인
+        ChatRoomMemberEntity chatRoomMember = chatRoomMemberRepository.findByChatRoom_IdAndMember_Id(chatRoomId,
+                memberId).orElseThrow(
+                () -> new GlobalException(ErrorCode.USER_NOT_FOUND));
+
+        // 채팅방을 나간 사용자가 다시 입장하는 경우
+        if (!chatRoomMember.getStatus().equals(ChatRoomMemberStatus.ACTIVE)) {
+            throw new GlobalException(ErrorCode.ALREADY_EXITED_CHAT_ROOM);
+        }
+
+        // 해당 게시물 상태
+        AccompanyStatusEntity status = accompanyStatusJpaRepository.findTopByAccompanyPostEntityOrderByCreatedAtDesc(
+                        chatRoom.getAccompanyPost())
+                .orElseThrow(NotFoundAccompanyPostException::new);
+
+        // 게시물이 삭제 되었는지
+        boolean isPostExists = chatRoom.getAccompanyPost().getDeletedAt() == null;
+
+        return ChatRoomEnterDto.fromEntity(chatRoom, status.getAccompanyStatusEnum().toString(), isPostExists);
     }
 
     private void pendingListUpdate(ChatRoomMemberEntity chatRoomMember, ChatRoomEntity chatRoom) {

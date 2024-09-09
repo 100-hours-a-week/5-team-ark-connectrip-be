@@ -9,17 +9,15 @@ import lombok.Builder;
 public record ChatRoomMemberResponse(
         Long chatRoomId,
         Long memberId,
-        String memberEmail,
         String memberNickname,
         String memberProfileImage,
         String memberChatRoomStatus
 ) {
 
-    public static ChatRoomMemberResponse fromEntity(ChatRoomMemberEntity chatRoomMember){
+    public static ChatRoomMemberResponse fromEntity(ChatRoomMemberEntity chatRoomMember) {
         return ChatRoomMemberResponse.builder()
                 .chatRoomId(chatRoomMember.getChatRoom().getId())
                 .memberId(chatRoomMember.getMember().getId())
-                .memberEmail(chatRoomMember.getMember().getEmail())
                 .memberNickname(chatRoomMember.getMember().getNickname())
                 .memberProfileImage(chatRoomMember.getMember().getProfileImagePath())
                 .memberChatRoomStatus(chatRoomMember.getStatus().toString())

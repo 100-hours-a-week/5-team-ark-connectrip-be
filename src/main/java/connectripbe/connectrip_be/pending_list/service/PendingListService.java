@@ -17,17 +17,14 @@ public interface PendingListService {
     // 사용자가 해당 게시물에 신청하는 api
     PendingResponse accompanyPending(Long memberId, Long accompanyPostId);
 
-    // TODO 신청자가 해당 신청을 취소하는 api
-    // - 신청자가 해당 신청을 취소한다면 다시 신청 가능
-    PendingResponse cancelPending(Long memberId, Long accompanyPostId);
-
-    // TODO 게시물 작성자가 해당 신청을 수락하는 api
-    // - 신청을 수락한다면(수락된다면) 채팅방 참여 멤버로 등록
+    // 신청을 수락한다면(수락된다면) 채팅방 참여 멤버로 등록
     PendingResponse acceptPending(Long memberId, Long accompanyPostId);
 
-    // TODO 게시물 작성자가 해당 신청을 거절하는 api
-    // - 신청자가 거절 당한다면 해당 게시물에 다시 신청 못 함.
+    // 신청자가 거절 당한다면 해당 게시물에 다시 신청 못 함.
     PendingResponse rejectPending(Long memberId, Long accompanyPostId);
+
+    //  신청자가 해당 신청을 취소한다면 다시 신청 가능
+    PendingResponse cancelPending(Long memberId, Long accompanyPostId);
 
 
 }

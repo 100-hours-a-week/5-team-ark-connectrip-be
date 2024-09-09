@@ -10,8 +10,8 @@ public enum PendingStatus {
     PENDING("대기중"),
     ACCEPTED("수락"),
     REJECTED("거절"),
-    EXIT_ROOM("나감")
-    ;
+    EXIT_ROOM("나감"),
+    DEFAULT("기본");
 
     private final String message;
 }
