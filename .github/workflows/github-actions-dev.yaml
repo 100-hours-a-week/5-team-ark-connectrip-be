@@ -1,4 +1,4 @@
-name: BE Dev Build & Deploy
+name: BE Dev(Test) Build & Deploy
 
 on:
   push:
@@ -35,9 +35,24 @@ jobs:
       - name: Push Docker Image to GHCR
         run: docker push ghcr.io/topazkang/be-dev:latest
 
-  deploy:
-    runs-on: [ self-hosted, Linux, X64, connectrip_be_dev]
-    name: Deploy on Self-Hosted Runner
+  deploy_test:
+    runs-on: [ self-hosted, Linux, X64, connectrip_test ]
+    name: Deploy Test API
+    needs: build
+
+    steps:
+      - name: set env & deploy
+        run: |
+          cd /home/ubuntu/deploy/back
+          echo "${{ secrets.ENV_FILE_TEST }}" > .env
+          sudo docker image prune -a -f
+          sudo docker-compose -f docker-compose.back.yaml down
+          sudo docker-compose -f docker-compose.back.yaml pull
+          sudo docker-compose -f docker-compose.back.yaml up -d
+
+  deploy_dev:
+    runs-on: [ self-hosted, Linux, X64, connectrip_be_dev ]
+    name: Deploy Dev API
     needs: build
 
     steps:
