@@ -45,11 +45,10 @@ jobs:
         run: |
           cd /home/ubuntu/deploy/back
           echo "${{ secrets.ENV_FILE_TEST }}" > .env
-          echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u ${{ secrets.GIT_USER }} --password-stdin
-          sudo docker image prune -a -f
-          sudo docker-compose -f docker-compose.back.yaml down
-          sudo docker-compose -f docker-compose.back.yaml pull
-          sudo docker-compose -f docker-compose.back.yaml up -d
+          docker image prune -a -f
+          docker-compose -f docker-compose.back.yaml down
+          docker-compose -f docker-compose.back.yaml pull
+          docker-compose -f docker-compose.back.yaml up -d
 
   deploy_dev:
     runs-on: [ self-hosted, Linux, X64, connectrip_be_dev ]
