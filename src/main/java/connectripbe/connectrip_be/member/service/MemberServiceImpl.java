@@ -133,9 +133,6 @@ public class MemberServiceImpl implements MemberService {
     @Transactional(readOnly = true)
     @Override
     public List<AccompanyReviewResponse> getAllReviews(Long memberId) {
-        MemberEntity member = memberJpaRepository.findById(memberId)
-                .orElseThrow(NotFoundMemberException::new);  // NotFoundMemberException 사용
-
         // 모든 리뷰 가져오기
         return accompanyReviewRepository.findAllByTargetId(memberId).stream()
                 .map(AccompanyReviewResponse::fromEntity)
