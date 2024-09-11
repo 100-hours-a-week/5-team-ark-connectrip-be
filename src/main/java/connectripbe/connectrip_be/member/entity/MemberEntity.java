@@ -1,5 +1,6 @@
 package connectripbe.connectrip_be.member.entity;
 
+import connectripbe.connectrip_be.Review.entity.AccompanyReviewEntity;
 import connectripbe.connectrip_be.global.entity.BaseEntity;
 import connectripbe.connectrip_be.member.entity.type.MemberLoginType;
 import connectripbe.connectrip_be.member.entity.type.MemberRoleType;
@@ -66,6 +67,10 @@ public class MemberEntity extends BaseEntity {
     @Builder.Default
     @OneToMany(mappedBy = "memberEntity", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AccompanyPostEntity> accompanyPostEntities = new ArrayList<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "target", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<AccompanyReviewEntity> reviews = new ArrayList<>();
 
     @Builder.Default
     @Column(name = "accompany_count", nullable = false)
