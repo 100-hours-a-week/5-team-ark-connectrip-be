@@ -24,38 +24,58 @@ import lombok.NoArgsConstructor;
 @Builder
 public class ChatRoomMemberEntity extends BaseEntity {
 
-      @Id
-      @GeneratedValue(strategy = GenerationType.IDENTITY)
-      private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-      @ManyToOne(fetch = FetchType.LAZY)
-      @JoinColumn(name = "chat_room_id")
-      private ChatRoomEntity chatRoom;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "chat_room_id")
+    private ChatRoomEntity chatRoom;
 
-      @ManyToOne(fetch = FetchType.LAZY)
-      @JoinColumn(name = "member_id")
-      private MemberEntity member;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private MemberEntity member;
 
-      @Enumerated(EnumType.STRING)
-      private ChatRoomMemberStatus status;
+    @Enumerated(EnumType.STRING)
+    private ChatRoomMemberStatus status;
 
-      // 연관관계 메서드
-      public void assignChatRoom(ChatRoomEntity chatRoomEntity) {
-            this.chatRoom = chatRoomEntity;
-      }
+    private boolean isLocationSharingEnabled;
 
-      public void updateStatus(ChatRoomMemberStatus status) {
-            this.status = status;
-      }
+    private Double lastLatitude;
 
-      public void exitChatRoom() {
-            this.status = ChatRoomMemberStatus.EXIT;
-      }
+    private Double lastLongitude;
 
-      public void activeChatRoom() {
-            this.status = ChatRoomMemberStatus.ACTIVE;
-      }
+    // 연관관계 메서드
+    public void assignChatRoom(ChatRoomEntity chatRoomEntity) {
+        this.chatRoom = chatRoomEntity;
+    }
 
+    public void updateStatus(ChatRoomMemberStatus status) {
+        this.status = status;
+    }
 
+    public void exitChatRoom() {
+        this.status = ChatRoomMemberStatus.EXIT;
+    }
 
+    public void activeChatRoom() {
+        this.status = ChatRoomMemberStatus.ACTIVE;
+    }
+
+    public boolean isLocationSharingEnabled() {
+        return isLocationSharingEnabled;
+    }
+
+    public void enableLocationSharing() {
+        isLocationSharingEnabled = true;
+    }
+
+    public void disableLocationSharing() {
+        isLocationSharingEnabled = false;
+    }
+
+    public void updateLocation(Double latitude, Double longitude) {
+        this.lastLatitude = latitude;
+        this.lastLongitude = longitude;
+    }
 }
