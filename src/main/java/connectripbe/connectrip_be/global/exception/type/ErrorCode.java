@@ -79,6 +79,9 @@ public enum ErrorCode {
 
     PENDING_LIST_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 신청 목록을 찾을 수 없습니다."),
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 이메일로 사용자를 찾을 수 없습니다."),
+    NOT_FOUND_REVIEW(HttpStatus.NOT_FOUND, "리뷰를 찾을 수 없습니다."),  // 리뷰 관련 에러 추가
+
+
     CHAT_ROOM_MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 채팅방 참여자를 찾을 수 없습니다."),
     CHAT_ROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 채팅방을 찾을 수 없습니다."),
     POST_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 글을 찾을 수 없습니다."),
@@ -91,6 +94,7 @@ public enum ErrorCode {
 
     // User error
     DUPLICATE_USER(HttpStatus.CONFLICT, "이미 존재하는 사용자입니다."),
+    REVIEW_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 동일한 리뷰가 존재합니다."),  // 리뷰 관련 에러 추가
 
     /**
      * 500 Internal Server Error
@@ -105,6 +109,8 @@ public enum ErrorCode {
      * 403 Forbidden
      */
     ACCESS_DENIED(HttpStatus.FORBIDDEN, "접근이 거부되었습니다."),
+    REVIEW_NOT_ALLOWED(HttpStatus.FORBIDDEN, "리뷰를 작성할 수 있는 상태가 아닙니다."), // 리뷰 관련 에러 추가
+    REVIEW_DELETE_NOT_ALLOWED(HttpStatus.FORBIDDEN, "리뷰를 삭제할 권한이 없습니다."),  // 리뷰 관련 에러 추가
 
     /**
      * 405 Method Not Allowed

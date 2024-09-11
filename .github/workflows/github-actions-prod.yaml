@@ -26,10 +26,15 @@ jobs:
       - name: Build with Gradle
         env:
           PROD_SENTRY_AUTH_TOKEN: ${{ secrets.PROD_SENTRY_AUTH_TOKEN }}
+          PROD_SENTRY_DSN: ${{ secrets.PROD_SENTRY_DSN }}
         run: ./gradlew bootJar
 
       - name: Build Docker Image
-        run: docker build -t ghcr.io/topazkang/be-prod:latest .
+        run: |
+          docker build \
+          --build-arg PROD_SENTRY_DSN=${{ secrets.PROD_SENTRY_DSN }} \
+          --build-arg PROD_SENTRY_AUTH_TOKEN=${{ secrets.PROD_SENTRY_AUTH_TOKEN }} \
+          -t ghcr.io/topazkang/be-prod:latest .
 
       - name: Log in to GitHub Container Registry
         run: echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u ${{ secrets.GIT_USER }} --password-stdin
@@ -38,21 +43,17 @@ jobs:
         run: docker push ghcr.io/topazkang/be-prod:latest
 
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: [ self-hosted, Linux, X64, connectrip_be_prod ]
+    name: Deploy on Self-Hosted Runner
     needs: build
 
     steps:
-      - name: SSH and Deploy Backend
-        uses: appleboy/ssh-action@v0.1.8
-        with:
-          host: ${{ secrets.EC2_HOST_PROD }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.ARK_DEPLOY }}
-          port: 22
-          script: |
-            echo "${{ secrets.ENV_FILE_PROD }}" > deploy/back/.env
-            echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u ${{ secrets.GIT_USER }} --password-stdin
-            cd deploy/back  
-            docker-compose -f docker-compose.back.yaml down
-            docker-compose -f docker-compose.back.yaml pull
-            docker-compose -f docker-compose.back.yaml up -d
+      - name: set env & deploy
+        run: |
+          cd /home/ubuntu/deploy/back
+          echo "${{ secrets.ENV_FILE_PROD }}" > .env
+          echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u ${{ secrets.GIT_USER }} --password-stdin
+          docker image prune -a -f
+          docker-compose -f docker-compose.back.yaml down
+          docker-compose -f docker-compose.back.yaml pull
+          docker-compose -f docker-compose.back.yaml up -d
