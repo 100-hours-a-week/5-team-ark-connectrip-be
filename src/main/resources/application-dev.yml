@@ -1,0 +1,37 @@
+spring:
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: ${DEV_DATABASE_URL}
+    username: ${DEV_DATABASE_USERNAME}
+    password: ${DEV_DATABASE_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+    show-sql: true
+  jwt:
+    secret-key: ${DEV_JWT_SECRET_KEY}
+
+  data:
+    redis:
+      host: ${DEV_REDIS_HOST}
+      port: ${DEV_REDIS_PORT}
+    mongodb:
+      uri: mongodb://${DEV_MONGODB_USERNAME}:${DEV_MONGODB_PASSWORD}@${DEV_MONGODB_HOST}:${DEV_MONGODB_PORT}/${DEV_MONGODB_DATABASE}?authSource=admin
+      host: ${DEV_MONGODB_HOST}
+      port: ${DEV_MONGODB_PORT}
+      database: ${DEV_MONGODB_DATABASE}
+      auto-index-creation: true
+      authentication-database: admin
+
+  auth:
+    success-redirect-url: ${DEV_KAKAO_SUCCESS_REDIRECT_URL}
+    first-login-redirect-url: ${DEV_KAKAO_FIRST_LOGIN_REDIRECT_URL}
+    kakao:
+      client-id: ${DEV_KAKAO_CLIENT_ID}
+      redirect-uri: ${DEV_KAKAO_REDIRECT_URI}
+
+allowed:
+  origins: ${DEV_ALLOWED_ORIGIN} # 허용할 오리진 설정

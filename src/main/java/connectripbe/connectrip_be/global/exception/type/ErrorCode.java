@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 @Getter
 @AllArgsConstructor
 public enum ErrorCode {
+
     /**
      * 400 Bad Request
      */
@@ -18,7 +19,6 @@ public enum ErrorCode {
     INVALID_AUTH_CODE(HttpStatus.BAD_REQUEST, "인증 코드가 일치하지 않습니다."),
     EMAIL_NOT_VERIFIED(HttpStatus.BAD_REQUEST, "이메일 인증이 완료되지 않았습니다."),
     WRITE_NOT_YOURSELF(HttpStatus.BAD_REQUEST, "본인이 작성한 글만 수정 또는 삭제할 수 있습니다."),
-    POST_NOT_FOUND(HttpStatus.BAD_REQUEST, "해당 글을 찾을 수 없습니다."),
     COMMENT_NOT_FOUND(HttpStatus.BAD_REQUEST, "해당 댓글을 찾을 수 없습니다."),
     PROFILE_IMAGE_UPLOAD_ERROR(HttpStatus.BAD_REQUEST, "프로필 이미지 업로드 중 오류가 발생했습니다."),
     POST_IMAGE_UPLOAD_ERROR(HttpStatus.BAD_REQUEST, "게시물 이미지 업로드 중 오류가 발생했습니다."),
@@ -27,6 +27,11 @@ public enum ErrorCode {
     NICKNAME_DUPLICATION(HttpStatus.BAD_REQUEST, "이미 사용중인 닉네임입니다."),
     PASSWORD_EMPTY(HttpStatus.BAD_REQUEST, "비밀번호를 입력해주세요."),
     OVER_MAX_PARTICIPANTS(HttpStatus.BAD_REQUEST, "모임 최대 인원수를 초과했습니다."),
+    PENDING_NOT_FOUND(HttpStatus.BAD_REQUEST, "해당 신청을 찾을 수 없습니다."),
+    PENDING_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "이미 신청한 상태입니다."),
+    WRITE_YOURSELF(HttpStatus.BAD_REQUEST, "본인이 작성한 글은 신청할 수 없습니다."),
+    NOT_CHATROOM_LEADER(HttpStatus.BAD_REQUEST, "채팅방 방장이 아닙니다."),
+
 
     // Member, 사용자
     NOT_FOUND_MEMBER(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다."),
@@ -37,14 +42,20 @@ public enum ErrorCode {
 
     // Accompany Post, 동행 게시글
     NOT_FOUND_ACCOMPANY_POST(HttpStatus.NOT_FOUND, "동행 게시글을 찾을 수 없습니다."),
+    DUPLICATED_CUSTOM_URL(HttpStatus.CONFLICT, "중복된 커스텀 URL 입니다."),
 
     //  Accompany Status, 동행 상태
     NOT_FOUND_ACCOMPANY_STATUS(HttpStatus.INTERNAL_SERVER_ERROR, "동행 상태를 찾을 수 없습니다."),
     ALREADY_FINISHED_ACCOMPANY_STATUS_EXCEPTION(HttpStatus.BAD_REQUEST, "이미 종료된 동행압니다."),
 
-    // Meeting error
-    DUPLICATE_MEETING(HttpStatus.BAD_REQUEST, "이미 모임에 참여하셨습니다."),
+    // Pending List, 신청 목록
+    PENDING_ALREADY_ACCEPTED(HttpStatus.BAD_REQUEST, "이미 수락된 신청입니다."),
+    PENDING_ALREADY_REJECTED(HttpStatus.BAD_REQUEST, "이미 거절된 신청입니다."),
 
+    // ChatRoom error
+    ALREADY_JOINED_CHAT_ROOM(HttpStatus.BAD_REQUEST, "이미 참여한 채팅방입니다."),
+    ALREADY_EXITED_CHAT_ROOM(HttpStatus.BAD_REQUEST, "이미 나간 채팅방입니다."),
+    USER_NOT_IN_CHAT_ROOM(HttpStatus.BAD_REQUEST, "사용자가 채팅방에 참여하지 않았습니다."),
     /**
      * 401 Unauthorized
      */
@@ -66,9 +77,16 @@ public enum ErrorCode {
      * 404 Not Found
      */
 
+    PENDING_LIST_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 신청 목록을 찾을 수 없습니다."),
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 이메일로 사용자를 찾을 수 없습니다."),
     NOT_FOUND_REVIEW(HttpStatus.NOT_FOUND, "리뷰를 찾을 수 없습니다."),  // 리뷰 관련 에러 추가
 
+
+    CHAT_ROOM_MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 채팅방 참여자를 찾을 수 없습니다."),
+    CHAT_ROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 채팅방을 찾을 수 없습니다."),
+    POST_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 글을 찾을 수 없습니다."),
+    CHATROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 채팅방을 찾을 수 없습니다."),
+    CHAT_MESSAGE_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 채팅 메세지를 찾을 수 없습니다."),
 
     /**
      * 409 Conflict
@@ -82,6 +100,8 @@ public enum ErrorCode {
      * 500 Internal Server Error
      */
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "내부 서버 오류가 발생했습니다."),
+
+    REDIRECT_FAILURE(HttpStatus.INTERNAL_SERVER_ERROR, "리다이렉트에 실패했습니다."),
 
     API_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "외부 API 서버 오류가 발생했습니다."),
 

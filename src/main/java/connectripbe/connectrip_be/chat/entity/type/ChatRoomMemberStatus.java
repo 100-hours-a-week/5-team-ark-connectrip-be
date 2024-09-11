@@ -9,5 +9,6 @@ public enum ChatRoomMemberStatus {
       ACTIVE("활성"),
       EXIT("나감");
 
-      private final String status;
+
+      private final String message;
 }

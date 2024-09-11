@@ -1,14 +1,40 @@
 spring:
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
-    url: ${DB_URL}            # 배포용 DB 주소를 환경 변수로 관리
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    url: ${LOCAL_DATABASE_URL}
+    username: ${LOCAL_DATABASE_USERNAME}
+    password: ${LOCAL_DATABASE_PASSWORD}
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+    show-sql: true
+
+  jwt:
+    secret-key: ${LOCAL_JWT_SECRET_KEY}
+
   data:
     redis:
-      host: ${REDIS_HOST}
-      port: 6379
+      host: ${LOCAL_REDIS_HOST}
+      port: ${LOCAL_REDIS_PORT}
 
-# .env 파일에서 로드될 변수들:
-# DB_USERNAME, DB_PASSWORD
-# AWS_ACCESS_KEY, AWS_SECRET_KEY
+    mongodb:
+      uri: mongodb://${LOCAL_MONGODB_USERNAME}:${LOCAL_MONGODB_PASSWORD}@${LOCAL_MONGODB_HOST}:${LOCAL_MONGODB_PORT}/${LOCAL_MONGODB_DATABASE}?authSource=admin
+      host: ${LOCAL_MONGODB_HOST}
+      port: ${LOCAL_MONGODB_PORT}
+      database: ${LOCAL_MONGODB_DATABASE}
+      auto-index-creation: true
+      authentication-database: admin
+
+  auth:
+    success-redirect-url: ${LOCAL_KAKAO_SUCCESS_REDIRECT_URL}
+    first-login-redirect-url: ${LOCAL_KAKAO_FIRST_LOGIN_REDIRECT_URL}
+    kakao:
+      client-id: ${LOCAL_KAKAO_CLIENT_ID}
+      redirect-uri: ${LOCAL_KAKAO_REDIRECT_URI}
+
+allowed:
+  origins: http://localhost:3000  # 허용할 오리진 설정

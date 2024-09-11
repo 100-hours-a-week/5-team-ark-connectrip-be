@@ -1,9 +1,12 @@
 package connectripbe.connectrip_be.chat.dto;
 
 import connectripbe.connectrip_be.chat.entity.ChatRoomEntity;
+
+import connectripbe.connectrip_be.chat.entity.type.ChatRoomMemberStatus;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+
 import lombok.Builder;
 
 @Builder
@@ -15,32 +18,43 @@ public record ChatRoomListResponse(
         String startDate,
         String endDate,
         String lastChatMessage,
-        String lastChatMessageTime
-        ) {
+        String lastChatMessageTime,
+        int memberNumber
+) {
 
 
-      public static ChatRoomListResponse fromEntity(ChatRoomEntity chatRoom){
-            return ChatRoomListResponse.builder()
-                    .chatRoomId(chatRoom.getId())
-                    .accompanyPostId(chatRoom.getAccompanyPost().getId())
-                    .accompanyPostTitle(chatRoom.getAccompanyPost().getTitle())
-                    .accompanyArea(chatRoom.getAccompanyPost().getAccompanyArea().toString())
-                    .startDate(formatToUTC(chatRoom.getAccompanyPost().getStartDate().atStartOfDay()))
-                    .endDate(formatToUTC(chatRoom.getAccompanyPost().getEndDate().atStartOfDay()))
-                    .lastChatMessage(chatRoom.getLastChatMessage())
-                    .lastChatMessageTime(formatToUTC(chatRoom.getLastChatTime()))
-                    .build();
-      }
+    public static ChatRoomListResponse fromEntity(ChatRoomEntity chatRoom) {
+        // 마지막 채팅 시간이 없을 경우 생성 시간으로 대체
+        LocalDateTime lastChatTime = chatRoom.getLastChatTime() != null
+                ? chatRoom.getLastChatTime()
+                : chatRoom.getCreatedAt();
 
-      private static final DateTimeFormatter UTC_FORMATTER = DateTimeFormatter.ofPattern(
-              "yyyy-MM-dd'T'HH:mm:ss'Z'");
+        // 활성 멤버 수 계산
+        int activeMemberCnt = (int) chatRoom.getChatRoomMembers().stream()
+                .filter(member -> member.getStatus().equals(ChatRoomMemberStatus.ACTIVE))
+                .count();
 
-      private static String formatToUTC(LocalDateTime dateTime) {
-            if (dateTime == null) {
-                  return null;
-            }
-            return dateTime.atZone(ZoneId.systemDefault())
-                    .withZoneSameInstant(ZoneId.of("UTC"))
-                    .format(UTC_FORMATTER);
-      }
+        return ChatRoomListResponse.builder()
+                .chatRoomId(chatRoom.getId())
+                .accompanyPostId(chatRoom.getAccompanyPost().getId())
+                .accompanyPostTitle(chatRoom.getAccompanyPost().getTitle())
+                .accompanyArea(chatRoom.getAccompanyPost().getAccompanyArea())
+                .startDate(formatToUTC(chatRoom.getAccompanyPost().getStartDate()))
+                .endDate(formatToUTC(chatRoom.getAccompanyPost().getEndDate()))
+                .lastChatMessage(chatRoom.getLastChatMessage())
+                .lastChatMessageTime(formatToUTC(lastChatTime))
+                .memberNumber(activeMemberCnt)
+                .build();
+    }
+
+    private static final DateTimeFormatter UTC_FORMATTER = DateTimeFormatter.ofPattern(
+            "yyyy-MM-dd'T'HH:mm:ss'Z'");
+
+    private static String formatToUTC(LocalDateTime dateTime) {
+        if (dateTime == null) {
+            return null;
+        }
+        return dateTime.atZone(ZoneId.systemDefault())
+                .format(UTC_FORMATTER);
+    }
 }

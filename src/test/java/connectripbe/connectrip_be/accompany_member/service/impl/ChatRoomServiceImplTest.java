@@ -14,7 +14,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -41,9 +41,9 @@ public class ChatRoomServiceImplTest {
             AccompanyPostEntity accompanyPost = AccompanyPostEntity.builder()
                     .id(1L)
                     .title("Test Title")
-                    .accompanyArea(AccompanyArea.SEOUL)
-                    .startDate(LocalDate.now())
-                    .endDate(LocalDate.now().plusDays(5))
+                    .accompanyArea(AccompanyArea.SEOUL.toString())
+                    .startDate(LocalDateTime.now())
+                    .endDate(LocalDateTime.now().plusDays(5))
                     .build();
 
             ChatRoomEntity chatRoom = ChatRoomEntity.builder()
@@ -58,7 +58,7 @@ public class ChatRoomServiceImplTest {
             // chatRoomMemberRepository가 특정 이메일에 대한 데이터를 반환하도록 설정
             when(chatRoomMemberRepository.findByMember_Email(email)).thenReturn(List.of(memberEntity));
 
-            List<ChatRoomListResponse> result = chatRoomService.getChatRoomList(email);
+            List<ChatRoomListResponse> result = chatRoomService.getChatRoomList(1L);
 
             assertEquals(1, result.size());  // 반환된 리스트의 크기 검증
             assertEquals(1L, result.get(0).chatRoomId());  // chatRoomId 검증
@@ -73,7 +73,7 @@ public class ChatRoomServiceImplTest {
             String email = "test@example.com";
             when(chatRoomMemberRepository.findByMember_Email(email)).thenReturn(List.of());
 
-            List<ChatRoomListResponse> result = chatRoomService.getChatRoomList(email);
+            List<ChatRoomListResponse> result = chatRoomService.getChatRoomList(1L);
 
             assertEquals(0, result.size());
       }

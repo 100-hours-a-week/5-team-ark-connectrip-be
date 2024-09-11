@@ -1,10 +1,9 @@
 package connectripbe.connectrip_be.post.dto;
 
+import connectripbe.connectrip_be.chat.entity.ChatRoomEntity;
 import connectripbe.connectrip_be.post.entity.AccompanyPostEntity;
-import connectripbe.connectrip_be.post.entity.enums.AccompanyArea;
 import lombok.Builder;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -13,6 +12,7 @@ import java.time.format.DateTimeFormatter;
 public record AccompanyPostResponse(
         Long id,
         Long memberId,
+        Long leaderId,
         String nickname,
         String profileImagePath,
         String title,
@@ -26,34 +26,36 @@ public record AccompanyPostResponse(
         String createdAt
 ) {
 
-    public static AccompanyPostResponse fromEntity(AccompanyPostEntity accompanyPost) {
+    public static AccompanyPostResponse fromEntity(AccompanyPostEntity accompanyPost, String status
+            , ChatRoomEntity chatRoom) {
 
         return AccompanyPostResponse.builder()
                 .id(accompanyPost.getId())
                 .memberId(accompanyPost.getMemberEntity().getId())
+                .leaderId(chatRoom.getCurrentLeader().getMember().getId())
                 .nickname(accompanyPost.getMemberEntity().getNickname())
                 .profileImagePath(accompanyPost.getMemberEntity().getProfileImagePath())
                 .title(accompanyPost.getTitle())
-                .startDate(formatToUTC(accompanyPost.getStartDate().atStartOfDay()))
-                .endDate(formatToUTC(accompanyPost.getEndDate().atStartOfDay()))
-                .accompanyArea(accompanyPost.getAccompanyArea().getDisplayName())
+                .startDate(formatToUTC(accompanyPost.getStartDate()))
+                .endDate(formatToUTC(accompanyPost.getEndDate()))
+                .accompanyArea(accompanyPost.getAccompanyArea())
                 .customUrl(accompanyPost.getCustomUrl())
                 .urlQrPath(accompanyPost.getUrlQrPath())
                 .content(accompanyPost.getContent())
-                .status(accompanyPost.getRequestStatus())
+                .status(status)
                 .createdAt(formatToUTC(accompanyPost.getCreatedAt()))
                 .build();
 
     }
 
-    private static final DateTimeFormatter UTC_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+    private static final DateTimeFormatter UTC_FORMATTER = DateTimeFormatter.ofPattern(
+            "yyyy-MM-dd'T'HH:mm:ss'Z'");
 
     private static String formatToUTC(LocalDateTime dateTime) {
         if (dateTime == null) {
             return null;
         }
         return dateTime.atZone(ZoneId.systemDefault())
-                .withZoneSameInstant(ZoneId.of("UTC"))
                 .format(UTC_FORMATTER);
     }
 }

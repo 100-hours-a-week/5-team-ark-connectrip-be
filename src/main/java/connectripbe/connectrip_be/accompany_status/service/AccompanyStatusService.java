@@ -6,5 +6,5 @@ public interface AccompanyStatusService {
 
     AccompanyStatusResponse getAccompanyStatus(long AccompanyPostId);
 
-    void updateAccompanyStatus(String memberEmail, long postId);
+    void updateAccompanyStatus(Long memberId, long postId);
 }
