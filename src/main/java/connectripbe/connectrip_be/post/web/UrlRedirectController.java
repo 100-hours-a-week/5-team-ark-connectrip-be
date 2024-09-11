@@ -15,12 +15,13 @@ public class UrlRedirectController {
 
     private final AccompanyPostRepository accompanyPostRepository;
 
-    @GetMapping("/api/v1/accompany/{customUrl}")
-    public RedirectView redirectToPostDetailPage(@PathVariable String customUrl) {
-        // 단축 URL로 게시글을 조회
+    @GetMapping("/s/{customUrl}")
+    public RedirectView redirectToOriginalUrl(@PathVariable String customUrl) {
+        // customUrl을 사용하여 게시글을 조회
         AccompanyPostEntity post = accompanyPostRepository.findByCustomUrl(customUrl)
                 .orElseThrow(NotFoundAccompanyPostException::new);
 
-        return new RedirectView("/api/v1/accompany/posts/" + post.getId());
+        // 게시글 ID를 사용하여 원래 경로로 리다이렉트
+        return new RedirectView("https://connectrip.travel/accompany/" + post.getId());
     }
 }
