@@ -3,6 +3,7 @@ package connectripbe.connectrip_be.chat.entity;
 import connectripbe.connectrip_be.chat.entity.type.ChatRoomMemberStatus;
 import connectripbe.connectrip_be.global.entity.BaseEntity;
 import connectripbe.connectrip_be.member.entity.MemberEntity;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -12,12 +13,14 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity(name = "chat_room_member")
+@Table(name = "chat_room_member")
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -39,10 +42,13 @@ public class ChatRoomMemberEntity extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private ChatRoomMemberStatus status;
 
+    @Column(name = "is_location_sharing_enabled")
     private boolean isLocationSharingEnabled;
 
+    @Column(name = "last_latitude")
     private Double lastLatitude;
 
+    @Column(name = "last_longitude")
     private Double lastLongitude;
 
     // 연관관계 메서드
