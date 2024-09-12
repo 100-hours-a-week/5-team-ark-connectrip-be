@@ -8,6 +8,7 @@ import connectripbe.connectrip_be.communitypost.repository.CommunityPostReposito
 import connectripbe.connectrip_be.communitypost.service.CommunityPostService;
 import connectripbe.connectrip_be.global.exception.GlobalException;
 import connectripbe.connectrip_be.global.exception.type.ErrorCode;
+import connectripbe.connectrip_be.global.util.bucket4j.annotation.RateLimit;
 import connectripbe.connectrip_be.member.entity.MemberEntity;
 import connectripbe.connectrip_be.member.repository.MemberJpaRepository;
 import java.util.List;
@@ -29,6 +30,7 @@ public class CommunityPostServiceImpl implements CommunityPostService {
      * @param memberId 게시글 작성자의 ID
      * @return 생성된 게시글의 정보를 담은 CommunityPostResponse 객체
      */
+    @RateLimit
     @Override
     public CommunityPostResponse createPost(CreateCommunityPostRequest request, Long memberId) {
         MemberEntity memberEntity = findMemberByIdAndValidate(memberId);

@@ -1,7 +1,6 @@
 package connectripbe.connectrip_be.auth.jwt;
 
 
-
 import static connectripbe.connectrip_be.global.exception.type.ErrorCode.USER_NOT_FOUND;
 
 import connectripbe.connectrip_be.auth.jwt.dto.CustomUserDto;
@@ -17,23 +16,28 @@ import org.springframework.stereotype.Service;
 
 
 /**
- * 사용자를 인증하기 위해 UserDetailsService 인터페이스를 구현한 클래스
- * 주어진 이메일 기반으로 사용자 정보를 로드
- * JWT 기반 인증을 위해 필요한 UserDetails 객체를 반환
+ * 사용자를 인증하기 위해 UserDetailsService 인터페이스를 구현한 클래스 주어진 이메일 기반으로 사용자 정보를 로드 JWT 기반 인증을 위해 필요한 UserDetails 객체를 반환
  */
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class JwtUserDetailService implements UserDetailsService {
 
-      private final MemberJpaRepository memberJpaRepository;
+    private final MemberJpaRepository memberJpaRepository;
 
-      @Override
-      public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+    @Override
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 
-            MemberEntity memberEntity = memberJpaRepository.findByEmail(email)
-                    .orElseThrow(() -> new GlobalException(USER_NOT_FOUND));
+        MemberEntity memberEntity = memberJpaRepository.findByEmail(email)
+                .orElseThrow(() -> new GlobalException(USER_NOT_FOUND));
 
-            return new JwtUserDetails(CustomUserDto.fromEntity(memberEntity));
-      }
+        return new JwtUserDetails(CustomUserDto.fromEntity(memberEntity));
+    }
+
+
+    public UserDetails loadUserById(Long memberId) {
+        MemberEntity memberEntity = memberJpaRepository.findById(memberId)
+                .orElseThrow(() -> new GlobalException(USER_NOT_FOUND));
+        return new JwtUserDetails(CustomUserDto.fromEntity(memberEntity));
+    }
 }
