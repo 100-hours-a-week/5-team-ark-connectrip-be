@@ -23,6 +23,13 @@ public class RateLimitAspect {
 
     private final RateLimiterService rateLimiterService;
 
+    /**
+     * 메서드 실행 전, 사용자에 대해 RateLimit 을 확인하여 제한을 초과하지 않는지 검증.
+     *
+     * @param joinPoint AOP 에서 제공하는 현재 메서드 실행 정보
+     * @return 메서드 실행 결과
+     * @throws Throwable RateLimit 에 의해 제한된 경우 예외가 발생
+     */
     @Around("@annotation(connectripbe.connectrip_be.global.util.bucket4j.annotation.RateLimit)")
     public Object checkRateLimit(ProceedingJoinPoint joinPoint) throws Throwable {
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();

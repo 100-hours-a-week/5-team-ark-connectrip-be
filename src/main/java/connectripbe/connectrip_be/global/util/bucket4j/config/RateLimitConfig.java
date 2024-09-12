@@ -34,6 +34,12 @@ public class RateLimitConfig {
 
     private final RedisClient lettuceRedisClient;
 
+
+    /**
+     * Redis 에 연결된 Lettuce 기반의 Bucket4j ProxyManager 를 생성.
+     *
+     * @return Lettuce 기반의 ProxyManager 인스턴스
+     */
     @Bean
     public LettuceBasedProxyManager<String> lettuceBasedProxyManager() {
         StatefulRedisConnection<String, byte[]> connect =
@@ -46,6 +52,11 @@ public class RateLimitConfig {
                 .build();
     }
 
+    /**
+     * Bucket4j의 기본 버킷 구성을 설정. 기본 설정으로는 용량과 충전 빈도가 적용.
+     *
+     * @return BucketConfiguration 인스턴스
+     */
     @Bean
     public BucketConfiguration bucketConfiguration() {
         return BucketConfiguration.builder()
