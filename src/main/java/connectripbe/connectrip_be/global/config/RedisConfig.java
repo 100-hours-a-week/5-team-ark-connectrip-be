@@ -1,5 +1,6 @@
 package connectripbe.connectrip_be.global.config;
 
+import io.lettuce.core.RedisClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;
@@ -21,6 +22,8 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 @Configuration
 @RequiredArgsConstructor
 public class RedisConfig {
+
+    private static final String PREFIX = "redis://";
 
     @Value("${spring.data.redis.host}")
     private String host;
@@ -67,5 +70,10 @@ public class RedisConfig {
         redisTemplate.setValueSerializer(new StringRedisSerializer());
 
         return redisTemplate;
+    }
+
+    @Bean(name = "lettuceRedisClient")
+    public RedisClient redisClient() {
+        return RedisClient.create(PREFIX + host + ":" + port);
     }
 }

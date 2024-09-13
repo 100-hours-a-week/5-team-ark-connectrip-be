@@ -89,6 +89,8 @@ dependencies {
     // Messaging
     implementation 'org.springframework:spring-messaging'
 
+    //Bucket4j
+    implementation 'com.bucket4j:bucket4j-redis:8.7.0'
 
 }
 

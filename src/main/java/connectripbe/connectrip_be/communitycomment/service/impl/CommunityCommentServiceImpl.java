@@ -9,6 +9,7 @@ import connectripbe.connectrip_be.communitypost.entity.CommunityPostEntity;
 import connectripbe.connectrip_be.communitypost.repository.CommunityPostRepository;
 import connectripbe.connectrip_be.global.exception.GlobalException;
 import connectripbe.connectrip_be.global.exception.type.ErrorCode;
+import connectripbe.connectrip_be.global.util.bucket4j.annotation.RateLimit;
 import connectripbe.connectrip_be.member.entity.MemberEntity;
 import connectripbe.connectrip_be.member.repository.MemberJpaRepository;
 import java.util.List;
@@ -33,16 +34,16 @@ public class CommunityCommentServiceImpl implements CommunityCommentService {
      * @param request  댓글 생성 요청 정보 (게시물 ID, 댓글 내용 포함)
      * @return 생성된 댓글 정보를 담은 CommunityCommentResponse 객체
      */
+    @RateLimit(capacity = 10, refillTokens = 10)
     @Override
-    @Transactional
     public CommunityCommentResponse createComment(Long memberId, CommunityCommentRequest request) {
         MemberEntity member = getMember(memberId);
 
         CommunityPostEntity post = getPost(request.getPostId());
 
         CommunityCommentEntity comment = request.toEntity(post, member);
-
-        return CommunityCommentResponse.fromEntity(communityCommentRepository.save(comment));
+        communityCommentRepository.save(comment);
+        return CommunityCommentResponse.fromEntity(comment);
     }
 
     /**
