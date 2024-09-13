@@ -59,7 +59,7 @@ public class RateLimiterService {
         BucketConfiguration configuration = BucketConfiguration.builder()
                 .addLimit(Bandwidth.builder()
                         .capacity(capacity)
-                        .refillGreedy(refillTokens, Duration.ofSeconds(refillDurationSeconds))
+                        .refillIntervally(refillTokens, Duration.ofSeconds(refillDurationSeconds))
                         .build())
                 .build();
 
