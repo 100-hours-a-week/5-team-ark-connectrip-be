@@ -8,6 +8,7 @@ import connectripbe.connectrip_be.member.dto.CheckDuplicateNicknameDto;
 import connectripbe.connectrip_be.member.dto.FirstUpdateMemberRequest;
 import connectripbe.connectrip_be.member.dto.MemberHeaderInfoDto;
 import connectripbe.connectrip_be.member.dto.ProfileDto;
+import connectripbe.connectrip_be.member.dto.ProfileUpdateRequestDto;
 import connectripbe.connectrip_be.member.dto.TokenAndHeaderInfoDto;
 import connectripbe.connectrip_be.member.service.MemberService;
 import jakarta.servlet.http.Cookie;
@@ -53,7 +54,7 @@ public class MemberController {
     ) {
         return memberService.getMemberHeaderInfo(id);
     }
-    
+
     // 프로필 조회: 프로필 정보 및 최신 3개 리뷰 반환
     @GetMapping("/profile/{memberId}")
     public ResponseEntity<ProfileDto> getProfile(@PathVariable Long memberId) {
@@ -66,6 +67,13 @@ public class MemberController {
     public ResponseEntity<List<AccompanyReviewResponse>> getAllReviews(@PathVariable Long memberId) {
         List<AccompanyReviewResponse> reviews = memberService.getAllReviews(memberId);
         return ResponseEntity.ok(reviews);
+    }
+
+    @PostMapping("/{memberId}/profile")
+    public ResponseEntity<ProfileDto> updateProfile(@PathVariable Long memberId,
+                                                    @RequestBody ProfileUpdateRequestDto dto) {
+        ProfileDto updatedProfile = memberService.updateProfile(memberId, dto);
+        return ResponseEntity.ok(updatedProfile);  // 수정된 ProfileDto 반환
     }
 
     // fixme-noah: 2024-08-21, 엉망 코드

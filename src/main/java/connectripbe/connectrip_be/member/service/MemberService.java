@@ -7,6 +7,7 @@ import connectripbe.connectrip_be.member.dto.CheckDuplicateNicknameDto;
 import connectripbe.connectrip_be.member.dto.FirstUpdateMemberRequest;
 import connectripbe.connectrip_be.member.dto.MemberHeaderInfoDto;
 import connectripbe.connectrip_be.member.dto.ProfileDto;
+import connectripbe.connectrip_be.member.dto.ProfileUpdateRequestDto;
 import connectripbe.connectrip_be.member.dto.TokenAndHeaderInfoDto;
 import java.util.List;
 
@@ -18,7 +19,6 @@ public interface MemberService {
 
     GlobalResponse<MemberHeaderInfoDto> getMemberHeaderInfo(Long id);
 
-    // 추후 달라지면 response 분리
     TokenAndHeaderInfoDto getFirstUpdateMemberResponse(
             String tempTokenCookie,
             FirstUpdateMemberRequest request);
@@ -27,6 +27,9 @@ public interface MemberService {
 
     List<AccompanyReviewResponse> getAllReviews(Long memberId);  // 모든 리뷰 조회
 
-    // 나이대 계산 메서드 추가
+    // 나이대 계산 메서드
     String calculateAgeGroup(int age);
+
+    // 반환 타입을 ProfileDto로 변경
+    ProfileDto updateProfile(Long memberId, ProfileUpdateRequestDto dto);
 }

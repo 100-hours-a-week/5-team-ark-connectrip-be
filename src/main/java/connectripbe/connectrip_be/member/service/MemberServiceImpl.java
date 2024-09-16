@@ -13,6 +13,7 @@ import connectripbe.connectrip_be.member.dto.CheckDuplicateNicknameDto;
 import connectripbe.connectrip_be.member.dto.FirstUpdateMemberRequest;
 import connectripbe.connectrip_be.member.dto.MemberHeaderInfoDto;
 import connectripbe.connectrip_be.member.dto.ProfileDto;
+import connectripbe.connectrip_be.member.dto.ProfileUpdateRequestDto;
 import connectripbe.connectrip_be.member.dto.TokenAndHeaderInfoDto;
 import connectripbe.connectrip_be.member.entity.MemberEntity;
 import connectripbe.connectrip_be.member.entity.enums.AgeGroup;
@@ -149,5 +150,36 @@ public class MemberServiceImpl implements MemberService {
     private int calculateAge(LocalDate birthDate) {
         LocalDate now = LocalDate.now();
         return Period.between(birthDate, now).getYears();
+    }
+
+    // 프로필 수정 메서드 추가 (닉네임과 자기소개만 수정 가능)
+    @Override
+    public ProfileDto updateProfile(Long memberId, ProfileUpdateRequestDto dto) {
+        MemberEntity member = memberJpaRepository.findById(memberId)
+                .orElseThrow(NotFoundMemberException::new);
+
+        // 닉네임과 자기소개 업데이트
+        if (dto.getNickname() != null && !dto.getNickname().isEmpty()) {
+            member.setNickname(dto.getNickname());
+        }
+        if (dto.getDescription() != null && !dto.getDescription().isEmpty()) {
+            member.setDescription(dto.getDescription());
+        }
+
+        // 변경된 내용 저장
+        memberJpaRepository.save(member);
+
+        // 리뷰 카운트 및 최신 리뷰 불러오기
+        int reviewCount = accompanyReviewRepository.countByTargetId(memberId);
+        List<AccompanyReviewResponse> recentReviews = accompanyReviewRepository.findRecentReviewsByTargetId(
+                        memberId, PageRequest.of(0, 3)).stream()
+                .map(AccompanyReviewResponse::fromEntity)
+                .collect(Collectors.toList());
+
+        // 나이대 계산
+        String ageGroup = calculateAgeGroup(calculateAge(member.getBirthDate().toLocalDate()));
+
+        // ProfileDto 반환
+        return ProfileDto.fromEntity(member, recentReviews, reviewCount, ageGroup);
     }
 }

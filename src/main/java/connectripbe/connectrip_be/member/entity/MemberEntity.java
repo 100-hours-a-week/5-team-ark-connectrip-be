@@ -22,9 +22,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -76,9 +78,12 @@ public class MemberEntity extends BaseEntity {
     @Column(name = "accompany_count", nullable = false)
     private int accompanyCount = 0;
 
-    public void firstUpdate(String nickname, LocalDateTime birthDate, String gender) {
+    public void setNickname(String nickname) {
         this.nickname = nickname;
-        this.birthDate = birthDate;
-        this.gender = gender;
     }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
 }
