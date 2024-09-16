@@ -123,7 +123,7 @@ public class MemberServiceImpl implements MemberService {
                 .collect(Collectors.toList());
 
         // 전체 리뷰 수 가져오기
-        int reviewCount = accompanyReviewRepository.countReviewsByTargetId(memberId);
+        int reviewCount = accompanyReviewRepository.countByTargetId(memberId);
 
         // 나이 계산 및 나이대 결정
         int age = calculateAge(member.getBirthDate().toLocalDate());
