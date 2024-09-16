@@ -26,4 +26,7 @@ public interface MemberService {
     ProfileDto getProfile(Long memberId);  // 프로필 조회 (최신 3개 리뷰)
 
     List<AccompanyReviewResponse> getAllReviews(Long memberId);  // 모든 리뷰 조회
+
+    // 나이대 계산 메서드 추가
+    String calculateAgeGroup(int age);
 }

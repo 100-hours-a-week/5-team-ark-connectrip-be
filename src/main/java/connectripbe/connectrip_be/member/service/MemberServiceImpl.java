@@ -15,11 +15,14 @@ import connectripbe.connectrip_be.member.dto.MemberHeaderInfoDto;
 import connectripbe.connectrip_be.member.dto.ProfileDto;
 import connectripbe.connectrip_be.member.dto.TokenAndHeaderInfoDto;
 import connectripbe.connectrip_be.member.entity.MemberEntity;
+import connectripbe.connectrip_be.member.entity.enums.AgeGroup;
 import connectripbe.connectrip_be.member.entity.type.MemberLoginType;
 import connectripbe.connectrip_be.member.entity.type.MemberRoleType;
 import connectripbe.connectrip_be.member.exception.DuplicateMemberNicknameException;
 import connectripbe.connectrip_be.member.exception.NotFoundMemberException;
 import connectripbe.connectrip_be.member.repository.MemberJpaRepository;
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -106,7 +109,6 @@ public class MemberServiceImpl implements MemberService {
         return new TokenAndHeaderInfoDto(tokenDto, memberHeaderInfoDto);
     }
 
-
     // 프로필 조회 메서드 (최신 3개의 리뷰만 가져오기)
     @Override
     public ProfileDto getProfile(Long memberId) {
@@ -123,7 +125,11 @@ public class MemberServiceImpl implements MemberService {
         // 전체 리뷰 수 가져오기
         int reviewCount = accompanyReviewRepository.countReviewsByTargetId(memberId);
 
-        return ProfileDto.fromEntity(member, recentReviews, reviewCount);
+        // 나이 계산 및 나이대 결정
+        int age = calculateAge(member.getBirthDate().toLocalDate());
+        String ageGroup = calculateAgeGroup(age);
+
+        return ProfileDto.fromEntity(member, recentReviews, reviewCount, ageGroup);
     }
 
     // 전체 리뷰 조회 메서드
@@ -132,5 +138,16 @@ public class MemberServiceImpl implements MemberService {
         return accompanyReviewRepository.findAllByTargetId(memberId).stream()
                 .map(AccompanyReviewResponse::fromEntity)
                 .collect(Collectors.toList());
+    }
+
+    // 나이대 계산 로직
+    public String calculateAgeGroup(int age) {
+        return AgeGroup.fromAge(age).getLabel();  // AgeGroup enum을 사용하여 나이대 계산
+    }
+
+    // 나이 계산 메서드
+    private int calculateAge(LocalDate birthDate) {
+        LocalDate now = LocalDate.now();
+        return Period.between(birthDate, now).getYears();
     }
 }
