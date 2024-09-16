@@ -23,6 +23,7 @@ import connectripbe.connectrip_be.member.repository.MemberJpaRepository;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -109,17 +110,18 @@ public class MemberServiceImpl implements MemberService {
         return new TokenAndHeaderInfoDto(tokenDto, memberHeaderInfoDto);
     }
 
-    // 프로필 조회 메서드
+
+    // 프로필 조회 메서드 (최신 3개의 리뷰만 가져오기)
     @Override
     @Transactional(readOnly = true)
     public ProfileDto getProfile(Long memberId) {
         MemberEntity member = memberJpaRepository.findById(memberId)
                 .orElseThrow(NotFoundMemberException::new);
 
-        // 최신 3개 리뷰 가져오기
-        List<AccompanyReviewResponse> recentReviews = accompanyReviewRepository.findRecentReviewsByTargetId(memberId)
+        // 최신 3개 리뷰 가져오기 (Pageable 사용)
+        List<AccompanyReviewResponse> recentReviews = accompanyReviewRepository.findRecentReviewsByTargetId(
+                        memberId, PageRequest.of(0, 3))  // PageRequest로 3개 제한
                 .stream()
-                .limit(3)
                 .map(AccompanyReviewResponse::fromEntity)
                 .collect(Collectors.toList());
 
@@ -130,10 +132,9 @@ public class MemberServiceImpl implements MemberService {
     }
 
     // 전체 리뷰 조회 메서드
-    @Transactional(readOnly = true)
     @Override
+    @Transactional(readOnly = true)
     public List<AccompanyReviewResponse> getAllReviews(Long memberId) {
-        // 모든 리뷰 가져오기
         return accompanyReviewRepository.findAllByTargetId(memberId).stream()
                 .map(AccompanyReviewResponse::fromEntity)
                 .collect(Collectors.toList());
