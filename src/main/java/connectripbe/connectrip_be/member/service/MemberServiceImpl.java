@@ -36,7 +36,6 @@ public class MemberServiceImpl implements MemberService {
     private final AccompanyReviewRepository accompanyReviewRepository;
     private final JwtProvider jwtProvider;
 
-    @Transactional(readOnly = true)
     @Override
     public GlobalResponse<CheckDuplicateEmailDto> checkDuplicateEmail(String email) {
         boolean existsByEmail = memberJpaRepository.existsByEmail(email);
@@ -45,7 +44,6 @@ public class MemberServiceImpl implements MemberService {
                 new CheckDuplicateEmailDto(existsByEmail));
     }
 
-    @Transactional(readOnly = true)
     @Override
     public GlobalResponse<CheckDuplicateNicknameDto> checkDuplicateNickname(String nickname) {
         boolean existsByNickname = memberJpaRepository.existsByNickname(nickname);
@@ -54,7 +52,6 @@ public class MemberServiceImpl implements MemberService {
                 new CheckDuplicateNicknameDto(existsByNickname));
     }
 
-    @Transactional(readOnly = true)
     @Override
     public GlobalResponse<MemberHeaderInfoDto> getMemberHeaderInfo(Long id) {
         MemberEntity memberEntity = memberJpaRepository.findById(id)
@@ -64,7 +61,6 @@ public class MemberServiceImpl implements MemberService {
                 MemberHeaderInfoDto.fromEntity(memberEntity));
     }
 
-    @Transactional
     @Override
     public TokenAndHeaderInfoDto getFirstUpdateMemberResponse(String tempTokenCookie,
                                                               FirstUpdateMemberRequest request) {
@@ -113,7 +109,6 @@ public class MemberServiceImpl implements MemberService {
 
     // 프로필 조회 메서드 (최신 3개의 리뷰만 가져오기)
     @Override
-    @Transactional(readOnly = true)
     public ProfileDto getProfile(Long memberId) {
         MemberEntity member = memberJpaRepository.findById(memberId)
                 .orElseThrow(NotFoundMemberException::new);
@@ -133,7 +128,6 @@ public class MemberServiceImpl implements MemberService {
 
     // 전체 리뷰 조회 메서드
     @Override
-    @Transactional(readOnly = true)
     public List<AccompanyReviewResponse> getAllReviews(Long memberId) {
         return accompanyReviewRepository.findAllByTargetId(memberId).stream()
                 .map(AccompanyReviewResponse::fromEntity)
