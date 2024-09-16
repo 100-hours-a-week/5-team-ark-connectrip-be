@@ -126,7 +126,7 @@ public class MemberServiceImpl implements MemberService {
                 .collect(Collectors.toList());
 
         // 전체 리뷰 수 가져오기
-        int reviewCount = accompanyReviewRepository.findAllByTargetId(memberId).size();
+        int reviewCount = accompanyReviewRepository.countReviewsByTargetId(memberId);
 
         return ProfileDto.fromEntity(member, recentReviews, reviewCount);
     }

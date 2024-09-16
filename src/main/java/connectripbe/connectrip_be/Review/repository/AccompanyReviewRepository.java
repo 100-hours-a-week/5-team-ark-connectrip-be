@@ -22,4 +22,9 @@ public interface AccompanyReviewRepository extends JpaRepository<AccompanyReview
     @Query("SELECT r FROM AccompanyReviewEntity r WHERE r.target.id = :memberId ORDER BY r.createdAt DESC")
     List<AccompanyReviewEntity> findAllByTargetId(Long memberId);
 
+
+    // 특정 유저가 받은 리뷰의 개수 가져오기 (리뷰 수 계산)
+    @Query("SELECT COUNT(r) FROM AccompanyReviewEntity r WHERE r.target.id = :memberId")
+    int countReviewsByTargetId(Long memberId);
+
 }
