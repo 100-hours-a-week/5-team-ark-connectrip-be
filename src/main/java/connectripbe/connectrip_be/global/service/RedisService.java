@@ -1,8 +1,8 @@
 package connectripbe.connectrip_be.global.service;
 
+import connectripbe.connectrip_be.global.exception.GlobalException;
+import connectripbe.connectrip_be.global.exception.type.ErrorCode;
 import java.time.Duration;
-import java.util.Map;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 public class RedisService {
 
     private final RedisTemplate<String, Object> redisTemplate;
+
 
     /**
      * 주어진 Key 에 대응하는 데이터를 Redis DB 에서 조회
@@ -70,14 +71,22 @@ public class RedisService {
         }
     }
 
-    public void increaseHashData(String hashKey, String key) {
-        redisTemplate.opsForHash().increment(hashKey, key, 1);
+    // 해시 값을 Redis 에서 조회 (명확한 반환 타입을 받기 위해 Class<T> 사용)
+    public <T> T getChatRoomHashKey(String hashKey, String key, Class<T> clazz) {
+        Object value = redisTemplate.opsForHash().get(hashKey, key);
+        if (clazz.isInstance(value)) {
+            return clazz.cast(value);
+        }
+        throw new GlobalException(ErrorCode.REDIS_CAST_ERROR);
     }
 
-    public Map<Object, Object> hasHashKeys(String key) {
-        return redisTemplate.opsForHash().entries(key);
+
+    // Redis 에 해시 값 저장
+    public void updateToHash(String hashKey, String key, Object value) {
+        redisTemplate.opsForHash().put(hashKey, key, value);
     }
 
+    // Redis 에서 해시 값 삭제
     public void deleteHashKey(String hashKey, String key) {
         redisTemplate.opsForHash().delete(hashKey, key);
     }
