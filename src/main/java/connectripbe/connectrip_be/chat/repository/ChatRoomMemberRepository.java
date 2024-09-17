@@ -20,7 +20,7 @@ public interface ChatRoomMemberRepository extends JpaRepository<ChatRoomMemberEn
             ChatRoomMemberStatus status,
             boolean isLocationTrackingEnabled);
 
-    Optional<ChatRoomMemberEntity> findByChatRoom_IdAndMember_Id(Long id, Long memberId);
+    Optional<ChatRoomMemberEntity> findByChatRoom_IdAndMember_Id(Long chatRoomId, Long memberId);
 
     Integer countByChatRoom_IdAndStatus(Long chatRoomId, ChatRoomMemberStatus chatRoomMemberStatus);
 
