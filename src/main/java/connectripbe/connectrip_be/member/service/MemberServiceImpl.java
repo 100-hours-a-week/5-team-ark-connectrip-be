@@ -39,6 +39,12 @@ public class MemberServiceImpl implements MemberService {
     private final AccompanyReviewRepository accompanyReviewRepository;
     private final JwtProvider jwtProvider;
 
+    /**
+     * 이메일 중복 확인
+     *
+     * @param email 중복 확인할 이메일
+     * @return 중복 여부를 포함한 GlobalResponse 객체
+     */
     @Override
     public GlobalResponse<CheckDuplicateEmailDto> checkDuplicateEmail(String email) {
         boolean existsByEmail = memberJpaRepository.existsByEmail(email);
@@ -46,6 +52,12 @@ public class MemberServiceImpl implements MemberService {
                 new CheckDuplicateEmailDto(existsByEmail));
     }
 
+    /**
+     * 닉네임 중복 확인
+     *
+     * @param nickname 중복 확인할 닉네임
+     * @return 중복 여부를 포함한 GlobalResponse 객체
+     */
     @Override
     public GlobalResponse<CheckDuplicateNicknameDto> checkDuplicateNickname(String nickname) {
         boolean existsByNickname = memberJpaRepository.existsByNickname(nickname);
@@ -53,13 +65,27 @@ public class MemberServiceImpl implements MemberService {
                 new CheckDuplicateNicknameDto(existsByNickname));
     }
 
+    /**
+     * 회원 헤더 정보 조회
+     *
+     * @param id 회원 ID
+     * @return 회원 헤더 정보를 포함한 GlobalResponse 객체
+     */
     @Override
     public GlobalResponse<MemberHeaderInfoDto> getMemberHeaderInfo(Long id) {
-        MemberEntity memberEntity = memberJpaRepository.findById(id).orElseThrow(NotFoundMemberException::new);
+        MemberEntity memberEntity = memberJpaRepository.findById(id)
+                .orElseThrow(NotFoundMemberException::new);
         return new GlobalResponse<>(memberEntity.getNickname() == null ? "FIRST_LOGIN" : "SUCCESS",
                 MemberHeaderInfoDto.fromEntity(memberEntity));
     }
 
+    /**
+     * 최초 로그인한 회원의 정보를 업데이트하고 JWT 토큰 반환
+     *
+     * @param tempTokenCookie 임시 토큰
+     * @param request         업데이트할 회원 정보
+     * @return 업데이트된 회원 정보와 JWT 토큰을 포함한 TokenAndHeaderInfoDto
+     */
     @Override
     public TokenAndHeaderInfoDto getFirstUpdateMemberResponse(String tempTokenCookie,
                                                               FirstUpdateMemberRequest request) {
@@ -71,9 +97,11 @@ public class MemberServiceImpl implements MemberService {
             throw new DuplicateMemberNicknameException();
         }
 
+        // 임시 토큰에서 이메일과 프로필 이미지를 추출
         MemberEmailAndProfileImagePathDto memberProfileImagePathDto = jwtProvider.getMemberProfileImagePathDtoFromToken(
                 tempTokenCookie);
 
+        // 새로운 회원 엔티티 생성 및 저장
         MemberEntity newMemberEntity = MemberEntity.builder()
                 .email(memberProfileImagePathDto.memberEmail())
                 .profileImagePath(memberProfileImagePathDto.memberProfileImagePath())
@@ -86,6 +114,7 @@ public class MemberServiceImpl implements MemberService {
 
         MemberEntity savedMemberEntity = memberJpaRepository.save(newMemberEntity);
 
+        // JWT 토큰 생성
         String refreshToken = jwtProvider.generateRefreshToken(savedMemberEntity.getId());
         String accessToken = jwtProvider.generateAccessToken(savedMemberEntity.getId());
 
@@ -105,13 +134,18 @@ public class MemberServiceImpl implements MemberService {
         return new TokenAndHeaderInfoDto(tokenDto, memberHeaderInfoDto);
     }
 
-    // 프로필 조회 메서드 (최신 3개의 리뷰만 가져오기)
+    /**
+     * 회원 프로필 조회 (최신 3개의 리뷰 포함)
+     *
+     * @param memberId 회원 ID
+     * @return 회원의 프로필 정보와 최신 리뷰를 포함한 ProfileDto
+     */
     @Override
     public ProfileDto getProfile(Long memberId) {
         MemberEntity member = memberJpaRepository.findById(memberId)
                 .orElseThrow(NotFoundMemberException::new);
 
-        // 최신 3개 리뷰 가져오기 (네이티브 쿼리 사용)
+        // 최신 3개의 리뷰 가져오기
         List<AccompanyReviewResponse> recentReviews = accompanyReviewRepository.findRecentReviewsByTargetId(memberId)
                 .stream()
                 .map(AccompanyReviewResponse::fromEntity)
@@ -127,6 +161,12 @@ public class MemberServiceImpl implements MemberService {
         return ProfileDto.fromEntity(member, recentReviews, reviewCount, ageGroup);
     }
 
+    /**
+     * 특정 회원의 모든 리뷰 조회
+     *
+     * @param memberId 회원 ID
+     * @return 모든 리뷰 목록
+     */
     @Override
     public List<AccompanyReviewResponse> getAllReviews(Long memberId) {
         return accompanyReviewRepository.findAllByTargetId(memberId).stream()
@@ -134,16 +174,34 @@ public class MemberServiceImpl implements MemberService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * 나이대 계산
+     *
+     * @param age 나이
+     * @return 나이대에 해당하는 문자열
+     */
     public String calculateAgeGroup(int age) {
         return AgeGroup.fromAge(age).getLabel();
     }
 
+    /**
+     * 나이 계산 메서드
+     *
+     * @param birthDate 생년월일
+     * @return 계산된 나이
+     */
     private int calculateAge(LocalDate birthDate) {
         LocalDate now = LocalDate.now();
         return Period.between(birthDate, now).getYears();
     }
 
-    // 프로필 수정 메서드 추가 (닉네임과 자기소개만 수정 가능)
+    /**
+     * 회원 프로필 수정 (닉네임과 자기소개 수정 가능)
+     *
+     * @param memberId 회원 ID
+     * @param dto      수정할 프로필 정보
+     * @return 수정된 프로필 정보를 포함한 ProfileDto
+     */
     @Override
     public ProfileDto updateProfile(Long memberId, ProfileUpdateRequestDto dto) {
         MemberEntity member = memberJpaRepository.findById(memberId)
@@ -170,7 +228,7 @@ public class MemberServiceImpl implements MemberService {
         // 나이대 계산
         String ageGroup = calculateAgeGroup(calculateAge(member.getBirthDate().toLocalDate()));
 
-        // ProfileDto 반환
+        // 수정된 프로필 정보를 반환
         return ProfileDto.fromEntity(member, recentReviews, reviewCount, ageGroup);
     }
 }
