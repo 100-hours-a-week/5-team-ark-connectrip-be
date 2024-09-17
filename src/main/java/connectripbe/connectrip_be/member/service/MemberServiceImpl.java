@@ -27,7 +27,6 @@ import java.time.Period;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,7 +42,6 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public GlobalResponse<CheckDuplicateEmailDto> checkDuplicateEmail(String email) {
         boolean existsByEmail = memberJpaRepository.existsByEmail(email);
-
         return new GlobalResponse<>(existsByEmail ? "DUPLICATED_EMAIL" : "SUCCESS",
                 new CheckDuplicateEmailDto(existsByEmail));
     }
@@ -51,16 +49,13 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public GlobalResponse<CheckDuplicateNicknameDto> checkDuplicateNickname(String nickname) {
         boolean existsByNickname = memberJpaRepository.existsByNickname(nickname);
-
         return new GlobalResponse<>(existsByNickname ? "DUPLICATED_NICKNAME" : "SUCCESS",
                 new CheckDuplicateNicknameDto(existsByNickname));
     }
 
     @Override
     public GlobalResponse<MemberHeaderInfoDto> getMemberHeaderInfo(Long id) {
-        MemberEntity memberEntity = memberJpaRepository.findById(id)
-                .orElseThrow(NotFoundMemberException::new);  // NotFoundMemberException 사용
-
+        MemberEntity memberEntity = memberJpaRepository.findById(id).orElseThrow(NotFoundMemberException::new);
         return new GlobalResponse<>(memberEntity.getNickname() == null ? "FIRST_LOGIN" : "SUCCESS",
                 MemberHeaderInfoDto.fromEntity(memberEntity));
     }
@@ -116,9 +111,8 @@ public class MemberServiceImpl implements MemberService {
         MemberEntity member = memberJpaRepository.findById(memberId)
                 .orElseThrow(NotFoundMemberException::new);
 
-        // 최신 3개 리뷰 가져오기 (Pageable 사용)
-        List<AccompanyReviewResponse> recentReviews = accompanyReviewRepository.findRecentReviewsByTargetId(
-                        memberId, PageRequest.of(0, 3))  // PageRequest로 3개 제한
+        // 최신 3개 리뷰 가져오기 (네이티브 쿼리 사용)
+        List<AccompanyReviewResponse> recentReviews = accompanyReviewRepository.findRecentReviewsByTargetId(memberId)
                 .stream()
                 .map(AccompanyReviewResponse::fromEntity)
                 .collect(Collectors.toList());
@@ -133,7 +127,6 @@ public class MemberServiceImpl implements MemberService {
         return ProfileDto.fromEntity(member, recentReviews, reviewCount, ageGroup);
     }
 
-    // 전체 리뷰 조회 메서드
     @Override
     public List<AccompanyReviewResponse> getAllReviews(Long memberId) {
         return accompanyReviewRepository.findAllByTargetId(memberId).stream()
@@ -141,12 +134,10 @@ public class MemberServiceImpl implements MemberService {
                 .collect(Collectors.toList());
     }
 
-    // 나이대 계산 로직
     public String calculateAgeGroup(int age) {
-        return AgeGroup.fromAge(age).getLabel();  // AgeGroup enum을 사용하여 나이대 계산
+        return AgeGroup.fromAge(age).getLabel();
     }
 
-    // 나이 계산 메서드
     private int calculateAge(LocalDate birthDate) {
         LocalDate now = LocalDate.now();
         return Period.between(birthDate, now).getYears();
@@ -171,8 +162,8 @@ public class MemberServiceImpl implements MemberService {
 
         // 리뷰 카운트 및 최신 리뷰 불러오기
         int reviewCount = accompanyReviewRepository.countByTargetId(memberId);
-        List<AccompanyReviewResponse> recentReviews = accompanyReviewRepository.findRecentReviewsByTargetId(
-                        memberId, PageRequest.of(0, 3)).stream()
+        List<AccompanyReviewResponse> recentReviews = accompanyReviewRepository.findRecentReviewsByTargetId(memberId)
+                .stream()
                 .map(AccompanyReviewResponse::fromEntity)
                 .collect(Collectors.toList());
 

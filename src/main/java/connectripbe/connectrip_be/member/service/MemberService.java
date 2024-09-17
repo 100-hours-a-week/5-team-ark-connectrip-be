@@ -19,17 +19,13 @@ public interface MemberService {
 
     GlobalResponse<MemberHeaderInfoDto> getMemberHeaderInfo(Long id);
 
-    TokenAndHeaderInfoDto getFirstUpdateMemberResponse(
-            String tempTokenCookie,
-            FirstUpdateMemberRequest request);
+    TokenAndHeaderInfoDto getFirstUpdateMemberResponse(String tempTokenCookie, FirstUpdateMemberRequest request);
 
-    ProfileDto getProfile(Long memberId);  // 프로필 조회 (최신 3개 리뷰)
+    ProfileDto getProfile(Long memberId);  // 프로필 조회 (최신 3개 리뷰 포함)
 
     List<AccompanyReviewResponse> getAllReviews(Long memberId);  // 모든 리뷰 조회
 
-    // 나이대 계산 메서드
-    String calculateAgeGroup(int age);
+    String calculateAgeGroup(int age);  // 나이대 계산 메서드
 
-    // 반환 타입을 ProfileDto로 변경
-    ProfileDto updateProfile(Long memberId, ProfileUpdateRequestDto dto);
+    ProfileDto updateProfile(Long memberId, ProfileUpdateRequestDto dto);  // 프로필 업데이트 메서드
 }
