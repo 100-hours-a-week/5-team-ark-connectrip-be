@@ -27,5 +27,5 @@ public interface MemberService {
 
     String calculateAgeGroup(int age);  // 나이대 계산 메서드
 
-    ProfileDto updateProfile(Long memberId, ProfileUpdateRequestDto dto);  // 프로필 업데이트 메서드
+    void updateProfile(Long memberId, ProfileUpdateRequestDto dto);  // 프로필 업데이트 메서드
 }

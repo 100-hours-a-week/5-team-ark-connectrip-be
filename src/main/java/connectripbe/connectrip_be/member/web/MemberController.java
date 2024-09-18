@@ -105,11 +105,12 @@ public class MemberController {
      * @return 수정된 프로필 정보를 담은 ProfileDto
      */
     @PostMapping("/{memberId}/profile")
-    public ResponseEntity<ProfileDto> updateProfile(@PathVariable Long memberId,
-                                                    @RequestBody ProfileUpdateRequestDto dto) {
-        ProfileDto updatedProfile = memberService.updateProfile(memberId, dto);
-        return ResponseEntity.ok(updatedProfile);  // 수정된 ProfileDto 반환
+    public ResponseEntity<Void> updateProfile(@PathVariable Long memberId,
+                                              @RequestBody ProfileUpdateRequestDto dto) {
+        memberService.updateProfile(memberId, dto);
+        return ResponseEntity.ok().build();  // 200 OK 응답만 반환
     }
+
 
     /**
      * 최초 로그인한 회원의 정보를 업데이트하고 JWT 토큰을 반환

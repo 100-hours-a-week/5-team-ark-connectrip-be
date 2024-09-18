@@ -203,7 +203,7 @@ public class MemberServiceImpl implements MemberService {
      * @return 수정된 프로필 정보를 포함한 ProfileDto
      */
     @Override
-    public ProfileDto updateProfile(Long memberId, ProfileUpdateRequestDto dto) {
+    public void updateProfile(Long memberId, ProfileUpdateRequestDto dto) {
         // MemberEntity 조회
         MemberEntity member = memberJpaRepository.findById(memberId)
                 .orElseThrow(NotFoundMemberException::new);
@@ -220,17 +220,7 @@ public class MemberServiceImpl implements MemberService {
         // 변경된 내용 저장
         memberJpaRepository.save(member);
 
-        // 리뷰 카운트 및 최신 리뷰 불러오기
-        int reviewCount = accompanyReviewRepository.countByTargetId(memberId);
-        List<AccompanyReviewResponse> recentReviews = accompanyReviewRepository.findRecentReviewsByTargetId(memberId)
-                .stream()
-                .map(AccompanyReviewResponse::fromEntity)
-                .collect(Collectors.toList());
-
-        // 나이대 계산
-        String ageGroup = calculateAgeGroup(calculateAge(member.getBirthDate().toLocalDate()));
-
-        // 수정된 프로필 정보를 반환
-        return ProfileDto.fromEntity(member, recentReviews, reviewCount, ageGroup);
+        // 여기서 반환은 하지 않고, 200 OK만 반환하도록 설정
     }
+
 }
