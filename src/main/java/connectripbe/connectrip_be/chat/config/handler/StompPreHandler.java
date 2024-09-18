@@ -93,11 +93,11 @@ public class StompPreHandler implements ChannelInterceptor {
     private String resolveTokenFromCookie(StompHeaderAccessor accessor) {
         String cookieHeader = accessor.getFirstNativeHeader("Cookie");
         if (cookieHeader != null) {
-            for (String cookie : cookieHeader.split(";")) {
-                String[] cookiePair = cookie.split("=");
-                if (cookiePair.length == 2 && "accessToken".equals(cookiePair[0].trim())) {
-                    log.info("accessToken found in cookies: {}", cookiePair[1].trim());
-                    return cookiePair[1].trim();
+            String[] cookies = cookieHeader.split(";");
+            for (String cookie : cookies) {
+                String trimmedCookie = cookie.trim();
+                if (trimmedCookie.startsWith("accessToken=")) {
+                    return trimmedCookie.substring("accessToken=".length());
                 }
             }
         }
