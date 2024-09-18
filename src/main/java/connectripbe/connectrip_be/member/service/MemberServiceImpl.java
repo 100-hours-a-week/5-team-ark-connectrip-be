@@ -199,8 +199,8 @@ public class MemberServiceImpl implements MemberService {
      * 회원 프로필 수정 (닉네임과 자기소개 수정 가능)
      *
      * @param memberId 회원 ID
-     * @param dto      수정할 프로필 정보
-     * @return 수정된 프로필 정보를 포함한 ProfileDto
+     * @param dto      수정할 프로필 정보 (닉네임, 자기소개)
+     * @return 반환값 없음 (프로필 수정 후 200 OK 응답)
      */
     @Override
     public void updateProfile(Long memberId, ProfileUpdateRequestDto dto) {
@@ -208,19 +208,14 @@ public class MemberServiceImpl implements MemberService {
         MemberEntity member = memberJpaRepository.findById(memberId)
                 .orElseThrow(NotFoundMemberException::new);
 
-        // 닉네임과 자기소개 업데이트 (dto 값이 있을 경우에만)
         String nickname =
                 dto.getNickname() != null && !dto.getNickname().isEmpty() ? dto.getNickname() : member.getNickname();
         String description = dto.getDescription() != null && !dto.getDescription().isEmpty() ? dto.getDescription()
                 : member.getDescription();
 
-        // Entity의 profileUpdate 메소드 사용
         member.profileUpdate(nickname, description);
 
-        // 변경된 내용 저장
         memberJpaRepository.save(member);
-
-        // 여기서 반환은 하지 않고, 200 OK만 반환하도록 설정
     }
 
 }

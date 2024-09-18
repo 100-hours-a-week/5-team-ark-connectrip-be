@@ -102,13 +102,13 @@ public class MemberController {
      *
      * @param memberId 수정할 회원의 ID
      * @param dto      수정할 프로필 정보 (닉네임, 자기소개)
-     * @return 수정된 프로필 정보를 담은 ProfileDto
+     * @return 200 OK 응답 (수정된 프로필 정보를 반환하지 않음)
      */
     @PostMapping("/{memberId}/profile")
     public ResponseEntity<Void> updateProfile(@PathVariable Long memberId,
                                               @RequestBody ProfileUpdateRequestDto dto) {
         memberService.updateProfile(memberId, dto);
-        return ResponseEntity.ok().build();  // 200 OK 응답만 반환
+        return ResponseEntity.ok().build();
     }
 
 
