@@ -204,16 +204,18 @@ public class MemberServiceImpl implements MemberService {
      */
     @Override
     public ProfileDto updateProfile(Long memberId, ProfileUpdateRequestDto dto) {
+        // MemberEntity 조회
         MemberEntity member = memberJpaRepository.findById(memberId)
                 .orElseThrow(NotFoundMemberException::new);
 
-        // 닉네임과 자기소개 업데이트
-        if (dto.getNickname() != null && !dto.getNickname().isEmpty()) {
-            member.setNickname(dto.getNickname());
-        }
-        if (dto.getDescription() != null && !dto.getDescription().isEmpty()) {
-            member.setDescription(dto.getDescription());
-        }
+        // 닉네임과 자기소개 업데이트 (dto 값이 있을 경우에만)
+        String nickname =
+                dto.getNickname() != null && !dto.getNickname().isEmpty() ? dto.getNickname() : member.getNickname();
+        String description = dto.getDescription() != null && !dto.getDescription().isEmpty() ? dto.getDescription()
+                : member.getDescription();
+
+        // Entity의 profileUpdate 메소드 사용
+        member.profileUpdate(nickname, description);
 
         // 변경된 내용 저장
         memberJpaRepository.save(member);
