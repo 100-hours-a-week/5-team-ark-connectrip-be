@@ -51,6 +51,10 @@ public class ChatRoomMemberEntity extends BaseEntity {
     @Column(name = "last_longitude")
     private Double lastLongitude;
 
+    @Builder.Default
+    @Column
+    private String lastReadMessageId = null;
+
     // 연관관계 메서드
     public void assignChatRoom(ChatRoomEntity chatRoomEntity) {
         this.chatRoom = chatRoomEntity;
@@ -83,5 +87,9 @@ public class ChatRoomMemberEntity extends BaseEntity {
     public void updateLocation(Double latitude, Double longitude) {
         this.lastLatitude = latitude;
         this.lastLongitude = longitude;
+    }
+
+    public void updateLastReadMessageId(String lastReadMessageId) {
+        this.lastReadMessageId = lastReadMessageId;
     }
 }

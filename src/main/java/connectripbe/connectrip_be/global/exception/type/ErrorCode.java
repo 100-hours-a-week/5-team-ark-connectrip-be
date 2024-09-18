@@ -7,7 +7,6 @@ import org.springframework.http.HttpStatus;
 @Getter
 @AllArgsConstructor
 public enum ErrorCode {
-
     /**
      * 400 Bad Request
      */
@@ -31,6 +30,7 @@ public enum ErrorCode {
     PENDING_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "이미 신청한 상태입니다."),
     WRITE_YOURSELF(HttpStatus.BAD_REQUEST, "본인이 작성한 글은 신청할 수 없습니다."),
     NOT_CHATROOM_LEADER(HttpStatus.BAD_REQUEST, "채팅방 방장이 아닙니다."),
+    TOKEN_NOT_FOUND(HttpStatus.BAD_REQUEST, "토큰을 찾을 수 없습니다."),
 
 
     // Member, 사용자
@@ -73,6 +73,8 @@ public enum ErrorCode {
 
     EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, "액세스 토큰이 만료되었습니다. 재발급이 필요합니다."),
 
+    INVALID_SESSION(HttpStatus.UNAUTHORIZED, "세션이 만료되었습니다."),
+
     /**
      * 404 Not Found
      */
@@ -98,6 +100,8 @@ public enum ErrorCode {
     /**
      * 500 Internal Server Error
      */
+    REDIS_CAST_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Redis 데이터 변환 중 오류가 발생했습니다."),
+
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "내부 서버 오류가 발생했습니다."),
 
     REDIRECT_FAILURE(HttpStatus.INTERNAL_SERVER_ERROR, "리다이렉트에 실패했습니다."),
@@ -110,6 +114,7 @@ public enum ErrorCode {
     ACCESS_DENIED(HttpStatus.FORBIDDEN, "접근이 거부되었습니다."),
     REVIEW_NOT_ALLOWED(HttpStatus.FORBIDDEN, "리뷰를 작성할 수 있는 상태가 아닙니다."), // 리뷰 관련 에러 추가
     REVIEW_DELETE_NOT_ALLOWED(HttpStatus.FORBIDDEN, "리뷰를 삭제할 권한이 없습니다."),  // 리뷰 관련 에러 추가
+    UNAUTHORIZED(HttpStatus.FORBIDDEN, "권한이 없습니다."),
 
     /**
      * 405 Method Not Allowed
