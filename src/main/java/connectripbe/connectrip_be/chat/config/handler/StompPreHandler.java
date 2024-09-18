@@ -96,6 +96,7 @@ public class StompPreHandler implements ChannelInterceptor {
             for (String cookie : cookieHeader.split(";")) {
                 String[] cookiePair = cookie.split("=");
                 if (cookiePair.length == 2 && "accessToken".equals(cookiePair[0].trim())) {
+                    log.info("accessToken found in cookies: {}", cookiePair[1].trim());
                     return cookiePair[1].trim();
                 }
             }
