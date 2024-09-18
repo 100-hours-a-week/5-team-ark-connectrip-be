@@ -92,15 +92,23 @@ public class StompPreHandler implements ChannelInterceptor {
     // 쿠키에서 accessToken 추출
     private String resolveTokenFromCookie(StompHeaderAccessor accessor) {
         String cookieHeader = accessor.getFirstNativeHeader("Cookie");
+        log.info("cookieHeader: {}", cookieHeader);
         if (cookieHeader != null) {
             String[] cookies = cookieHeader.split(";");
             for (String cookie : cookies) {
-                String trimmedCookie = cookie.trim();
-                if (trimmedCookie.startsWith("accessToken=")) {
-                    return trimmedCookie.substring("accessToken=".length());
+                int equalSignIndex = cookie.indexOf("=");
+                if (equalSignIndex > 0) {
+                    String cookieName = cookie.substring(0, equalSignIndex).trim();
+                    String cookieValue = cookie.substring(equalSignIndex + 1).trim();
+
+                    if ("accessToken".equals(cookieName)) {
+                        log.info("accessToken found: {}", cookieValue);
+                        return cookieValue;
+                    }
                 }
             }
         }
+
         log.error("accessToken not found in cookies");
         throw new GlobalException(ErrorCode.TOKEN_NOT_FOUND);
     }
