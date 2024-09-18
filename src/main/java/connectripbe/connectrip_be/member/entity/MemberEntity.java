@@ -76,9 +76,9 @@ public class MemberEntity extends BaseEntity {
     @Column(name = "accompany_count", nullable = false)
     private int accompanyCount = 0;
 
-    public void firstUpdate(String nickname, LocalDateTime birthDate, String gender) {
+    public void profileUpdate(String nickname, String description) {
         this.nickname = nickname;
-        this.birthDate = birthDate;
-        this.gender = gender;
+        this.description = description;
     }
+
 }

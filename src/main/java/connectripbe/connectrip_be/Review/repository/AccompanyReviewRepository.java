@@ -4,8 +4,9 @@ import connectripbe.connectrip_be.Review.entity.AccompanyReviewEntity;
 import connectripbe.connectrip_be.chat.entity.ChatRoomEntity;
 import connectripbe.connectrip_be.member.entity.MemberEntity;
 import java.util.List;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface AccompanyReviewRepository extends JpaRepository<AccompanyReviewEntity, Long> {
 
@@ -15,12 +16,13 @@ public interface AccompanyReviewRepository extends JpaRepository<AccompanyReview
     // 리뷰어, 대상자, 채팅방을 기준으로 리뷰 존재 여부 확인
     boolean existsByReviewerAndTargetAndChatRoom(MemberEntity reviewer, MemberEntity target, ChatRoomEntity chatRoom);
 
-    // 특정 유저가 받은 최신 3개의 리뷰 가져오기 (Pageable을 사용해 LIMIT 적용)
-    List<AccompanyReviewEntity> findRecentReviewsByTargetId(Long memberId, Pageable pageable);
+    // 네이티브 쿼리로 특정 유저가 받은 최신 3개의 리뷰 가져오기
+    @Query(value = "SELECT * FROM accompany_review r WHERE r.target_id = :memberId ORDER BY r.created_at DESC LIMIT 3", nativeQuery = true)
+    List<AccompanyReviewEntity> findRecentReviewsByTargetId(@Param("memberId") Long memberId);
 
     // 특정 유저가 받은 모든 리뷰를 가져오기
     List<AccompanyReviewEntity> findAllByTargetId(Long memberId);
 
-    // 특정 유저가 받은 리뷰의 개수 가져오기 (Spring Data JPA가 자동으로 COUNT 쿼리 생성)
+    // 특정 유저가 받은 리뷰의 개수 가져오기
     int countByTargetId(Long memberId);
 }

@@ -13,6 +13,7 @@ import connectripbe.connectrip_be.member.dto.CheckDuplicateNicknameDto;
 import connectripbe.connectrip_be.member.dto.FirstUpdateMemberRequest;
 import connectripbe.connectrip_be.member.dto.MemberHeaderInfoDto;
 import connectripbe.connectrip_be.member.dto.ProfileDto;
+import connectripbe.connectrip_be.member.dto.ProfileUpdateRequestDto;
 import connectripbe.connectrip_be.member.dto.TokenAndHeaderInfoDto;
 import connectripbe.connectrip_be.member.entity.MemberEntity;
 import connectripbe.connectrip_be.member.entity.enums.AgeGroup;
@@ -26,7 +27,6 @@ import java.time.Period;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,31 +39,53 @@ public class MemberServiceImpl implements MemberService {
     private final AccompanyReviewRepository accompanyReviewRepository;
     private final JwtProvider jwtProvider;
 
+    /**
+     * 이메일 중복 확인
+     *
+     * @param email 중복 확인할 이메일
+     * @return 중복 여부를 포함한 GlobalResponse 객체
+     */
     @Override
     public GlobalResponse<CheckDuplicateEmailDto> checkDuplicateEmail(String email) {
         boolean existsByEmail = memberJpaRepository.existsByEmail(email);
-
         return new GlobalResponse<>(existsByEmail ? "DUPLICATED_EMAIL" : "SUCCESS",
                 new CheckDuplicateEmailDto(existsByEmail));
     }
 
+    /**
+     * 닉네임 중복 확인
+     *
+     * @param nickname 중복 확인할 닉네임
+     * @return 중복 여부를 포함한 GlobalResponse 객체
+     */
     @Override
     public GlobalResponse<CheckDuplicateNicknameDto> checkDuplicateNickname(String nickname) {
         boolean existsByNickname = memberJpaRepository.existsByNickname(nickname);
-
         return new GlobalResponse<>(existsByNickname ? "DUPLICATED_NICKNAME" : "SUCCESS",
                 new CheckDuplicateNicknameDto(existsByNickname));
     }
 
+    /**
+     * 회원 헤더 정보 조회
+     *
+     * @param id 회원 ID
+     * @return 회원 헤더 정보를 포함한 GlobalResponse 객체
+     */
     @Override
     public GlobalResponse<MemberHeaderInfoDto> getMemberHeaderInfo(Long id) {
         MemberEntity memberEntity = memberJpaRepository.findById(id)
-                .orElseThrow(NotFoundMemberException::new);  // NotFoundMemberException 사용
-
+                .orElseThrow(NotFoundMemberException::new);
         return new GlobalResponse<>(memberEntity.getNickname() == null ? "FIRST_LOGIN" : "SUCCESS",
                 MemberHeaderInfoDto.fromEntity(memberEntity));
     }
 
+    /**
+     * 최초 로그인한 회원의 정보를 업데이트하고 JWT 토큰 반환
+     *
+     * @param tempTokenCookie 임시 토큰
+     * @param request         업데이트할 회원 정보
+     * @return 업데이트된 회원 정보와 JWT 토큰을 포함한 TokenAndHeaderInfoDto
+     */
     @Override
     public TokenAndHeaderInfoDto getFirstUpdateMemberResponse(String tempTokenCookie,
                                                               FirstUpdateMemberRequest request) {
@@ -75,9 +97,11 @@ public class MemberServiceImpl implements MemberService {
             throw new DuplicateMemberNicknameException();
         }
 
+        // 임시 토큰에서 이메일과 프로필 이미지를 추출
         MemberEmailAndProfileImagePathDto memberProfileImagePathDto = jwtProvider.getMemberProfileImagePathDtoFromToken(
                 tempTokenCookie);
 
+        // 새로운 회원 엔티티 생성 및 저장
         MemberEntity newMemberEntity = MemberEntity.builder()
                 .email(memberProfileImagePathDto.memberEmail())
                 .profileImagePath(memberProfileImagePathDto.memberProfileImagePath())
@@ -90,6 +114,7 @@ public class MemberServiceImpl implements MemberService {
 
         MemberEntity savedMemberEntity = memberJpaRepository.save(newMemberEntity);
 
+        // JWT 토큰 생성
         String refreshToken = jwtProvider.generateRefreshToken(savedMemberEntity.getId());
         String accessToken = jwtProvider.generateAccessToken(savedMemberEntity.getId());
 
@@ -109,15 +134,19 @@ public class MemberServiceImpl implements MemberService {
         return new TokenAndHeaderInfoDto(tokenDto, memberHeaderInfoDto);
     }
 
-    // 프로필 조회 메서드 (최신 3개의 리뷰만 가져오기)
+    /**
+     * 회원 프로필 조회 (최신 3개의 리뷰 포함)
+     *
+     * @param memberId 회원 ID
+     * @return 회원의 프로필 정보와 최신 리뷰를 포함한 ProfileDto
+     */
     @Override
     public ProfileDto getProfile(Long memberId) {
         MemberEntity member = memberJpaRepository.findById(memberId)
                 .orElseThrow(NotFoundMemberException::new);
 
-        // 최신 3개 리뷰 가져오기 (Pageable 사용)
-        List<AccompanyReviewResponse> recentReviews = accompanyReviewRepository.findRecentReviewsByTargetId(
-                        memberId, PageRequest.of(0, 3))  // PageRequest로 3개 제한
+        // 최신 3개의 리뷰 가져오기
+        List<AccompanyReviewResponse> recentReviews = accompanyReviewRepository.findRecentReviewsByTargetId(memberId)
                 .stream()
                 .map(AccompanyReviewResponse::fromEntity)
                 .collect(Collectors.toList());
@@ -132,7 +161,12 @@ public class MemberServiceImpl implements MemberService {
         return ProfileDto.fromEntity(member, recentReviews, reviewCount, ageGroup);
     }
 
-    // 전체 리뷰 조회 메서드
+    /**
+     * 특정 회원의 모든 리뷰 조회
+     *
+     * @param memberId 회원 ID
+     * @return 모든 리뷰 목록
+     */
     @Override
     public List<AccompanyReviewResponse> getAllReviews(Long memberId) {
         return accompanyReviewRepository.findAllByTargetId(memberId).stream()
@@ -140,14 +174,48 @@ public class MemberServiceImpl implements MemberService {
                 .collect(Collectors.toList());
     }
 
-    // 나이대 계산 로직
+    /**
+     * 나이대 계산
+     *
+     * @param age 나이
+     * @return 나이대에 해당하는 문자열
+     */
     public String calculateAgeGroup(int age) {
-        return AgeGroup.fromAge(age).getLabel();  // AgeGroup enum을 사용하여 나이대 계산
+        return AgeGroup.fromAge(age).getLabel();
     }
 
-    // 나이 계산 메서드
+    /**
+     * 나이 계산 메서드
+     *
+     * @param birthDate 생년월일
+     * @return 계산된 나이
+     */
     private int calculateAge(LocalDate birthDate) {
         LocalDate now = LocalDate.now();
         return Period.between(birthDate, now).getYears();
     }
+
+    /**
+     * 회원 프로필 수정 (닉네임과 자기소개 수정 가능)
+     *
+     * @param memberId 회원 ID
+     * @param dto      수정할 프로필 정보 (닉네임, 자기소개)
+     * @return 반환값 없음 (프로필 수정 후 200 OK 응답)
+     */
+    @Override
+    public void updateProfile(Long memberId, ProfileUpdateRequestDto dto) {
+        // MemberEntity 조회
+        MemberEntity member = memberJpaRepository.findById(memberId)
+                .orElseThrow(NotFoundMemberException::new);
+
+        String nickname =
+                dto.getNickname() != null && !dto.getNickname().isEmpty() ? dto.getNickname() : member.getNickname();
+        String description = dto.getDescription() != null && !dto.getDescription().isEmpty() ? dto.getDescription()
+                : member.getDescription();
+
+        member.profileUpdate(nickname, description);
+
+        memberJpaRepository.save(member);
+    }
+
 }
