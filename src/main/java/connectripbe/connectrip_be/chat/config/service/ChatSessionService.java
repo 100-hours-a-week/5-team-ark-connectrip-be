@@ -51,9 +51,9 @@ public class ChatSessionService {
         ChatRoomEntity chatRoom = chatRoomRepository.findById(sessionDto.chatRoomId())
                 .orElseThrow(() -> new GlobalException(ErrorCode.CHAT_ROOM_NOT_FOUND));
 
-        chatMessageRepository.findTopByChatRoomIdOrderByCreatedAtDesc(sessionDto.chatRoomId())
+        chatMessageRepository.findTopByChatRoomIdOrderByCreatedAtDesc(chatMember.getId())
                 .ifPresent(chatMessage -> {
-                    chatRoomMemberRepository.findByChatRoom_IdAndMember_Id(sessionDto.chatRoomId(),
+                    chatRoomMemberRepository.findByChatRoom_IdAndMember_Id(chatRoom.getId(),
                                     sessionDto.memberId())
                             .ifPresent(member -> {
                                 member.updateLastReadMessageId(chatMessage.getId());
