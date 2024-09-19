@@ -65,7 +65,7 @@ public class AccompanyReviewServiceImpl implements AccompanyReviewService {
     }
 
     /**
-     * 특정 채팅방에 달린 모든 리뷰를 조회하는 메서드.
+     * 특정 채팅방에 달린 모든 리뷰를 조회하고, 각 리뷰에 대한 정보를 AccompanyReviewResponse로 변환하는 메서드.
      *
      * @param chatRoomId 리뷰를 조회할 채팅방의 ID
      * @return 해당 채팅방에 달린 리뷰들의 정보를 담은 List<AccompanyReviewResponse> 객체
@@ -75,13 +75,20 @@ public class AccompanyReviewServiceImpl implements AccompanyReviewService {
     public List<AccompanyReviewResponse> getReviewsByChatRoomId(Long chatRoomId) {
         List<AccompanyReviewEntity> reviews = accompanyReviewRepository.findByChatRoomId(chatRoomId);
 
-        // 리뷰 수를 계산하고 반환
         return reviews.stream()
-                .map(review -> {
-                    int reviewCount = accompanyReviewRepository.countByTargetId(review.getTarget().getId());
-                    return AccompanyReviewResponse.fromEntity(review, reviewCount);
-                })
+                .map(this::convertToAccompanyReviewResponse)
                 .toList();
+    }
+
+    /**
+     * AccompanyReviewEntity 객체를 AccompanyReviewResponse로 변환하고 리뷰 개수를 포함시키는 메서드.
+     *
+     * @param review AccompanyReviewEntity 객체
+     * @return 변환된 AccompanyReviewResponse 객체
+     */
+    private AccompanyReviewResponse convertToAccompanyReviewResponse(AccompanyReviewEntity review) {
+        int reviewCount = accompanyReviewRepository.countByTargetId(review.getTarget().getId());
+        return AccompanyReviewResponse.fromEntity(review, reviewCount);
     }
 
 
