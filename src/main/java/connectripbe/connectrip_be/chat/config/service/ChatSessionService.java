@@ -11,10 +11,12 @@ import connectripbe.connectrip_be.global.service.RedisService;
 import connectripbe.connectrip_be.member.entity.MemberEntity;
 import connectripbe.connectrip_be.member.repository.MemberJpaRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ChatSessionService {
 
     private static final String CHAT_ROOM_KEY_PREFIX = "chat_room_session: ";
@@ -53,11 +55,10 @@ public class ChatSessionService {
 
         chatMessageRepository.findTopByChatRoomIdOrderByCreatedAtDesc(chatMember.getId())
                 .ifPresent(chatMessage -> {
-                    chatRoomMemberRepository.findByChatRoom_IdAndMember_Id(chatRoom.getId(),
-                                    sessionDto.memberId())
+                    chatRoomMemberRepository.findByChatRoom_IdAndMember_Id(chatRoom.getId(), sessionDto.memberId())
                             .ifPresent(member -> {
                                 member.updateLastReadMessageId(chatMessage.getId());
-
+                                log.info("[WS] Last Message save : {}", chatMessage.getId());
                                 chatRoomMemberRepository.save(member);
                             });
                 });
