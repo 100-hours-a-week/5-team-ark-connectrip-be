@@ -77,7 +77,7 @@ public class StompPreHandler implements ChannelInterceptor {
         String sessionId = accessor.getSessionId();
 
         chatSessionService.saveUserSession(chatRoomId, memberId, sessionId);
-        log.info("User {} subscribed to chat room {}, session ID: {}", memberId, chatRoomId, sessionId);
+        log.info("SUBSCRIBE memberID {}, chatRoomId: {}, sessionID: {}", memberId, chatRoomId, sessionId);
 
     }
 
@@ -94,12 +94,11 @@ public class StompPreHandler implements ChannelInterceptor {
         Long memberId = sessionDto.memberId();
         chatSessionService.updateLastReadMessage(memberId, chatRoomId);
         chatSessionService.removeUserSession(sessionId);
-        log.info("User {} disconnected from chat room {}, session ID: {}", memberId, chatRoomId, sessionId);
+        log.info("DISCONNECT memberID {}, chatRoomId: {}, sessionID: {}", memberId, chatRoomId, sessionId);
     }
 
     // 쿠키에서 accessToken 추출
     private String resolveTokenFromCookie(String cookies) {
-        log.info("cookies: {}", cookies);
         for (String cookie : cookies.split(";")) {
             String[] cookiePair = cookie.split("=", 2);
             if (cookiePair.length == 2 && "accessToken".equals(cookiePair[0].trim())) {
@@ -108,21 +107,6 @@ public class StompPreHandler implements ChannelInterceptor {
         }
         throw new GlobalException(ErrorCode.TOKEN_NOT_FOUND);
 
-    }
-
-
-    // 쿠키에서 refreshToken 추출
-    private String resolveRefreshTokenFromCookie(StompHeaderAccessor accessor) {
-        String cookieHeader = accessor.getFirstNativeHeader("Cookie");
-        if (cookieHeader != null) {
-            for (String cookie : cookieHeader.split(";")) {
-                String[] cookiePair = cookie.split("=");
-                if ("refreshToken".equals(cookiePair[0].trim())) {
-                    return cookiePair[1].trim();
-                }
-            }
-        }
-        return null;
     }
 
 
