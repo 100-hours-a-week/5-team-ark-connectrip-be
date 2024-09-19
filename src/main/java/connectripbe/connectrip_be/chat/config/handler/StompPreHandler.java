@@ -49,8 +49,15 @@ public class StompPreHandler implements ChannelInterceptor {
     }
 
     private void handleConnect(StompHeaderAccessor accessor) {
-        String accessToken = resolveTokenFromCookie(accessor);
+        String cookies = (String) Objects.requireNonNull(accessor.getSessionAttributes())
+                .get("cookie");  // 세션 속성에서 쿠키 가져오기
+        log.info("Cookies: {}", cookies);
 
+        if (cookies == null) {
+            throw new GlobalException(ErrorCode.TOKEN_NOT_FOUND);
+        }
+
+        String accessToken = resolveTokenFromCookie(cookies);
         if (!jwtProvider.validateToken(accessToken)) {
             throw new GlobalException(ErrorCode.INVALID_TOKEN);
         }
@@ -90,27 +97,16 @@ public class StompPreHandler implements ChannelInterceptor {
     }
 
     // 쿠키에서 accessToken 추출
-    private String resolveTokenFromCookie(StompHeaderAccessor accessor) {
-        String cookieHeader = accessor.getFirstNativeHeader("Cookie");
-        log.info("cookieHeader: {}", cookieHeader);
-        if (cookieHeader != null) {
-            String[] cookies = cookieHeader.split(";");
-            for (String cookie : cookies) {
-                int equalSignIndex = cookie.indexOf("=");
-                if (equalSignIndex > 0) {
-                    String cookieName = cookie.substring(0, equalSignIndex).trim();
-                    String cookieValue = cookie.substring(equalSignIndex + 1).trim();
-
-                    if ("accessToken".equals(cookieName)) {
-                        log.info("accessToken found: {}", cookieValue);
-                        return cookieValue;
-                    }
-                }
+    private String resolveTokenFromCookie(String cookies) {
+        log.info("cookies: {}", cookies);
+        for (String cookie : cookies.split(";")) {
+            String[] cookiePair = cookie.split("=", 2);
+            if (cookiePair.length == 2 && "accessToken".equals(cookiePair[0].trim())) {
+                return cookiePair[1].trim();
             }
         }
-
-        log.error("accessToken not found in cookies");
         throw new GlobalException(ErrorCode.TOKEN_NOT_FOUND);
+
     }
 
 

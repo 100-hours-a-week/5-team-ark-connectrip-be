@@ -1,5 +1,6 @@
 package connectripbe.connectrip_be.chat.config;
 
+import connectripbe.connectrip_be.chat.config.handler.CustomHandshakeInterceptor;
 import connectripbe.connectrip_be.chat.config.handler.StompPreHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,7 +26,9 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         // 클라이언트가 WebSocket에 연결할 수 있는 엔드포인트를 등록.
         registry.addEndpoint("/ws/init")  // 클라이언트가 "/ws" 엔드포인트로 WebSocket 연결을 시도할 수 있도록 설정.
-                .setAllowedOrigins(allowedOrigins)// 허용할 도메인을 설정.
+                //.setAllowedOrigins(allowedOrigins)// 허용할 도메인을 설정.
+                .setAllowedOriginPatterns("*") // CORS 요청을 허용.
+                .addInterceptors(new CustomHandshakeInterceptor())
                 .withSockJS();
     }
 
