@@ -67,7 +67,7 @@ public class StompPreHandler implements ChannelInterceptor {
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(userId, null, null);
         accessor.setUser(authenticationToken);
-        log.info("User {} connected via WebSocket", userId);
+        log.info("memberId: {} connected via WebSocket  ", userId);
     }
 
     private void handleSubscribe(StompHeaderAccessor accessor) {
