@@ -62,11 +62,11 @@ public class StompPreHandler implements ChannelInterceptor {
             throw new GlobalException(ErrorCode.INVALID_TOKEN);
         }
 
-        Long userId = jwtProvider.getMemberIdFromToken(accessToken);
+        Long memberId = jwtProvider.getMemberIdFromToken(accessToken);
         UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(userId, null, null);
+                new UsernamePasswordAuthenticationToken(memberId, null, null);
         accessor.setUser(authenticationToken);
-        log.info("User {} connected via WebSocket", userId);
+        log.info("User {} connected via WebSocket", memberId);
     }
 
     private void handleSubscribe(StompHeaderAccessor accessor) {
