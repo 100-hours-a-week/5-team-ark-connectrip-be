@@ -145,14 +145,14 @@ public class MemberServiceImpl implements MemberService {
         MemberEntity member = memberJpaRepository.findById(memberId)
                 .orElseThrow(NotFoundMemberException::new);
 
+        // 전체 리뷰 수 가져오기
+        int reviewCount = accompanyReviewRepository.countByTargetId(memberId);
+
         // 최신 3개의 리뷰 가져오기
         List<AccompanyReviewResponse> recentReviews = accompanyReviewRepository.findRecentReviewsByTargetId(memberId)
                 .stream()
-                .map(AccompanyReviewResponse::fromEntity)
+                .map(review -> AccompanyReviewResponse.fromEntity(review, reviewCount)) // 리뷰 수를 함께 전달
                 .collect(Collectors.toList());
-
-        // 전체 리뷰 수 가져오기
-        int reviewCount = accompanyReviewRepository.countByTargetId(memberId);
 
         // 나이 계산 및 나이대 결정
         int age = calculateAge(member.getBirthDate().toLocalDate());
@@ -161,16 +161,21 @@ public class MemberServiceImpl implements MemberService {
         return ProfileDto.fromEntity(member, recentReviews, reviewCount, ageGroup);
     }
 
+
     /**
      * 특정 회원의 모든 리뷰 조회
      *
      * @param memberId 회원 ID
-     * @return 모든 리뷰 목록
+     * @return 모든 리뷰 목록과 전체 리뷰 수를 포함한 리스트
      */
     @Override
     public List<AccompanyReviewResponse> getAllReviews(Long memberId) {
+        // 전체 리뷰 수 조회
+        int reviewCount = accompanyReviewRepository.countByTargetId(memberId);
+
+        // 전체 리뷰 목록 조회
         return accompanyReviewRepository.findAllByTargetId(memberId).stream()
-                .map(AccompanyReviewResponse::fromEntity)
+                .map(review -> AccompanyReviewResponse.fromEntity(review, reviewCount)) // 리뷰 수를 함께 전달
                 .collect(Collectors.toList());
     }
 
