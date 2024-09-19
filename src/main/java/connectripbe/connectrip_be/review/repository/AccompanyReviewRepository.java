@@ -1,8 +1,8 @@
-package connectripbe.connectrip_be.Review.repository;
+package connectripbe.connectrip_be.review.repository;
 
-import connectripbe.connectrip_be.Review.entity.AccompanyReviewEntity;
 import connectripbe.connectrip_be.chat.entity.ChatRoomEntity;
 import connectripbe.connectrip_be.member.entity.MemberEntity;
+import connectripbe.connectrip_be.review.entity.AccompanyReviewEntity;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

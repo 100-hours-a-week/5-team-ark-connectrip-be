@@ -1,6 +1,6 @@
-package connectripbe.connectrip_be.Review.dto;
+package connectripbe.connectrip_be.review.dto;
 
-import connectripbe.connectrip_be.Review.entity.AccompanyReviewEntity;
+import connectripbe.connectrip_be.review.entity.AccompanyReviewEntity;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;

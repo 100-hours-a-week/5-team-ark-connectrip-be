@@ -1,7 +1,5 @@
 package connectripbe.connectrip_be.member.service;
 
-import connectripbe.connectrip_be.Review.dto.AccompanyReviewResponse;
-import connectripbe.connectrip_be.Review.repository.AccompanyReviewRepository;
 import connectripbe.connectrip_be.auth.jwt.JwtProvider;
 import connectripbe.connectrip_be.auth.jwt.dto.MemberEmailAndProfileImagePathDto;
 import connectripbe.connectrip_be.auth.jwt.dto.TokenDto;
@@ -22,6 +20,8 @@ import connectripbe.connectrip_be.member.entity.type.MemberRoleType;
 import connectripbe.connectrip_be.member.exception.DuplicateMemberNicknameException;
 import connectripbe.connectrip_be.member.exception.NotFoundMemberException;
 import connectripbe.connectrip_be.member.repository.MemberJpaRepository;
+import connectripbe.connectrip_be.review.dto.AccompanyReviewResponse;
+import connectripbe.connectrip_be.review.repository.AccompanyReviewRepository;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.List;

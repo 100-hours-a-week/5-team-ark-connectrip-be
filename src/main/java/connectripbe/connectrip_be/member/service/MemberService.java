@@ -1,6 +1,5 @@
 package connectripbe.connectrip_be.member.service;
 
-import connectripbe.connectrip_be.Review.dto.AccompanyReviewResponse;
 import connectripbe.connectrip_be.global.dto.GlobalResponse;
 import connectripbe.connectrip_be.member.dto.CheckDuplicateEmailDto;
 import connectripbe.connectrip_be.member.dto.CheckDuplicateNicknameDto;
@@ -9,6 +8,7 @@ import connectripbe.connectrip_be.member.dto.MemberHeaderInfoDto;
 import connectripbe.connectrip_be.member.dto.ProfileDto;
 import connectripbe.connectrip_be.member.dto.ProfileUpdateRequestDto;
 import connectripbe.connectrip_be.member.dto.TokenAndHeaderInfoDto;
+import connectripbe.connectrip_be.review.dto.AccompanyReviewResponse;
 import java.util.List;
 
 public interface MemberService {

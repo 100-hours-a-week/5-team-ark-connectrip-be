@@ -1,4 +1,4 @@
-package connectripbe.connectrip_be.Review.dto;
+package connectripbe.connectrip_be.review.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
