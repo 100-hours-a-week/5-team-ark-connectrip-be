@@ -47,7 +47,7 @@ public class ChatSessionService {
 
     // 마지막 메시지 업데이트 로직
     public void updateLastReadMessage(ChatRoomSessionDto sessionDto) {
-
+        log.info("[WS] Last Message update : {}", sessionDto);
         MemberEntity chatMember = memberRepository.findById(sessionDto.memberId())
                 .orElseThrow(() -> new GlobalException(ErrorCode.USER_NOT_FOUND));
         ChatRoomEntity chatRoom = chatRoomRepository.findById(sessionDto.chatRoomId())
@@ -55,7 +55,7 @@ public class ChatSessionService {
 
         chatMessageRepository.findTopByChatRoomIdOrderByCreatedAtDesc(chatMember.getId())
                 .ifPresent(chatMessage -> {
-                    chatRoomMemberRepository.findByChatRoom_IdAndMember_Id(chatRoom.getId(), sessionDto.memberId())
+                    chatRoomMemberRepository.findByChatRoom_IdAndMember_Id(chatRoom.getId(), chatMember.getId())
                             .ifPresent(member -> {
                                 member.updateLastReadMessageId(chatMessage.getId());
                                 log.info("[WS] Last Message save : {}", chatMessage.getId());
