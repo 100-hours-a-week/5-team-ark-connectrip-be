@@ -14,7 +14,6 @@ public class CustomHandshakeInterceptor implements HandshakeInterceptor {
                                    WebSocketHandler wsHandler, Map<String, Object> attributes) throws Exception {
 
         String cookies = request.getHeaders().getFirst("Cookie");
-        log.info("cookie: {}", cookies);
         if (cookies != null) {
             // 쿠키를 세션이나 속성에 저장
             attributes.put("cookie", cookies);

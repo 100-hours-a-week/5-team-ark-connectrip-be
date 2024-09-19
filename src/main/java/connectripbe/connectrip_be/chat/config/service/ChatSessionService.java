@@ -33,7 +33,7 @@ public class ChatSessionService {
 
     // 세션 조회 로직
     public ChatRoomSessionDto getUserSession(String sessionId) {
-        return redisService.getChatRoomHashKey(CHAT_ROOM_KEY_PREFIX, sessionId, ChatRoomSessionDto.class);
+        return redisService.getClassData(CHAT_ROOM_KEY_PREFIX, sessionId, ChatRoomSessionDto.class);
     }
 
     // 마지막 메시지 업데이트 로직

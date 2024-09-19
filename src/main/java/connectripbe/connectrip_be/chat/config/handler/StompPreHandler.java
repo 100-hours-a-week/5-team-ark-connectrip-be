@@ -49,24 +49,25 @@ public class StompPreHandler implements ChannelInterceptor {
     }
 
     private void handleConnect(StompHeaderAccessor accessor) {
-        String cookies = (String) Objects.requireNonNull(accessor.getSessionAttributes())
-                .get("cookie");  // 세션 속성에서 쿠키 가져오기
+        // 세션 속성에서 쿠키 가져오기
+        String cookies = (String) Objects.requireNonNull(accessor.getSessionAttributes()).get("cookies");
         log.info("Cookies: {}", cookies);
 
         if (cookies == null) {
             throw new GlobalException(ErrorCode.TOKEN_NOT_FOUND);
         }
 
-        String accessToken = resolveTokenFromCookie(cookies);
+        String accessToken = resolveTokenFromCookie(cookies);  // 쿠키에서 accessToken 추출
+
         if (!jwtProvider.validateToken(accessToken)) {
             throw new GlobalException(ErrorCode.INVALID_TOKEN);
         }
 
-        Long memberId = jwtProvider.getMemberIdFromToken(accessToken);
+        Long userId = jwtProvider.getMemberIdFromToken(accessToken);
         UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(memberId, null, null);
+                new UsernamePasswordAuthenticationToken(userId, null, null);
         accessor.setUser(authenticationToken);
-        log.info("User {} connected via WebSocket", memberId);
+        log.info("User {} connected via WebSocket", userId);
     }
 
     private void handleSubscribe(StompHeaderAccessor accessor) {
@@ -77,7 +78,6 @@ public class StompPreHandler implements ChannelInterceptor {
 
         chatSessionService.saveUserSession(chatRoomId, memberId, sessionId);
         log.info("User {} subscribed to chat room {}, session ID: {}", memberId, chatRoomId, sessionId);
-
     }
 
     private void handleDisconnect(StompHeaderAccessor accessor) {
