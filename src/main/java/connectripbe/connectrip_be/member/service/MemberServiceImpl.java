@@ -21,6 +21,7 @@ import connectripbe.connectrip_be.member.exception.DuplicateMemberNicknameExcept
 import connectripbe.connectrip_be.member.exception.NotFoundMemberException;
 import connectripbe.connectrip_be.member.repository.MemberJpaRepository;
 import connectripbe.connectrip_be.review.dto.AccompanyReviewResponse;
+import connectripbe.connectrip_be.review.entity.AccompanyReviewEntity;
 import connectripbe.connectrip_be.review.repository.AccompanyReviewRepository;
 import java.time.LocalDate;
 import java.time.Period;
@@ -163,21 +164,35 @@ public class MemberServiceImpl implements MemberService {
 
 
     /**
-     * 특정 회원의 모든 리뷰 조회
+     * 특정 회원의 모든 리뷰를 조회하고, 각 리뷰를 AccompanyReviewResponse로 변환하여 반환하는 메서드.
      *
      * @param memberId 회원 ID
-     * @return 모든 리뷰 목록과 전체 리뷰 수를 포함한 리스트
+     * @return 해당 회원의 모든 리뷰 목록과 전체 리뷰 수를 포함한 리스트
      */
     @Override
     public List<AccompanyReviewResponse> getAllReviews(Long memberId) {
         // 전체 리뷰 수 조회
         int reviewCount = accompanyReviewRepository.countByTargetId(memberId);
 
-        // 전체 리뷰 목록 조회
-        return accompanyReviewRepository.findAllByTargetId(memberId).stream()
-                .map(review -> AccompanyReviewResponse.fromEntity(review, reviewCount)) // 리뷰 수를 함께 전달
+        // 전체 리뷰 목록을 조회하고 DTO로 변환하여 반환
+        List<AccompanyReviewEntity> reviews = accompanyReviewRepository.findAllByTargetId(memberId);
+
+        return reviews.stream()
+                .map(this::convertToAccompanyReviewResponse) // 변환 메서드를 사용하여 DTO로 변환
                 .collect(Collectors.toList());
     }
+
+    /**
+     * AccompanyReviewEntity를 AccompanyReviewResponse로 변환하는 메서드.
+     *
+     * @param review AccompanyReviewEntity 객체
+     * @return 변환된 AccompanyReviewResponse 객체
+     */
+    private AccompanyReviewResponse convertToAccompanyReviewResponse(AccompanyReviewEntity review) {
+        int reviewCount = accompanyReviewRepository.countByTargetId(review.getTarget().getId());
+        return AccompanyReviewResponse.fromEntity(review, reviewCount);
+    }
+
 
     /**
      * 나이대 계산
