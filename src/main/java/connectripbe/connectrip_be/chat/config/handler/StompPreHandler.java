@@ -41,7 +41,7 @@ public class StompPreHandler implements ChannelInterceptor {
                 handleDisconnect(accessor);
             }
         } catch (Exception e) {
-            log.error("Error occurred while processing STOMP message: {}", e.getMessage());
+            log.error("Error occurred while processing STOMP message: {},  {}", e, e.getMessage());
             throw e;
         }
 
@@ -50,8 +50,8 @@ public class StompPreHandler implements ChannelInterceptor {
 
     private void handleConnect(StompHeaderAccessor accessor) {
         // 세션 속성에서 쿠키 가져오기
-        String cookies = (String) Objects.requireNonNull(accessor.getSessionAttributes()).get("cookies");
-        log.info("Cookies: {}", cookies);
+        String cookies = (String) Objects.requireNonNull(accessor.getSessionAttributes()).get("cookie");
+        log.info("Cookie: {}", cookies);
 
         if (cookies == null) {
             throw new GlobalException(ErrorCode.TOKEN_NOT_FOUND);
@@ -78,6 +78,7 @@ public class StompPreHandler implements ChannelInterceptor {
 
         chatSessionService.saveUserSession(chatRoomId, memberId, sessionId);
         log.info("User {} subscribed to chat room {}, session ID: {}", memberId, chatRoomId, sessionId);
+
     }
 
     private void handleDisconnect(StompHeaderAccessor accessor) {
