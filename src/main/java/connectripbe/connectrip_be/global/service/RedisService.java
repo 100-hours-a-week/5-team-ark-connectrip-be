@@ -92,7 +92,7 @@ public class RedisService {
                 return elementClass.cast(jsonResult);
             }
         } catch (Exception e) {
-            log.error("{} is occurred", e.getMessage());
+            log.error("Redis getClassData error: {}", e.getMessage());
             throw e;
         }
     }

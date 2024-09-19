@@ -41,7 +41,7 @@ public class StompPreHandler implements ChannelInterceptor {
                 handleDisconnect(accessor);
             }
         } catch (Exception e) {
-            log.error("Error occurred while processing STOMP message: {},  {}", e, e.getMessage());
+            log.error("Error occurred while processing STOMP message: {}", e.getMessage());
             throw e;
         }
 
