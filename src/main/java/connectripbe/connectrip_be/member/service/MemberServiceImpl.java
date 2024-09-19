@@ -164,32 +164,33 @@ public class MemberServiceImpl implements MemberService {
 
 
     /**
-     * 특정 회원의 모든 리뷰를 조회하고, 각 리뷰를 AccompanyReviewResponse로 변환하여 반환하는 메서드.
+     * 특정 회원이 받은 모든 리뷰를 조회하고, 각 리뷰를 AccompanyReviewResponse로 변환하여 반환하는 메서드.
      *
-     * @param memberId 회원 ID
-     * @return 해당 회원의 모든 리뷰 목록과 전체 리뷰 수를 포함한 리스트
+     * @param memberId 리뷰 대상이 되는 회원 ID
+     * @return 해당 회원이 받은 모든 리뷰 목록과 리뷰 대상자가 받은 전체 리뷰 수를 포함한 리스트
      */
     @Override
     public List<AccompanyReviewResponse> getAllReviews(Long memberId) {
-        // 전체 리뷰 수 조회
-        int reviewCount = accompanyReviewRepository.countByTargetId(memberId);
-
-        // 전체 리뷰 목록을 조회하고 DTO로 변환하여 반환
+        // 전체 리뷰 목록을 조회
         List<AccompanyReviewEntity> reviews = accompanyReviewRepository.findAllByTargetId(memberId);
 
+        // 리뷰 목록을 DTO로 변환하여 반환
         return reviews.stream()
-                .map(this::convertToAccompanyReviewResponse) // 변환 메서드를 사용하여 DTO로 변환
+                .map(this::convertReviewToResponse) // 변환 메서드를 사용하여 DTO 변환
                 .collect(Collectors.toList());
     }
 
     /**
-     * AccompanyReviewEntity를 AccompanyReviewResponse로 변환하는 메서드.
+     * AccompanyReviewEntity를 AccompanyReviewResponse로 변환하는 메서드. 각 리뷰 대상자(targetId)에 대한 전체 리뷰 수를 계산하여 함께 반환.
      *
      * @param review AccompanyReviewEntity 객체
      * @return 변환된 AccompanyReviewResponse 객체
      */
-    private AccompanyReviewResponse convertToAccompanyReviewResponse(AccompanyReviewEntity review) {
+    private AccompanyReviewResponse convertReviewToResponse(AccompanyReviewEntity review) {
+        // 리뷰 대상자에 대한 전체 리뷰 수 계산
         int reviewCount = accompanyReviewRepository.countByTargetId(review.getTarget().getId());
+
+        // DTO로 변환하여 반환
         return AccompanyReviewResponse.fromEntity(review, reviewCount);
     }
 
