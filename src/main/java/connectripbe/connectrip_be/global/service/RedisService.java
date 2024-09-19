@@ -1,5 +1,6 @@
 package connectripbe.connectrip_be.global.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import connectripbe.connectrip_be.global.exception.GlobalException;
 import connectripbe.connectrip_be.global.exception.type.ErrorCode;
 import java.time.Duration;
@@ -8,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 /**
  * Redis DB 데이터 처리
@@ -80,10 +82,32 @@ public class RedisService {
         throw new GlobalException(ErrorCode.REDIS_CAST_ERROR);
     }
 
+    public <T> T getClassData(String hashKey, String key, Class<T> elementClass) {
+        try {
+            Object jsonResult = redisTemplate.opsForHash().get(hashKey, key);
+            if (StringUtils.isEmpty(jsonResult)) {
+                throw new GlobalException(ErrorCode.REDIS_CAST_ERROR);
+            } else {
+                ObjectMapper mapper = new ObjectMapper();
+                return elementClass.cast(jsonResult);
+            }
+        } catch (Exception e) {
+            log.error("{} is occurred", e.getMessage());
+            throw e;
+        }
+    }
+
 
     // Redis 에 해시 값 저장
     public void updateToHash(String hashKey, String key, Object value) {
-        redisTemplate.opsForHash().put(hashKey, key, value);
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            String jsonData = mapper.writeValueAsString(value);
+            redisTemplate.opsForHash().put(hashKey, key, jsonData);
+
+        } catch (Exception e) {
+            log.error("Error occurred while updating hash : {}", e.getMessage());
+        }
     }
 
     // Redis 에서 해시 값 삭제
