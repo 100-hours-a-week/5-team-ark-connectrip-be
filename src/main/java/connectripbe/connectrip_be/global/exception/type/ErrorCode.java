@@ -102,6 +102,8 @@ public enum ErrorCode {
      */
     REDIS_CAST_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Redis 데이터 변환 중 오류가 발생했습니다."),
 
+    REDIS_GET_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Redis 데이터 조회 중 오류가 발생했습니다."),
+
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "내부 서버 오류가 발생했습니다."),
 
     REDIRECT_FAILURE(HttpStatus.INTERNAL_SERVER_ERROR, "리다이렉트에 실패했습니다."),

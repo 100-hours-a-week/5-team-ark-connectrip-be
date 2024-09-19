@@ -82,18 +82,28 @@ public class RedisService {
         throw new GlobalException(ErrorCode.REDIS_CAST_ERROR);
     }
 
-    public <T> T getClassData(String hashKey, String key, Class<T> elementClass) {
+    public <T> T getClassData(String key, Class<T> elementClass) {
         try {
-            Object jsonResult = redisTemplate.opsForHash().get(hashKey, key);
+            String jsonResult = (String) redisTemplate.opsForValue().get(key);
             if (StringUtils.isEmpty(jsonResult)) {
-                throw new GlobalException(ErrorCode.REDIS_CAST_ERROR);
+                throw new GlobalException(ErrorCode.REDIS_GET_ERROR);
             } else {
                 ObjectMapper mapper = new ObjectMapper();
-                return elementClass.cast(jsonResult);
+                return mapper.readValue(jsonResult, elementClass);
             }
         } catch (Exception e) {
-            log.error("Redis getClassData error: {}", e.getMessage());
-            throw e;
+            log.error("Redis getClassData Error: {}", e.getMessage());
+            throw new GlobalException(ErrorCode.REDIS_GET_ERROR);
+        }
+    }
+
+    public void setClassData(String key, Object data) {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            String jsonData = mapper.writeValueAsString(data);
+            redisTemplate.opsForValue().set(key, jsonData);
+        } catch (Exception e) {
+            log.error("Redis setClassData Error : {}", e.getMessage());
         }
     }
 

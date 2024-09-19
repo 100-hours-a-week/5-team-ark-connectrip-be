@@ -5,6 +5,7 @@ import connectripbe.connectrip_be.chat.config.service.ChatSessionService;
 import connectripbe.connectrip_be.chat.dto.ChatRoomSessionDto;
 import connectripbe.connectrip_be.global.exception.GlobalException;
 import connectripbe.connectrip_be.global.exception.type.ErrorCode;
+import connectripbe.connectrip_be.global.service.RedisService;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +25,7 @@ public class StompPreHandler implements ChannelInterceptor {
 
     private final JwtProvider jwtProvider;
     private final ChatSessionService chatSessionService;
+    private final RedisService redisService;
 
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
@@ -63,11 +65,13 @@ public class StompPreHandler implements ChannelInterceptor {
             throw new GlobalException(ErrorCode.INVALID_TOKEN);
         }
 
-        Long userId = jwtProvider.getMemberIdFromToken(accessToken);
+        Long memberId = jwtProvider.getMemberIdFromToken(accessToken);
+
         UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(userId, null, null);
+                new UsernamePasswordAuthenticationToken(memberId, null, null);
         accessor.setUser(authenticationToken);
-        log.info("memberId: {} connected via WebSocket  ", userId);
+
+        log.info("[WS] memberId: {} connected via WebSocket  ", memberId);
     }
 
     private void handleSubscribe(StompHeaderAccessor accessor) {
@@ -90,11 +94,14 @@ public class StompPreHandler implements ChannelInterceptor {
             throw new GlobalException(ErrorCode.INVALID_SESSION);
         }
 
-        Long chatRoomId = sessionDto.chatRoomId();
-        Long memberId = sessionDto.memberId();
-        chatSessionService.updateLastReadMessage(memberId, chatRoomId);
+        chatSessionService.updateLastReadMessage(sessionDto);
         chatSessionService.removeUserSession(sessionId);
-        log.info("DISCONNECT memberID {}, chatRoomId: {}, sessionID: {}", memberId, chatRoomId, sessionId);
+        log.info("DISCONNECT- Last Message save."
+                        + " memberID {}, chatRoomId: {}, sessionID: {}",
+                sessionDto.memberId(), sessionDto.chatRoomId()
+                , sessionId);
+
+        redisService.deleteData(sessionId);
     }
 
     // 쿠키에서 accessToken 추출
