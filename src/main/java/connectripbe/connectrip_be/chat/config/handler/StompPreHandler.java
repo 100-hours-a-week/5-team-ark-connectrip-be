@@ -91,17 +91,15 @@ public class StompPreHandler implements ChannelInterceptor {
 
         if (sessionDto == null) {
             log.warn("Session not found for sessionId: {}", sessionId);
-            throw new GlobalException(ErrorCode.INVALID_SESSION);
+            throw new GlobalException(ErrorCode.NOT_FOUND_SESSION);
         }
 
         chatSessionService.updateLastReadMessage(sessionDto);
-        chatSessionService.removeUserSession(sessionId);
         log.info("DISCONNECT- Last Message save."
                         + " memberID {}, chatRoomId: {}, sessionID: {}",
                 sessionDto.memberId(), sessionDto.chatRoomId()
                 , sessionId);
-
-        redisService.deleteData(sessionId);
+        chatSessionService.removeUserSession(sessionId);
     }
 
     // 쿠키에서 accessToken 추출

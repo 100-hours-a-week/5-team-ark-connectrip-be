@@ -73,7 +73,7 @@ public enum ErrorCode {
 
     EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, "액세스 토큰이 만료되었습니다. 재발급이 필요합니다."),
 
-    INVALID_SESSION(HttpStatus.UNAUTHORIZED, "세션이 만료되었습니다."),
+    NOT_FOUND_SESSION(HttpStatus.UNAUTHORIZED, "세션을 찾을 수 없습니다."),
 
     /**
      * 404 Not Found

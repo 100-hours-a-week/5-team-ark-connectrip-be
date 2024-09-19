@@ -35,7 +35,7 @@ public class ChatSessionService {
 
     // 세션 삭제 로직
     public void removeUserSession(String sessionId) {
-        redisService.deleteHashKey(CHAT_ROOM_KEY_PREFIX, sessionId);
+        redisService.deleteData(CHAT_ROOM_KEY_PREFIX + sessionId);
     }
 
     // 세션 조회 로직
