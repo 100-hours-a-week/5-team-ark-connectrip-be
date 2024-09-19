@@ -84,6 +84,7 @@ public class RedisService {
 
     public <T> T getClassData(String key, Class<T> elementClass) {
         try {
+            log.info("Redis Key : {}", key);
             String jsonResult = (String) redisTemplate.opsForValue().get(key);
             log.info("Redis Data : {}", jsonResult);
             if (StringUtils.isEmpty(jsonResult)) {
