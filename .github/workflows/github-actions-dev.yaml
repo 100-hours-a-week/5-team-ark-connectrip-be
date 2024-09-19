@@ -5,6 +5,9 @@ on:
     branches:
       # develop 브랜치로 merge되어 push가 트리거 된 경우 실행
       - develop
+  pull_request:
+    branches:
+      - develop
 
 jobs:
   build:
