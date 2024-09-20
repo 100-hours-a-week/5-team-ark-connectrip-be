@@ -39,7 +39,7 @@ public class ChatMessageServiceImpl implements ChatMessageService {
                 ChatMessage.builder()
                         .type(MessageType.TALK)
                         .chatRoomId(chatRoomId)
-                        .senderId(memberId)
+                        .senderId(member.getId())
                         .senderNickname(member.getNickname())
                         .senderProfileImage(member.getProfileImagePath())
                         .content(request.content())
