@@ -5,6 +5,7 @@ import connectripbe.connectrip_be.chat.config.service.ChatSessionService;
 import connectripbe.connectrip_be.chat.dto.ChatRoomSessionDto;
 import connectripbe.connectrip_be.global.exception.GlobalException;
 import connectripbe.connectrip_be.global.exception.type.ErrorCode;
+import connectripbe.connectrip_be.global.service.RedisService;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +25,7 @@ public class StompPreHandler implements ChannelInterceptor {
 
     private final JwtProvider jwtProvider;
     private final ChatSessionService chatSessionService;
+    private final RedisService redisService;
 
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
@@ -41,7 +43,7 @@ public class StompPreHandler implements ChannelInterceptor {
                 handleDisconnect(accessor);
             }
         } catch (Exception e) {
-            log.error("Error occurred while processing STOMP message: {},  {}", e, e.getMessage());
+            log.error("Error occurred while processing STOMP message: {}", e.getMessage());
             throw e;
         }
 
@@ -63,11 +65,13 @@ public class StompPreHandler implements ChannelInterceptor {
             throw new GlobalException(ErrorCode.INVALID_TOKEN);
         }
 
-        Long userId = jwtProvider.getMemberIdFromToken(accessToken);
+        Long memberId = jwtProvider.getMemberIdFromToken(accessToken);
+
         UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(userId, null, null);
+                new UsernamePasswordAuthenticationToken(memberId, null, null);
         accessor.setUser(authenticationToken);
-        log.info("User {} connected via WebSocket", userId);
+
+        log.info("[WS] memberId: {} connected via WebSocket  ", memberId);
     }
 
     private void handleSubscribe(StompHeaderAccessor accessor) {
@@ -77,7 +81,7 @@ public class StompPreHandler implements ChannelInterceptor {
         String sessionId = accessor.getSessionId();
 
         chatSessionService.saveUserSession(chatRoomId, memberId, sessionId);
-        log.info("User {} subscribed to chat room {}, session ID: {}", memberId, chatRoomId, sessionId);
+        log.info("SUBSCRIBE memberID {}, chatRoomId: {}, sessionID: {}", memberId, chatRoomId, sessionId);
 
     }
 
@@ -87,19 +91,19 @@ public class StompPreHandler implements ChannelInterceptor {
 
         if (sessionDto == null) {
             log.warn("Session not found for sessionId: {}", sessionId);
-            throw new GlobalException(ErrorCode.INVALID_SESSION);
+            throw new GlobalException(ErrorCode.NOT_FOUND_SESSION);
         }
 
-        Long chatRoomId = sessionDto.chatRoomId();
-        Long memberId = sessionDto.memberId();
-        chatSessionService.updateLastReadMessage(memberId, chatRoomId);
+        chatSessionService.updateLastReadMessage(sessionDto);
+        log.info("DISCONNECT- Last Message save."
+                        + " memberID {}, chatRoomId: {}, sessionID: {}",
+                sessionDto.memberId(), sessionDto.chatRoomId()
+                , sessionId);
         chatSessionService.removeUserSession(sessionId);
-        log.info("User {} disconnected from chat room {}, session ID: {}", memberId, chatRoomId, sessionId);
     }
 
     // 쿠키에서 accessToken 추출
     private String resolveTokenFromCookie(String cookies) {
-        log.info("cookies: {}", cookies);
         for (String cookie : cookies.split(";")) {
             String[] cookiePair = cookie.split("=", 2);
             if (cookiePair.length == 2 && "accessToken".equals(cookiePair[0].trim())) {
@@ -108,21 +112,6 @@ public class StompPreHandler implements ChannelInterceptor {
         }
         throw new GlobalException(ErrorCode.TOKEN_NOT_FOUND);
 
-    }
-
-
-    // 쿠키에서 refreshToken 추출
-    private String resolveRefreshTokenFromCookie(StompHeaderAccessor accessor) {
-        String cookieHeader = accessor.getFirstNativeHeader("Cookie");
-        if (cookieHeader != null) {
-            for (String cookie : cookieHeader.split(";")) {
-                String[] cookiePair = cookie.split("=");
-                if ("refreshToken".equals(cookiePair[0].trim())) {
-                    return cookiePair[1].trim();
-                }
-            }
-        }
-        return null;
     }
 
 

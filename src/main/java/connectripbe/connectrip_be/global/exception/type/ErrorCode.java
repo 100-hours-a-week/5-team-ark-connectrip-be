@@ -73,7 +73,7 @@ public enum ErrorCode {
 
     EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, "액세스 토큰이 만료되었습니다. 재발급이 필요합니다."),
 
-    INVALID_SESSION(HttpStatus.UNAUTHORIZED, "세션이 만료되었습니다."),
+    NOT_FOUND_SESSION(HttpStatus.UNAUTHORIZED, "세션을 찾을 수 없습니다."),
 
     /**
      * 404 Not Found
@@ -101,6 +101,8 @@ public enum ErrorCode {
      * 500 Internal Server Error
      */
     REDIS_CAST_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Redis 데이터 변환 중 오류가 발생했습니다."),
+
+    REDIS_GET_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Redis 데이터 조회 중 오류가 발생했습니다."),
 
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "내부 서버 오류가 발생했습니다."),
 
