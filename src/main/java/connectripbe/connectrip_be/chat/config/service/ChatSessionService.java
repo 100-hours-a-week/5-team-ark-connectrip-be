@@ -47,7 +47,6 @@ public class ChatSessionService {
 
     // 마지막 메시지 업데이트 로직
     public void updateLastReadMessage(ChatRoomSessionDto sessionDto) {
-        log.info("[WS] Last Message update : {}", sessionDto);
         MemberEntity chatMember = memberRepository.findById(sessionDto.memberId())
                 .orElseThrow(() -> new GlobalException(ErrorCode.USER_NOT_FOUND));
         ChatRoomEntity chatRoom = chatRoomRepository.findById(sessionDto.chatRoomId())

@@ -14,10 +14,12 @@ import connectripbe.connectrip_be.member.entity.MemberEntity;
 import connectripbe.connectrip_be.member.repository.MemberJpaRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ChatMessageServiceImpl implements ChatMessageService {
 
     private final ChatMessageRepository chatMessageRepository;
@@ -25,9 +27,9 @@ public class ChatMessageServiceImpl implements ChatMessageService {
     private final MemberJpaRepository memberJpaRepository;
 
     @Override
-    public ChatMessageResponse saveMessage(ChatMessageRequest request, Long chatRoomId) {
+    public ChatMessageResponse saveMessage(ChatMessageRequest request, Long chatRoomId, Long memberId) {
         // 채팅 수신 유저 정보 조회
-        MemberEntity member = memberJpaRepository.findById(request.senderId())
+        MemberEntity member = memberJpaRepository.findById(memberId)
                 .orElseThrow(() -> new GlobalException(ErrorCode.USER_NOT_FOUND));
 
         // 유저가 보낸 메세지 전송 여부
@@ -37,7 +39,7 @@ public class ChatMessageServiceImpl implements ChatMessageService {
                 ChatMessage.builder()
                         .type(MessageType.TALK)
                         .chatRoomId(chatRoomId)
-                        .senderId(request.senderId())
+                        .senderId(memberId)
                         .senderNickname(member.getNickname())
                         .senderProfileImage(member.getProfileImagePath())
                         .content(request.content())
@@ -45,6 +47,7 @@ public class ChatMessageServiceImpl implements ChatMessageService {
                         .build();
 
         ChatMessage saved = chatMessageRepository.save(chatMessage);
+        log.info("ChatMessage saved : {}", saved.getSenderId());
 
         ChatRoomEntity chatRoom = chatRoomRepository.findById(saved.getChatRoomId())
                 .orElseThrow(() -> new GlobalException(ErrorCode.CHAT_ROOM_NOT_FOUND));

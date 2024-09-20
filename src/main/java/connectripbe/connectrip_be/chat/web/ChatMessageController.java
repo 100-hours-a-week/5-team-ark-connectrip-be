@@ -10,6 +10,7 @@ import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,8 +24,9 @@ public class ChatMessageController {
 
     @MessageMapping("/chat/room/{chatRoomId}")
     public void sendMessage(@Payload ChatMessageRequest chatMessage,
-                            @DestinationVariable("chatRoomId") Long chatRoomId) {
-        ChatMessageResponse savedMessage = chatMessageService.saveMessage(chatMessage, chatRoomId);
+                            @DestinationVariable("chatRoomId") Long chatRoomId,
+                            @AuthenticationPrincipal Long memberId) {
+        ChatMessageResponse savedMessage = chatMessageService.saveMessage(chatMessage, chatRoomId, memberId);
         simpMessagingTemplate.convertAndSend("/sub/chat/room/" + chatRoomId, savedMessage);
     }
 
