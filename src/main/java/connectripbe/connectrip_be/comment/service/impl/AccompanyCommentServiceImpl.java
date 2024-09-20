@@ -5,6 +5,7 @@ import connectripbe.connectrip_be.comment.dto.AccompanyCommentResponse;
 import connectripbe.connectrip_be.comment.entity.AccompanyCommentEntity;
 import connectripbe.connectrip_be.comment.repository.AccompanyCommentRepository;
 import connectripbe.connectrip_be.comment.service.AccompanyCommentService;
+import connectripbe.connectrip_be.commentnotification.service.CommentNotificationService;
 import connectripbe.connectrip_be.global.exception.GlobalException;
 import connectripbe.connectrip_be.global.exception.type.ErrorCode;
 import connectripbe.connectrip_be.global.util.bucket4j.annotation.RateLimit;
@@ -24,6 +25,8 @@ public class AccompanyCommentServiceImpl implements AccompanyCommentService {
     private final AccompanyCommentRepository accompanyCommentRepository;
     private final MemberJpaRepository memberRepository;
     private final AccompanyPostRepository accompanyPostRepository;
+    private final CommentNotificationService notificationService; // 주입된 notificationService
+
 
     /**
      * 댓글을 생성하는 메서드. 사용자 이메일을 통해 MemberEntity 를 조회하고, 게시물 ID를 통해 AccompanyPostEntity 를 조회한 후 AccompanyCommentEntity 를
@@ -46,6 +49,9 @@ public class AccompanyCommentServiceImpl implements AccompanyCommentService {
                 .build();
 
         accompanyCommentRepository.save(comment);
+
+        // 게시글 작성자에게 실시간 알림 전송
+        notificationService.sendNotification(post.getMemberEntity().getId(), "댓글이 달렸습니다.");
 
         return AccompanyCommentResponse.fromEntity(comment);
     }
