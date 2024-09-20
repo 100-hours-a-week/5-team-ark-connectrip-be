@@ -1,22 +1,21 @@
-package connectripbe.connectrip_be.Review.service.impl;
+package connectripbe.connectrip_be.review.service.impl;
 
-import connectripbe.connectrip_be.Review.dto.AccompanyReviewRequest;
-import connectripbe.connectrip_be.Review.dto.AccompanyReviewResponse;
-import connectripbe.connectrip_be.Review.entity.AccompanyReviewEntity;
-import connectripbe.connectrip_be.Review.repository.AccompanyReviewRepository;
-import connectripbe.connectrip_be.Review.service.AccompanyReviewService;
 import connectripbe.connectrip_be.chat.entity.ChatRoomEntity;
 import connectripbe.connectrip_be.chat.entity.type.ChatRoomType;
 import connectripbe.connectrip_be.chat.repository.ChatRoomRepository;
 import connectripbe.connectrip_be.global.exception.GlobalException;
 import connectripbe.connectrip_be.global.exception.type.ErrorCode;
-import connectripbe.connectrip_be.member.repository.MemberJpaRepository;
 import connectripbe.connectrip_be.member.entity.MemberEntity;
+import connectripbe.connectrip_be.member.repository.MemberJpaRepository;
+import connectripbe.connectrip_be.review.dto.AccompanyReviewRequest;
+import connectripbe.connectrip_be.review.dto.AccompanyReviewResponse;
+import connectripbe.connectrip_be.review.entity.AccompanyReviewEntity;
+import connectripbe.connectrip_be.review.repository.AccompanyReviewRepository;
+import connectripbe.connectrip_be.review.service.AccompanyReviewService;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @Transactional
@@ -29,18 +28,14 @@ public class AccompanyReviewServiceImpl implements AccompanyReviewService {
 
     /**
      * 리뷰를 생성하는 메서드.
-     * 주어진 요청 정보와 회원 및 채팅방 정보를 기반으로 리뷰를 생성하고, 데이터베이스에 저장합니다.
-     * 채팅방이 FINISH 상태가 아닌 경우 리뷰를 작성할 수 없습니다.
      *
-     * @param reviewRequest 리뷰 생성 요청 정보 (리뷰어, 대상자, 채팅방 ID 및 리뷰 내용 포함)
+     * @param reviewRequest 리뷰 생성 요청 정보
      * @return 생성된 리뷰의 정보를 담은 AccompanyReviewResponse 객체
      */
     @Override
     public AccompanyReviewResponse createReview(Long chatRoomId, Long memberId, AccompanyReviewRequest reviewRequest) {
         MemberEntity reviewer = findMemberById(memberId);
-
         MemberEntity target = findMemberById(reviewRequest.getTargetId());
-
         ChatRoomEntity chatRoom = findChatRoomById(chatRoomId);
 
         // 채팅방이 FINISH 상태인지 확인
@@ -49,7 +44,8 @@ public class AccompanyReviewServiceImpl implements AccompanyReviewService {
         }
 
         // 동일한 리뷰가 이미 존재하는지 확인
-        boolean reviewExists = accompanyReviewRepository.existsByReviewerAndTargetAndChatRoom(reviewer, target, chatRoom);
+        boolean reviewExists = accompanyReviewRepository.existsByReviewerAndTargetAndChatRoom(reviewer, target,
+                chatRoom);
         if (reviewExists) {
             throw new GlobalException(ErrorCode.REVIEW_ALREADY_EXISTS);
         }
@@ -63,12 +59,13 @@ public class AccompanyReviewServiceImpl implements AccompanyReviewService {
 
         accompanyReviewRepository.save(review);
 
-        return AccompanyReviewResponse.fromEntity(review);
+        // 리뷰 수를 계산하고 반환
+        int reviewCount = accompanyReviewRepository.countByTargetId(target.getId());
+        return AccompanyReviewResponse.fromEntity(review, reviewCount);
     }
 
     /**
-     * 특정 채팅방에 달린 모든 리뷰를 조회하는 메서드.
-     * 주어진 채팅방 ID에 해당하는 모든 리뷰를 조회하여 반환합니다.
+     * 특정 채팅방에 달린 모든 리뷰를 조회하고, 각 리뷰에 대한 정보를 AccompanyReviewResponse로 변환하는 메서드.
      *
      * @param chatRoomId 리뷰를 조회할 채팅방의 ID
      * @return 해당 채팅방에 달린 리뷰들의 정보를 담은 List<AccompanyReviewResponse> 객체
@@ -77,12 +74,26 @@ public class AccompanyReviewServiceImpl implements AccompanyReviewService {
     @Transactional(readOnly = true)
     public List<AccompanyReviewResponse> getReviewsByChatRoomId(Long chatRoomId) {
         List<AccompanyReviewEntity> reviews = accompanyReviewRepository.findByChatRoomId(chatRoomId);
-        return reviews.stream().map(AccompanyReviewResponse::fromEntity).toList();
+
+        return reviews.stream()
+                .map(this::convertToAccompanyReviewResponse)
+                .toList();
     }
 
     /**
-     * 주어진 회원 ID로 회원을 조회하는 메서드.
-     * 만약 해당 회원이 존재하지 않으면 GlobalException을 발생시킵니다.
+     * AccompanyReviewEntity 객체를 AccompanyReviewResponse로 변환하고 리뷰 개수를 포함시키는 메서드.
+     *
+     * @param review AccompanyReviewEntity 객체
+     * @return 변환된 AccompanyReviewResponse 객체
+     */
+    private AccompanyReviewResponse convertToAccompanyReviewResponse(AccompanyReviewEntity review) {
+        int reviewCount = accompanyReviewRepository.countByTargetId(review.getTarget().getId());
+        return AccompanyReviewResponse.fromEntity(review, reviewCount);
+    }
+
+
+    /**
+     * 주어진 회원 ID로 회원을 조회하는 메서드. 만약 해당 회원이 존재하지 않으면 GlobalException을 발생시킵니다.
      *
      * @param memberId 조회할 회원의 ID
      * @return 조회된 MemberEntity 객체
@@ -93,8 +104,7 @@ public class AccompanyReviewServiceImpl implements AccompanyReviewService {
     }
 
     /**
-     * 주어진 채팅방 ID로 채팅방을 조회하는 메서드.
-     * 만약 해당 채팅방이 존재하지 않으면 GlobalException을 발생시킵니다.
+     * 주어진 채팅방 ID로 채팅방을 조회하는 메서드. 만약 해당 채팅방이 존재하지 않으면 GlobalException을 발생시킵니다.
      *
      * @param chatRoomId 조회할 채팅방의 ID
      * @return 조회된 ChatRoomEntity 객체

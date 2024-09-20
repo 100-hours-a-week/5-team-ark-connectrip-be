@@ -1,7 +1,5 @@
 package connectripbe.connectrip_be.member.service;
 
-import connectripbe.connectrip_be.Review.dto.AccompanyReviewResponse;
-import connectripbe.connectrip_be.Review.repository.AccompanyReviewRepository;
 import connectripbe.connectrip_be.auth.jwt.JwtProvider;
 import connectripbe.connectrip_be.auth.jwt.dto.MemberEmailAndProfileImagePathDto;
 import connectripbe.connectrip_be.auth.jwt.dto.TokenDto;
@@ -22,6 +20,9 @@ import connectripbe.connectrip_be.member.entity.type.MemberRoleType;
 import connectripbe.connectrip_be.member.exception.DuplicateMemberNicknameException;
 import connectripbe.connectrip_be.member.exception.NotFoundMemberException;
 import connectripbe.connectrip_be.member.repository.MemberJpaRepository;
+import connectripbe.connectrip_be.review.dto.AccompanyReviewResponse;
+import connectripbe.connectrip_be.review.entity.AccompanyReviewEntity;
+import connectripbe.connectrip_be.review.repository.AccompanyReviewRepository;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.List;
@@ -145,14 +146,14 @@ public class MemberServiceImpl implements MemberService {
         MemberEntity member = memberJpaRepository.findById(memberId)
                 .orElseThrow(NotFoundMemberException::new);
 
+        // 전체 리뷰 수 가져오기
+        int reviewCount = accompanyReviewRepository.countByTargetId(memberId);
+
         // 최신 3개의 리뷰 가져오기
         List<AccompanyReviewResponse> recentReviews = accompanyReviewRepository.findRecentReviewsByTargetId(memberId)
                 .stream()
-                .map(AccompanyReviewResponse::fromEntity)
+                .map(review -> AccompanyReviewResponse.fromEntity(review, reviewCount)) // 리뷰 수를 함께 전달
                 .collect(Collectors.toList());
-
-        // 전체 리뷰 수 가져오기
-        int reviewCount = accompanyReviewRepository.countByTargetId(memberId);
 
         // 나이 계산 및 나이대 결정
         int age = calculateAge(member.getBirthDate().toLocalDate());
@@ -161,18 +162,38 @@ public class MemberServiceImpl implements MemberService {
         return ProfileDto.fromEntity(member, recentReviews, reviewCount, ageGroup);
     }
 
+
     /**
-     * 특정 회원의 모든 리뷰 조회
+     * 특정 회원이 받은 모든 리뷰를 조회하고, 각 리뷰를 AccompanyReviewResponse로 변환하여 반환하는 메서드.
      *
-     * @param memberId 회원 ID
-     * @return 모든 리뷰 목록
+     * @param memberId 리뷰 대상이 되는 회원 ID
+     * @return 해당 회원이 받은 모든 리뷰 목록과 리뷰 대상자가 받은 전체 리뷰 수를 포함한 리스트
      */
     @Override
     public List<AccompanyReviewResponse> getAllReviews(Long memberId) {
-        return accompanyReviewRepository.findAllByTargetId(memberId).stream()
-                .map(AccompanyReviewResponse::fromEntity)
+        // 전체 리뷰 목록을 조회
+        List<AccompanyReviewEntity> reviews = accompanyReviewRepository.findAllByTargetId(memberId);
+
+        // 리뷰 목록을 DTO로 변환하여 반환
+        return reviews.stream()
+                .map(this::convertReviewToResponse) // 변환 메서드를 사용하여 DTO 변환
                 .collect(Collectors.toList());
     }
+
+    /**
+     * AccompanyReviewEntity를 AccompanyReviewResponse로 변환하는 메서드. 각 리뷰 대상자(targetId)에 대한 전체 리뷰 수를 계산하여 함께 반환.
+     *
+     * @param review AccompanyReviewEntity 객체
+     * @return 변환된 AccompanyReviewResponse 객체
+     */
+    private AccompanyReviewResponse convertReviewToResponse(AccompanyReviewEntity review) {
+        // 리뷰 대상자에 대한 전체 리뷰 수 계산
+        int reviewCount = accompanyReviewRepository.countByTargetId(review.getTarget().getId());
+
+        // DTO로 변환하여 반환
+        return AccompanyReviewResponse.fromEntity(review, reviewCount);
+    }
+
 
     /**
      * 나이대 계산
