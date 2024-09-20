@@ -44,8 +44,8 @@ public class AccompanyReviewServiceImpl implements AccompanyReviewService {
         }
 
         // 동일한 리뷰가 이미 존재하는지 확인
-        boolean reviewExists = accompanyReviewRepository.existsByReviewerAndTargetAndChatRoom(reviewer, target,
-                chatRoom);
+        boolean reviewExists = accompanyReviewRepository.existsByReviewerIdAndTargetIdAndChatRoomId(reviewer.getId(),
+                target.getId(), chatRoom.getId());
         if (reviewExists) {
             throw new GlobalException(ErrorCode.REVIEW_ALREADY_EXISTS);
         }
