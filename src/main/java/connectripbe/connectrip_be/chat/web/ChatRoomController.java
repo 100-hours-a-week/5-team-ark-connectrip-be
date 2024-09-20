@@ -32,9 +32,10 @@ public class ChatRoomController {
     // 해당 채팅방 참여자 목록 조회
     @GetMapping("/{chatRoomId}/members")
     public ResponseEntity<?> getChatRoomMembers(
-            @PathVariable Long chatRoomId
+            @PathVariable Long chatRoomId,
+            @AuthenticationPrincipal Long memberId
     ) {
-        return ResponseEntity.ok(chatRoomService.getChatRoomMembers(chatRoomId));
+        return ResponseEntity.ok(chatRoomService.getChatRoomMembers(chatRoomId, memberId));
     }
 
     // 해당 채팅방 나가기
