@@ -53,12 +53,11 @@ public class ChatSessionService {
         ChatRoomEntity chatRoom = chatRoomRepository.findById(sessionDto.chatRoomId())
                 .orElseThrow(() -> new GlobalException(ErrorCode.CHAT_ROOM_NOT_FOUND));
 
-        chatMessageRepository.findTopByChatRoomIdOrderByCreatedAtDesc(chatMember.getId())
+        chatMessageRepository.findTopByChatRoomIdOrderByCreatedAtDesc(chatRoom.getId())
                 .ifPresent(chatMessage -> {
                     chatRoomMemberRepository.findByChatRoom_IdAndMember_Id(chatRoom.getId(), chatMember.getId())
                             .ifPresent(member -> {
                                 member.updateLastReadMessageId(chatMessage.getId());
-                                log.info("[WS] Last Message save : {}", chatMessage.getId());
                                 chatRoomMemberRepository.save(member);
                             });
                 });
