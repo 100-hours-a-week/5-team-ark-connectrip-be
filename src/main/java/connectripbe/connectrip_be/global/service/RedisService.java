@@ -73,14 +73,6 @@ public class RedisService {
         }
     }
 
-    // 해시 값을 Redis 에서 조회 (명확한 반환 타입을 받기 위해 Class<T> 사용)
-    public <T> T getChatRoomHashKey(String hashKey, String key, Class<T> clazz) {
-        Object value = redisTemplate.opsForHash().get(hashKey, key);
-        if (clazz.isInstance(value)) {
-            return clazz.cast(value);
-        }
-        throw new GlobalException(ErrorCode.REDIS_CAST_ERROR);
-    }
 
     public <T> T getClassData(String key, Class<T> elementClass) {
         try {
@@ -109,21 +101,13 @@ public class RedisService {
         }
     }
 
-
-    // Redis 에 해시 값 저장
-    public void updateToHash(String hashKey, String key, Object value) {
+    // 리스트로 저장
+    public void setListData(String key, Object data) {
         try {
-            ObjectMapper mapper = new ObjectMapper();
-            String jsonData = mapper.writeValueAsString(value);
-            redisTemplate.opsForHash().put(hashKey, key, jsonData);
-
+            redisTemplate.opsForList().rightPush(key, data);
+            log.info("Redis List Data : {}", data);
         } catch (Exception e) {
-            log.error("Error occurred while updating hash : {}", e.getMessage());
+            log.error("Redis setListData Error : {}", e.getMessage());
         }
-    }
-
-    // Redis 에서 해시 값 삭제
-    public void deleteHashKey(String hashKey, String key) {
-        redisTemplate.opsForHash().delete(hashKey, key);
     }
 }

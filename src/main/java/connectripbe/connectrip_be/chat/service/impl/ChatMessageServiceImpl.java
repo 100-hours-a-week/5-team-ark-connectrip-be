@@ -6,6 +6,7 @@ import connectripbe.connectrip_be.chat.entity.ChatMessage;
 import connectripbe.connectrip_be.chat.entity.ChatRoomEntity;
 import connectripbe.connectrip_be.chat.entity.type.MessageType;
 import connectripbe.connectrip_be.chat.repository.ChatMessageRepository;
+import connectripbe.connectrip_be.chat.repository.ChatRoomMemberRepository;
 import connectripbe.connectrip_be.chat.repository.ChatRoomRepository;
 import connectripbe.connectrip_be.chat.service.ChatMessageService;
 import connectripbe.connectrip_be.global.exception.GlobalException;
@@ -24,6 +25,7 @@ public class ChatMessageServiceImpl implements ChatMessageService {
 
     private final ChatMessageRepository chatMessageRepository;
     private final ChatRoomRepository chatRoomRepository;
+    private final ChatRoomMemberRepository chatRoomMemberRepository;
     private final MemberJpaRepository memberJpaRepository;
 
     @Override

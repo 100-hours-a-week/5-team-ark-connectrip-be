@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 public class ChatSessionService {
 
     private static final String CHAT_ROOM_KEY_PREFIX = "chat_room_session: ";
+    private static final String CHAT_ROOM_LIST_KEY_PREFIX = "chat_room_list: ";
 
 
     private final RedisService redisService;
@@ -33,6 +34,7 @@ public class ChatSessionService {
 
         ChatRoomSessionDto sessionDto = new ChatRoomSessionDto(chatRoomId, memberId);
         redisService.setClassData(CHAT_ROOM_KEY_PREFIX + sessionId, sessionDto);
+        redisService.setListData(CHAT_ROOM_LIST_KEY_PREFIX + chatRoomId, sessionId);
     }
 
     // 세션 삭제 로직
