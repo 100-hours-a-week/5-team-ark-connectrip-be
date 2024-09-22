@@ -23,4 +23,6 @@ public interface AccompanyReviewRepository extends JpaRepository<AccompanyReview
 
     // 특정 유저가 받은 리뷰의 개수 가져오기
     int countByTargetId(Long memberId);
+    
+    List<Long> findAllTargetIdsByReviewerIdAndChatRoomId(Long reviewerId, Long chatRoomId);
 }
