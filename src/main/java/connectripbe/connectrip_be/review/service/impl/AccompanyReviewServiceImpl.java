@@ -2,6 +2,7 @@ package connectripbe.connectrip_be.review.service.impl;
 
 import connectripbe.connectrip_be.accompany_status.entity.AccompanyStatusEntity;
 import connectripbe.connectrip_be.accompany_status.entity.AccompanyStatusEnum;
+import connectripbe.connectrip_be.accompany_status.repository.AccompanyStatusJpaRepository;
 import connectripbe.connectrip_be.chat.entity.ChatRoomEntity;
 import connectripbe.connectrip_be.chat.repository.ChatRoomRepository;
 import connectripbe.connectrip_be.global.exception.GlobalException;
@@ -26,6 +27,7 @@ public class AccompanyReviewServiceImpl implements AccompanyReviewService {
     private final AccompanyReviewRepository accompanyReviewRepository;
     private final MemberJpaRepository memberJpaRepository;
     private final ChatRoomRepository chatRoomRepository;
+    private final AccompanyStatusJpaRepository accompanyStatusJpaRepository;
 
     /**
      * 리뷰를 생성하는 메서드.
@@ -39,13 +41,10 @@ public class AccompanyReviewServiceImpl implements AccompanyReviewService {
         MemberEntity target = findMemberById(reviewRequest.getTargetId());
         ChatRoomEntity chatRoom = findChatRoomById(chatRoomId);
 
-        // AccompanyPostEntity를 통해 AccompanyStatusEntity를 가져옴
-        AccompanyStatusEntity accompanyStatus = chatRoom.getAccompanyPost().getAccompanyStatusEntity();
-
-        // accompanyStatus가 null인지 확인
-        if (accompanyStatus == null) {
-            throw new GlobalException(ErrorCode.REVIEW_NOT_ALLOWED);  // 새로운 오류코드를 정의해 처리
-        }
+        // AccompanyStatusEntity를 쿼리로 가져와 FINISHED 상태 확인
+        AccompanyStatusEntity accompanyStatus = accompanyStatusJpaRepository
+                .findTopByAccompanyPostEntityOrderByCreatedAtDesc(chatRoom.getAccompanyPost())
+                .orElseThrow(() -> new GlobalException(ErrorCode.REVIEW_NOT_ALLOWED));
 
         // AccompanyStatusEnum이 FINISHED 상태인지 확인
         if (accompanyStatus.getAccompanyStatusEnum() != AccompanyStatusEnum.FINISHED) {
