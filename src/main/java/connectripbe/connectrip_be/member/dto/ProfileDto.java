@@ -34,6 +34,7 @@ public class ProfileDto {
                 .profileImagePath(member.getProfileImagePath())
                 .nickname(member.getNickname())
                 .gender(member.getGender())
+                .reviewCount(recentReviews.size())
                 .recentReviews(recentReviews)
                 .description(member.getDescription())
                 .ageGroup(ageGroup)
