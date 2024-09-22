@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import connectripbe.connectrip_be.global.exception.GlobalException;
 import connectripbe.connectrip_be.global.exception.type.ErrorCode;
 import java.time.Duration;
+import java.util.Collections;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -76,9 +78,7 @@ public class RedisService {
 
     public <T> T getClassData(String key, Class<T> elementClass) {
         try {
-            log.info("Redis Key : {}", key);
             String jsonResult = (String) redisTemplate.opsForValue().get(key);
-            log.info("Redis Data : {}", jsonResult);
             if (StringUtils.isEmpty(jsonResult)) {
                 throw new GlobalException(ErrorCode.REDIS_GET_ERROR);
             } else {
@@ -105,9 +105,25 @@ public class RedisService {
     public void setListData(String key, Object data) {
         try {
             redisTemplate.opsForList().rightPush(key, data);
-            log.info("Redis List Data : {}", data);
         } catch (Exception e) {
             log.error("Redis setListData Error : {}", e.getMessage());
+        }
+    }
+
+    public void deleteListData(String key, Object data) {
+        try {
+            redisTemplate.opsForList().remove(key, 1, data);
+        } catch (Exception e) {
+            log.error("Redis deleteListData Error : {}", e.getMessage());
+        }
+    }
+
+    public List<Object> getListData(String key) {
+        try {
+            return redisTemplate.opsForList().range(key, 0, -1);
+        } catch (Exception e) {
+            log.error("Error fetching Redis List Data: {}", e.getMessage());
+            return Collections.emptyList();
         }
     }
 }

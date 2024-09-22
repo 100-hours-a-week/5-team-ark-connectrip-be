@@ -99,7 +99,7 @@ public class StompPreHandler implements ChannelInterceptor {
                         + " memberID {}, chatRoomId: {}, sessionID: {}",
                 sessionDto.memberId(), sessionDto.chatRoomId()
                 , sessionId);
-        chatSessionService.removeUserSession(sessionId);
+        chatSessionService.removeUserSession(sessionId, sessionDto.chatRoomId());
     }
 
     // 쿠키에서 accessToken 추출
