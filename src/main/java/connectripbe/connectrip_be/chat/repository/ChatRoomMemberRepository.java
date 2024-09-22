@@ -5,6 +5,7 @@ import connectripbe.connectrip_be.chat.entity.type.ChatRoomMemberStatus;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -26,6 +27,11 @@ public interface ChatRoomMemberRepository extends JpaRepository<ChatRoomMemberEn
 
     Optional<ChatRoomMemberEntity> findFirstByChatRoom_IdAndStatusOrderByCreatedAt(Long chatRoomId,
                                                                                    ChatRoomMemberStatus chatRoomMemberStatus);
+
+    @Query("SELECT m.id FROM chat_room_member crm "
+            + "JOIN crm.member m"
+            + " WHERE crm.chatRoom.id = :chatRoomId and crm.status = 'ACTIVE'")
+    List<Long> findMemberIdsByChatRoomId(Long chatRoomId);
 
 
     boolean existsByChatRoomIdAndMemberId(Long chatRoomId, Long memberId);

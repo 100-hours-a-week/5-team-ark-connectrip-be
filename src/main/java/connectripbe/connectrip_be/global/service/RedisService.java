@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import connectripbe.connectrip_be.global.exception.GlobalException;
 import connectripbe.connectrip_be.global.exception.type.ErrorCode;
 import java.time.Duration;
+import java.util.Collections;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -73,20 +75,10 @@ public class RedisService {
         }
     }
 
-    // 해시 값을 Redis 에서 조회 (명확한 반환 타입을 받기 위해 Class<T> 사용)
-    public <T> T getChatRoomHashKey(String hashKey, String key, Class<T> clazz) {
-        Object value = redisTemplate.opsForHash().get(hashKey, key);
-        if (clazz.isInstance(value)) {
-            return clazz.cast(value);
-        }
-        throw new GlobalException(ErrorCode.REDIS_CAST_ERROR);
-    }
 
     public <T> T getClassData(String key, Class<T> elementClass) {
         try {
-            log.info("Redis Key : {}", key);
             String jsonResult = (String) redisTemplate.opsForValue().get(key);
-            log.info("Redis Data : {}", jsonResult);
             if (StringUtils.isEmpty(jsonResult)) {
                 throw new GlobalException(ErrorCode.REDIS_GET_ERROR);
             } else {
@@ -109,21 +101,29 @@ public class RedisService {
         }
     }
 
-
-    // Redis 에 해시 값 저장
-    public void updateToHash(String hashKey, String key, Object value) {
+    // 리스트로 저장
+    public void setListData(String key, Object data) {
         try {
-            ObjectMapper mapper = new ObjectMapper();
-            String jsonData = mapper.writeValueAsString(value);
-            redisTemplate.opsForHash().put(hashKey, key, jsonData);
-
+            redisTemplate.opsForList().rightPush(key, data);
         } catch (Exception e) {
-            log.error("Error occurred while updating hash : {}", e.getMessage());
+            log.error("Redis setListData Error : {}", e.getMessage());
         }
     }
 
-    // Redis 에서 해시 값 삭제
-    public void deleteHashKey(String hashKey, String key) {
-        redisTemplate.opsForHash().delete(hashKey, key);
+    public void deleteListData(String key, Object data) {
+        try {
+            redisTemplate.opsForList().remove(key, 1, data);
+        } catch (Exception e) {
+            log.error("Redis deleteListData Error : {}", e.getMessage());
+        }
+    }
+
+    public List<Object> getListData(String key) {
+        try {
+            return redisTemplate.opsForList().range(key, 0, -1);
+        } catch (Exception e) {
+            log.error("Error fetching Redis List Data: {}", e.getMessage());
+            return Collections.emptyList();
+        }
     }
 }
