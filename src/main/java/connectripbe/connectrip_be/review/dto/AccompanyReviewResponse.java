@@ -35,7 +35,7 @@ public class AccompanyReviewResponse {
                 .build();
     }
 
-    // UTC 형식으로 변환하는 메서드 (AccompanyCommentResponse와 동일하게 변경)
+    // UTC 형식으로 변환하는 메서드
     private static final DateTimeFormatter UTC_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
     private static String formatToUTC(LocalDateTime dateTime) {
