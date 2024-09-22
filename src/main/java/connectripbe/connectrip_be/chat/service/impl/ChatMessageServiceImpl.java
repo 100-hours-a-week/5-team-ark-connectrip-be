@@ -25,7 +25,6 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class ChatMessageServiceImpl implements ChatMessageService {
 
-    private static final String CHAT_ROOM_KEY_PREFIX = "chat_room_session: ";
     private static final String CHAT_ROOM_LIST_KEY_PREFIX = "chat_room_list: ";
 
     private final ChatMessageRepository chatMessageRepository;
