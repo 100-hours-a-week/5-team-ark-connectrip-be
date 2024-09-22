@@ -95,4 +95,5 @@ public class ChatMessageServiceImpl implements ChatMessageService {
                     log.info("발송 성공: {}", memberId);
                 });
     }
+
 }
