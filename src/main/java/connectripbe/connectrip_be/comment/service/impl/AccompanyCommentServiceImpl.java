@@ -10,6 +10,8 @@ import connectripbe.connectrip_be.global.exception.type.ErrorCode;
 import connectripbe.connectrip_be.global.util.bucket4j.annotation.RateLimit;
 import connectripbe.connectrip_be.member.entity.MemberEntity;
 import connectripbe.connectrip_be.member.repository.MemberJpaRepository;
+import connectripbe.connectrip_be.notification.dto.NotificationCommentResponse;
+import connectripbe.connectrip_be.notification.service.NotificationService;
 import connectripbe.connectrip_be.post.entity.AccompanyPostEntity;
 import connectripbe.connectrip_be.post.repository.AccompanyPostRepository;
 import java.util.List;
@@ -24,10 +26,12 @@ public class AccompanyCommentServiceImpl implements AccompanyCommentService {
     private final AccompanyCommentRepository accompanyCommentRepository;
     private final MemberJpaRepository memberRepository;
     private final AccompanyPostRepository accompanyPostRepository;
+    private final NotificationService notificationService; // 주입된 notificationService
+
 
     /**
-     * 댓글을 생성하는 메서드. 사용자 이메일을 통해 MemberEntity 를 조회하고, 게시물 ID를 통해 AccompanyPostEntity 를 조회한 후 AccompanyCommentEntity 를
-     * 생성하여 데이터베이스에 저장
+     * 댓글을 생성하는 메서드. 사용자 이메일을 통해 MemberEntity를 조회하고, 게시물 ID를 통해 AccompanyPostEntity를 조회한 후 AccompanyCommentEntity를 생성하여
+     * 데이터베이스에 저장
      *
      * @param memberId 댓글 작성자의 아이디
      * @param request  댓글 생성 요청 정보 (게시물 ID, 댓글 내용 포함)
@@ -39,6 +43,7 @@ public class AccompanyCommentServiceImpl implements AccompanyCommentService {
         MemberEntity member = getMember(memberId);
         AccompanyPostEntity post = getPost(request.getPostId());
 
+        // 댓글 생성
         AccompanyCommentEntity comment = AccompanyCommentEntity.builder()
                 .memberEntity(member)
                 .accompanyPostEntity(post)
@@ -47,8 +52,29 @@ public class AccompanyCommentServiceImpl implements AccompanyCommentService {
 
         accompanyCommentRepository.save(comment);
 
+        // 댓글 내용에서 첫 20자를 추출하는 로직 추가
+        String limitedContent = limitContentTo20Characters(request.getContent());
+
+        // NotificationCommentResponse 생성 (댓글 내용은 첫 20자만)
+        NotificationCommentResponse notificationResponse = NotificationCommentResponse.fromEntity(comment,
+                limitedContent);
+
+        // 게시글 작성자에게 실시간 알림 전송
+        notificationService.sendNotification(post.getMemberEntity().getId(), notificationResponse);
+
         return AccompanyCommentResponse.fromEntity(comment);
     }
+
+    /**
+     * 댓글 내용을 20자로 제한하는 메서드
+     *
+     * @param content 댓글 내용
+     * @return 20자 이하로 잘린 댓글 내용
+     */
+    private String limitContentTo20Characters(String content) {
+        return content.length() > 20 ? content.substring(0, 20) : content;
+    }
+
 
     /**
      * 댓글을 수정하는 메서드. 주어진 댓글 ID를 통해 AccompanyCommentEntity를 조회하고, 수정 권한이 있는지 확인한 후 댓글 내용을 업데이트
