@@ -2,6 +2,7 @@ package connectripbe.connectrip_be.member.dto;
 
 import connectripbe.connectrip_be.member.entity.MemberEntity;
 import connectripbe.connectrip_be.review.dto.AccompanyReviewResponse;
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,11 +19,11 @@ public class ProfileDto {
     private String profileImagePath;
     private String nickname;
     private String gender;
-    private int accompanyCount;
     private int reviewCount;
     private List<AccompanyReviewResponse> recentReviews;
     private String description;
-    private String ageGroup;  // 나이대는 외부에서 전달받음
+    private String ageGroup;
+    private LocalDateTime createdAt;
 
     public static ProfileDto fromEntity(MemberEntity member, List<AccompanyReviewResponse> recentReviews,
                                         String ageGroup) {
@@ -31,10 +32,10 @@ public class ProfileDto {
                 .profileImagePath(member.getProfileImagePath())
                 .nickname(member.getNickname())
                 .gender(member.getGender())
-                .accompanyCount(member.getAccompanyCount())
                 .recentReviews(recentReviews)
                 .description(member.getDescription())
-                .ageGroup(ageGroup)  // 서비스 계층에서 계산된 나이대 전달
+                .ageGroup(ageGroup)
+                .createdAt(member.getCreatedAt())
                 .build();
     }
 }
