@@ -1,7 +1,9 @@
 package connectripbe.connectrip_be.review.service.impl;
 
+import connectripbe.connectrip_be.accompany_status.entity.AccompanyStatusEntity;
+import connectripbe.connectrip_be.accompany_status.entity.AccompanyStatusEnum;
+import connectripbe.connectrip_be.accompany_status.repository.AccompanyStatusJpaRepository;
 import connectripbe.connectrip_be.chat.entity.ChatRoomEntity;
-import connectripbe.connectrip_be.chat.entity.type.ChatRoomType;
 import connectripbe.connectrip_be.chat.repository.ChatRoomRepository;
 import connectripbe.connectrip_be.global.exception.GlobalException;
 import connectripbe.connectrip_be.global.exception.type.ErrorCode;
@@ -25,6 +27,7 @@ public class AccompanyReviewServiceImpl implements AccompanyReviewService {
     private final AccompanyReviewRepository accompanyReviewRepository;
     private final MemberJpaRepository memberJpaRepository;
     private final ChatRoomRepository chatRoomRepository;
+    private final AccompanyStatusJpaRepository accompanyStatusJpaRepository;
 
     /**
      * 리뷰를 생성하는 메서드.
@@ -38,14 +41,20 @@ public class AccompanyReviewServiceImpl implements AccompanyReviewService {
         MemberEntity target = findMemberById(reviewRequest.getTargetId());
         ChatRoomEntity chatRoom = findChatRoomById(chatRoomId);
 
-        // 채팅방이 FINISH 상태인지 확인
-        if (chatRoom.getChatRoomType() != ChatRoomType.FINISH) {
+        // AccompanyStatusEntity를 쿼리로 가져와 FINISHED 상태 확인
+        AccompanyStatusEntity accompanyStatus = accompanyStatusJpaRepository
+                .findTopByAccompanyPostEntityOrderByCreatedAtDesc(chatRoom.getAccompanyPost())
+                .orElseThrow(() -> new GlobalException(ErrorCode.REVIEW_NOT_ALLOWED));
+
+        // AccompanyStatusEnum이 FINISHED 상태인지 확인
+        if (accompanyStatus.getAccompanyStatusEnum() != AccompanyStatusEnum.FINISHED) {
             throw new GlobalException(ErrorCode.REVIEW_NOT_ALLOWED);
         }
 
         // 동일한 리뷰가 이미 존재하는지 확인
-        boolean reviewExists = accompanyReviewRepository.existsByReviewerIdAndTargetIdAndChatRoomId(reviewer.getId(),
-                target.getId(), chatRoom.getId());
+        boolean reviewExists = accompanyReviewRepository.existsByReviewerIdAndTargetIdAndChatRoomId(
+                reviewer.getId(), target.getId(), chatRoom.getId());
+
         if (reviewExists) {
             throw new GlobalException(ErrorCode.REVIEW_ALREADY_EXISTS);
         }
@@ -63,6 +72,7 @@ public class AccompanyReviewServiceImpl implements AccompanyReviewService {
         int reviewCount = accompanyReviewRepository.countByTargetId(target.getId());
         return AccompanyReviewResponse.fromEntity(review, reviewCount);
     }
+
 
     /**
      * 특정 채팅방에 달린 모든 리뷰를 조회하고, 각 리뷰에 대한 정보를 AccompanyReviewResponse로 변환하는 메서드.
