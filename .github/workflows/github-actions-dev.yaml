@@ -48,8 +48,4 @@ jobs:
         run: |
           cd /home/ubuntu/deploy/back
           echo "${{ secrets.ENV_FILE_DEV }}" > .env
-          echo "${{ secrets.GHCR_TOKEN }}" | sudo docker login ghcr.io -u ${{ secrets.GIT_USER }} --password-stdin
-          sudo docker image prune -a -f
-          sudo docker-compose -f docker-compose.back.yaml down
-          sudo docker-compose -f docker-compose.back.yaml pull
-          sudo docker-compose -f docker-compose.back.yaml up -d
+          sudo sh switch.sh
