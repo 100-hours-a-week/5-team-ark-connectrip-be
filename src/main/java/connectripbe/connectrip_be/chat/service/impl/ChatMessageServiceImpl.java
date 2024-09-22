@@ -82,6 +82,7 @@ public class ChatMessageServiceImpl implements ChatMessageService {
     private void sendMessageToNotification(Long chatRoomId, ChatMessageResponse message) {
         // 채팅방에 입장한 사용자 세션 리스트 조회
         List<Object> activeSessionIds = redisService.getListData(CHAT_ROOM_LIST_KEY_PREFIX + chatRoomId);
+        log.info("activeSessionIds: {}", activeSessionIds);
 
         // 채팅방 회원 리스트
         List<Long> memberIds = chatRoomMemberRepository.findMemberIdsByChatRoomId(chatRoomId);
