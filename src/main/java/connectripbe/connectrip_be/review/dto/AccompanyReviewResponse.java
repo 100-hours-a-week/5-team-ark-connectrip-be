@@ -35,16 +35,15 @@ public class AccompanyReviewResponse {
                 .build();
     }
 
-    // UTC 형식으로 변환하는 메서드
+    // UTC 형식으로 변환하는 메서드 (AccompanyCommentResponse와 동일하게 변경)
     private static final DateTimeFormatter UTC_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
     private static String formatToUTC(LocalDateTime dateTime) {
         if (dateTime == null) {
             return null;
         }
-        return dateTime.atZone(ZoneId.systemDefault())
-                .withZoneSameInstant(ZoneId.of("UTC"))
-                .format(UTC_FORMATTER);
+        return dateTime.atZone(ZoneId.systemDefault()) // 시스템 시간대 적용
+                .format(UTC_FORMATTER); // 형식에 맞춰 반환
     }
 }
 
