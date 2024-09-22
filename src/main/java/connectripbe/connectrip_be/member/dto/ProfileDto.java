@@ -25,14 +25,13 @@ public class ProfileDto {
     private String ageGroup;  // 나이대는 외부에서 전달받음
 
     public static ProfileDto fromEntity(MemberEntity member, List<AccompanyReviewResponse> recentReviews,
-                                        int reviewCount, String ageGroup) {
+                                        String ageGroup) {
         return ProfileDto.builder()
                 .memberId(member.getId())
                 .profileImagePath(member.getProfileImagePath())
                 .nickname(member.getNickname())
                 .gender(member.getGender())
                 .accompanyCount(member.getAccompanyCount())
-                .reviewCount(reviewCount)
                 .recentReviews(recentReviews)
                 .description(member.getDescription())
                 .ageGroup(ageGroup)  // 서비스 계층에서 계산된 나이대 전달
