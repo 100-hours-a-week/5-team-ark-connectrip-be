@@ -5,12 +5,12 @@ import connectripbe.connectrip_be.comment.dto.AccompanyCommentResponse;
 import connectripbe.connectrip_be.comment.entity.AccompanyCommentEntity;
 import connectripbe.connectrip_be.comment.repository.AccompanyCommentRepository;
 import connectripbe.connectrip_be.comment.service.AccompanyCommentService;
-import connectripbe.connectrip_be.commentnotification.service.CommentNotificationService;
 import connectripbe.connectrip_be.global.exception.GlobalException;
 import connectripbe.connectrip_be.global.exception.type.ErrorCode;
 import connectripbe.connectrip_be.global.util.bucket4j.annotation.RateLimit;
 import connectripbe.connectrip_be.member.entity.MemberEntity;
 import connectripbe.connectrip_be.member.repository.MemberJpaRepository;
+import connectripbe.connectrip_be.notification.service.NotificationService;
 import connectripbe.connectrip_be.post.entity.AccompanyPostEntity;
 import connectripbe.connectrip_be.post.repository.AccompanyPostRepository;
 import java.util.List;
@@ -25,7 +25,7 @@ public class AccompanyCommentServiceImpl implements AccompanyCommentService {
     private final AccompanyCommentRepository accompanyCommentRepository;
     private final MemberJpaRepository memberRepository;
     private final AccompanyPostRepository accompanyPostRepository;
-    private final CommentNotificationService notificationService; // 주입된 notificationService
+    private final NotificationService notificationService; // 주입된 notificationService
 
 
     /**

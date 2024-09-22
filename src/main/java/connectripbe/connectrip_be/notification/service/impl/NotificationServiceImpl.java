@@ -1,9 +1,9 @@
-package connectripbe.connectrip_be.commentnotification.service.impl;
+package connectripbe.connectrip_be.notification.service.impl;
 
-import connectripbe.connectrip_be.commentnotification.entity.CommentNotificationEntity;
-import connectripbe.connectrip_be.commentnotification.repository.CommentNotificationRepository;
-import connectripbe.connectrip_be.commentnotification.service.CommentNotificationService;
 import connectripbe.connectrip_be.member.entity.MemberEntity;
+import connectripbe.connectrip_be.notification.entity.NotificationEntity;
+import connectripbe.connectrip_be.notification.repository.NotificationRepository;
+import connectripbe.connectrip_be.notification.service.NotificationService;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -14,9 +14,9 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 @Service
 @RequiredArgsConstructor
-public class CommentNotificationServiceImpl implements CommentNotificationService {
+public class NotificationServiceImpl implements NotificationService {
 
-    private final CommentNotificationRepository notificationRepository;
+    private final NotificationRepository notificationRepository;
     private final Map<Long, SseEmitter> emitters = new ConcurrentHashMap<>();
 
     @Override
@@ -38,7 +38,7 @@ public class CommentNotificationServiceImpl implements CommentNotificationServic
 
     @Override
     public void sendNotification(Long memberId, String message) {
-        CommentNotificationEntity notification = CommentNotificationEntity.builder()
+        NotificationEntity notification = NotificationEntity.builder()
                 .member(MemberEntity.builder().id(memberId).build())
                 .message(message)
                 .build();
@@ -55,7 +55,7 @@ public class CommentNotificationServiceImpl implements CommentNotificationServic
     }
 
     @Override
-    public List<CommentNotificationEntity> getUnreadNotifications(Long memberId) {
+    public List<NotificationEntity> getUnreadNotifications(Long memberId) {
         return notificationRepository.findByMemberIdAndReadAtIsNull(memberId);
     }
 }

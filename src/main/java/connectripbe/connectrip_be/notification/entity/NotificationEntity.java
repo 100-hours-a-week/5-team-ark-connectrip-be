@@ -1,4 +1,4 @@
-package connectripbe.connectrip_be.commentnotification.entity;
+package connectripbe.connectrip_be.notification.entity;
 
 import connectripbe.connectrip_be.global.entity.BaseEntity;
 import connectripbe.connectrip_be.member.entity.MemberEntity;
@@ -27,7 +27,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CommentNotificationEntity extends BaseEntity {
+public class NotificationEntity extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
