@@ -38,6 +38,18 @@ jobs:
       - name: Push Docker Image to GHCR
         run: docker push ghcr.io/topazkang/be-dev:latest
 
+  deploy_test:
+    runs-on:  [ self-hosted, Linux, X64, connectrip_test]
+    name: Deploy Test API
+    needs: build
+
+    steps:
+      - name: set env & deploy
+        run: |
+          cd /home/ubuntu
+          echo "${{ secrets.ENV_FILE_TEST }}" > .env
+          sudo sh switch.sh
+
   deploy_dev:
     runs-on: [ self-hosted, Linux, X64, connectrip_be_dev ]
     name: Deploy Dev API
