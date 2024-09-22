@@ -47,6 +47,5 @@ jobs:
       - name: set env & deploy
         run: |
           cd /home/ubuntu/deploy/back
-          whoami
           echo "${{ secrets.ENV_FILE_DEV }}" > .env
-          sh switch.sh
+          sudo sh switch.sh
