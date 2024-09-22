@@ -81,4 +81,8 @@ public class MemberEntity extends BaseEntity {
         this.description = description;
     }
 
+    public MemberEntity(Long id) {
+        this.id = id;
+    }
+
 }

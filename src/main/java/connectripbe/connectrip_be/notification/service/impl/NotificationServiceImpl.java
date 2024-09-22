@@ -43,20 +43,20 @@ public class NotificationServiceImpl implements NotificationService {
         return emitter;
     }
 
-    /**
-     * 특정 사용자에게 알림을 전송하는 메서드. NotificationCommentResponse를 기반으로 알림 데이터를 저장하고, SSE로 실시간 알림을 전송합니다.
-     *
-     * @param memberId             알림을 받을 사용자의 ID
-     * @param notificationResponse 전송할 알림 정보
-     */
     @Override
     public void sendNotification(Long memberId, NotificationCommentResponse notificationResponse) {
+        // MemberEntity를 생성자를 통해 간단하게 생성
+        MemberEntity member = new MemberEntity(memberId);  // 생성자에서 ID만 설정
+
+        // NotificationEntity를 빌더 패턴으로 생성
         NotificationEntity notification = NotificationEntity.builder()
-                .member(MemberEntity.builder().id(memberId).build())
-                .message(notificationResponse.getContent())  // 알림 메시지는 댓글 내용
+                .member(member)                            // 생성자를 통해 만든 MemberEntity 사용
+                .message(notificationResponse.getContent()) // 댓글 내용
                 .build();
+
         notificationRepository.save(notification);
 
+        // 알림을 받을 사용자에게 실시간 알림 전송
         SseEmitter emitter = emitters.get(memberId);
         if (emitter != null) {
             try {
@@ -68,6 +68,7 @@ public class NotificationServiceImpl implements NotificationService {
             }
         }
     }
+
 
     /**
      * 특정 사용자의 읽지 않은 알림 목록을 조회하는 메서드. 읽지 않은 알림(읽음 시간이 설정되지 않은 알림)을 데이터베이스에서 조회하여 반환합니다.
