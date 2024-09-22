@@ -87,9 +87,14 @@ public class ChatMessageServiceImpl implements ChatMessageService {
         // 채팅방 회원 리스트
         List<Long> memberIds = chatRoomMemberRepository.findMemberIdsByChatRoomId(chatRoomId);
 
+        // 세션 ID를 Long 타입으로 변환
+        List<Long> activeMemberIds = activeSessionIds.stream()
+                .map(sessionId -> Long.valueOf(sessionId.toString()))
+                .toList();
+
         // 채팅방 회원 리스트 중 채팅방에 입장하지 않은 사람들에게 알림 발송
         memberIds.stream()
-                .filter(memberId -> !activeSessionIds.contains(memberId))
+                .filter(memberId -> !activeMemberIds.contains(memberId))
                 .forEach(memberId -> {
                     // 알림 발송
                     simpMessagingTemplate.convertAndSend("/sub/member/notification/" + memberId, message);
