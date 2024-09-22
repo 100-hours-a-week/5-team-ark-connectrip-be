@@ -42,9 +42,8 @@ public class AccompanyReviewResponse {
         if (dateTime == null) {
             return null;
         }
-        return dateTime.atZone(ZoneId.systemDefault())
-                .withZoneSameInstant(ZoneId.of("UTC"))
-                .format(UTC_FORMATTER);
+        return dateTime.atZone(ZoneId.systemDefault()) // 시스템 시간대 적용
+                .format(UTC_FORMATTER); // 형식에 맞춰 반환
     }
 }
 
