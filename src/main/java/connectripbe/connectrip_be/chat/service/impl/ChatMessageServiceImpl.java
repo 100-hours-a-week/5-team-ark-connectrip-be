@@ -94,6 +94,5 @@ public class ChatMessageServiceImpl implements ChatMessageService {
                     simpMessagingTemplate.convertAndSend("/sub/member/notification/" + memberId, message);
                     log.info("발송 성공: {}", memberId);
                 });
-
     }
 }
