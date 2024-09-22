@@ -1,6 +1,7 @@
 package connectripbe.connectrip_be.notification.service.impl;
 
 import connectripbe.connectrip_be.member.entity.MemberEntity;
+import connectripbe.connectrip_be.notification.dto.NotificationCommentResponse;
 import connectripbe.connectrip_be.notification.entity.NotificationEntity;
 import connectripbe.connectrip_be.notification.repository.NotificationRepository;
 import connectripbe.connectrip_be.notification.service.NotificationService;
@@ -43,23 +44,25 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     /**
-     * 특정 사용자에게 알림 메시지를 전송하는 메서드. 알림 데이터를 데이터베이스에 저장한 후, 실시간 알림을 구독 중인 사용자가 있다면 SSE로 메시지를 전송합니다.
+     * 특정 사용자에게 알림을 전송하는 메서드. NotificationCommentResponse를 기반으로 알림 데이터를 저장하고, SSE로 실시간 알림을 전송합니다.
      *
-     * @param memberId 알림을 받을 사용자의 ID
-     * @param message  전송할 알림 메시지
+     * @param memberId             알림을 받을 사용자의 ID
+     * @param notificationResponse 전송할 알림 정보
      */
     @Override
-    public void sendNotification(Long memberId, String message) {
+    public void sendNotification(Long memberId, NotificationCommentResponse notificationResponse) {
         NotificationEntity notification = NotificationEntity.builder()
                 .member(MemberEntity.builder().id(memberId).build())
-                .message(message)
+                .message(notificationResponse.getContent())  // 알림 메시지는 댓글 내용
                 .build();
         notificationRepository.save(notification);
 
         SseEmitter emitter = emitters.get(memberId);
         if (emitter != null) {
             try {
-                emitter.send(SseEmitter.event().name("COMMENT_ADDED").data(message));
+                emitter.send(SseEmitter.event()
+                        .name("COMMENT_ADDED")
+                        .data(notificationResponse));  // NotificationCommentResponse 객체 전송
             } catch (IOException e) {
                 emitters.remove(memberId);
             }
