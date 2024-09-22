@@ -28,13 +28,13 @@ public class ProfileDto {
     private String createdAt;
 
     public static ProfileDto fromEntity(MemberEntity member, List<AccompanyReviewResponse> recentReviews,
-                                        String ageGroup) {
+                                        int reviewCount, String ageGroup) {
         return ProfileDto.builder()
                 .memberId(member.getId())
                 .profileImagePath(member.getProfileImagePath())
                 .nickname(member.getNickname())
                 .gender(member.getGender())
-                .reviewCount(recentReviews.size())
+                .reviewCount(reviewCount)
                 .recentReviews(recentReviews)
                 .description(member.getDescription())
                 .ageGroup(ageGroup)

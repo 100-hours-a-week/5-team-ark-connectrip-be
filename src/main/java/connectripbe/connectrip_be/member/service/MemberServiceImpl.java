@@ -159,7 +159,7 @@ public class MemberServiceImpl implements MemberService {
         int age = calculateAge(member.getBirthDate().toLocalDate());
         String ageGroup = calculateAgeGroup(age);
 
-        return ProfileDto.fromEntity(member, recentReviews, ageGroup);
+        return ProfileDto.fromEntity(member, recentReviews, reviewCount, ageGroup);
     }
 
 
