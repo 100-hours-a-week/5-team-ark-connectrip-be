@@ -20,7 +20,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "comment_notifications")
+@Table(name = "notifications")
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
