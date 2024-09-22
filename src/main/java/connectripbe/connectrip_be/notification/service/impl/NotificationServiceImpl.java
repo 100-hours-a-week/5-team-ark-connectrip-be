@@ -1,6 +1,9 @@
 package connectripbe.connectrip_be.notification.service.impl;
 
+import connectripbe.connectrip_be.global.exception.GlobalException;
+import connectripbe.connectrip_be.global.exception.type.ErrorCode;
 import connectripbe.connectrip_be.member.entity.MemberEntity;
+import connectripbe.connectrip_be.member.repository.MemberJpaRepository;
 import connectripbe.connectrip_be.notification.dto.NotificationCommentResponse;
 import connectripbe.connectrip_be.notification.entity.NotificationEntity;
 import connectripbe.connectrip_be.notification.repository.NotificationRepository;
@@ -18,6 +21,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 public class NotificationServiceImpl implements NotificationService {
 
     private final NotificationRepository notificationRepository;
+    private final MemberJpaRepository memberJpaRepository;
     private final Map<Long, SseEmitter> emitters = new ConcurrentHashMap<>();
 
     /**
@@ -45,13 +49,15 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public void sendNotification(Long memberId, NotificationCommentResponse notificationResponse) {
-        // MemberEntity를 생성자를 통해 간단하게 생성
-        MemberEntity member = new MemberEntity(memberId);  // 생성자에서 ID만 설정
+
+        // 사용자 ID로 MemberEntity 조회
+        MemberEntity member = memberJpaRepository.findById(memberId)
+                .orElseThrow(() -> new GlobalException(ErrorCode.USER_NOT_FOUND));
 
         // NotificationEntity를 빌더 패턴으로 생성
         NotificationEntity notification = NotificationEntity.builder()
-                .member(member)                            // 생성자를 통해 만든 MemberEntity 사용
-                .message(notificationResponse.getContent()) // 댓글 내용
+                .member(member)
+                .message(notificationResponse.getContent())
                 .build();
 
         notificationRepository.save(notification);
