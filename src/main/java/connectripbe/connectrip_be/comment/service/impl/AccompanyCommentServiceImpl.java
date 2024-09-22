@@ -52,15 +52,29 @@ public class AccompanyCommentServiceImpl implements AccompanyCommentService {
 
         accompanyCommentRepository.save(comment);
 
-        // NotificationCommentResponse 생성
+        // 댓글 내용에서 첫 20자를 추출하는 로직 추가
+        String limitedContent = limitContentTo20Characters(request.getContent());
+
+        // NotificationCommentResponse 생성 (댓글 내용은 첫 20자만)
         NotificationCommentResponse notificationResponse = NotificationCommentResponse.fromEntity(comment,
-                request.getContent());
+                limitedContent);
 
         // 게시글 작성자에게 실시간 알림 전송
         notificationService.sendNotification(post.getMemberEntity().getId(), notificationResponse);
 
         return AccompanyCommentResponse.fromEntity(comment);
     }
+
+    /**
+     * 댓글 내용을 20자로 제한하는 메서드
+     *
+     * @param content 댓글 내용
+     * @return 20자 이하로 잘린 댓글 내용
+     */
+    private String limitContentTo20Characters(String content) {
+        return content.length() > 20 ? content.substring(0, 20) : content;
+    }
+
 
     /**
      * 댓글을 수정하는 메서드. 주어진 댓글 ID를 통해 AccompanyCommentEntity를 조회하고, 수정 권한이 있는지 확인한 후 댓글 내용을 업데이트
