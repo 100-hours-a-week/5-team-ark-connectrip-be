@@ -1,6 +1,5 @@
 package connectripbe.connectrip_be.post.entity;
 
-import connectripbe.connectrip_be.accompany_status.entity.AccompanyStatusEntity;
 import connectripbe.connectrip_be.global.entity.BaseEntity;
 import connectripbe.connectrip_be.member.entity.MemberEntity;
 import jakarta.persistence.Column;
@@ -52,10 +51,6 @@ public class AccompanyPostEntity extends BaseEntity {
 
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "accompany_status_id")
-    private AccompanyStatusEntity accompanyStatusEntity;
 
     // fixme-eric 동행 요청 상태 임시보류
 
