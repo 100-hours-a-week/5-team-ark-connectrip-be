@@ -10,6 +10,7 @@ import connectripbe.connectrip_be.global.exception.type.ErrorCode;
 import connectripbe.connectrip_be.global.util.bucket4j.annotation.RateLimit;
 import connectripbe.connectrip_be.member.entity.MemberEntity;
 import connectripbe.connectrip_be.member.repository.MemberJpaRepository;
+import connectripbe.connectrip_be.notification.dto.NotificationCommentResponse;
 import connectripbe.connectrip_be.notification.service.NotificationService;
 import connectripbe.connectrip_be.post.entity.AccompanyPostEntity;
 import connectripbe.connectrip_be.post.repository.AccompanyPostRepository;
@@ -29,8 +30,8 @@ public class AccompanyCommentServiceImpl implements AccompanyCommentService {
 
 
     /**
-     * 댓글을 생성하는 메서드. 사용자 이메일을 통해 MemberEntity 를 조회하고, 게시물 ID를 통해 AccompanyPostEntity 를 조회한 후 AccompanyCommentEntity 를
-     * 생성하여 데이터베이스에 저장
+     * 댓글을 생성하는 메서드. 사용자 이메일을 통해 MemberEntity를 조회하고, 게시물 ID를 통해 AccompanyPostEntity를 조회한 후 AccompanyCommentEntity를 생성하여
+     * 데이터베이스에 저장
      *
      * @param memberId 댓글 작성자의 아이디
      * @param request  댓글 생성 요청 정보 (게시물 ID, 댓글 내용 포함)
@@ -42,6 +43,7 @@ public class AccompanyCommentServiceImpl implements AccompanyCommentService {
         MemberEntity member = getMember(memberId);
         AccompanyPostEntity post = getPost(request.getPostId());
 
+        // 댓글 생성
         AccompanyCommentEntity comment = AccompanyCommentEntity.builder()
                 .memberEntity(member)
                 .accompanyPostEntity(post)
@@ -50,8 +52,12 @@ public class AccompanyCommentServiceImpl implements AccompanyCommentService {
 
         accompanyCommentRepository.save(comment);
 
+        // NotificationCommentResponse 생성
+        NotificationCommentResponse notificationResponse = NotificationCommentResponse.fromEntity(comment,
+                request.getContent());
+
         // 게시글 작성자에게 실시간 알림 전송
-        notificationService.sendNotification(post.getMemberEntity().getId(), "댓글이 달렸습니다.");
+        notificationService.sendNotification(post.getMemberEntity().getId(), notificationResponse);
 
         return AccompanyCommentResponse.fromEntity(comment);
     }
