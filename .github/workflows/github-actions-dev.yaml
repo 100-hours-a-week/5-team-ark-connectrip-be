@@ -46,9 +46,12 @@ jobs:
     steps:
       - name: set env & deploy
         run: |
-          cd /home/ubuntu
+          cd /home/ubuntu/deploy/back
           echo "${{ secrets.ENV_FILE_TEST }}" > .env
-          sudo sh switch.sh
+          docker image prune -a -f
+          docker-compose -f docker-compose.back.yaml down
+          docker-compose -f docker-compose.back.yaml pull
+          docker-compose -f docker-compose.back.yaml up -d
 
   deploy_dev:
     runs-on: [ self-hosted, Linux, X64, connectrip_be_dev ]
