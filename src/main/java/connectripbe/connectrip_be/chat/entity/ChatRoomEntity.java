@@ -3,6 +3,7 @@ package connectripbe.connectrip_be.chat.entity;
 import connectripbe.connectrip_be.chat.entity.type.ChatRoomType;
 import connectripbe.connectrip_be.global.entity.BaseEntity;
 import connectripbe.connectrip_be.post.entity.AccompanyPostEntity;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -45,6 +46,10 @@ public class ChatRoomEntity extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private ChatRoomType chatRoomType;
 
+    @Builder.Default
+    @Column
+    private String lastReadMessageId = null;
+
     private String lastChatMessage;
 
     // 마지막 채팅 시간. 정렬을 위해 기본적으로 CreatedAt 값을 사용하고, 채팅이 발생할 때마다 업데이트
@@ -78,9 +83,10 @@ public class ChatRoomEntity extends BaseEntity {
     }
 
     //마지막 채팅 메시지 및 시간 업데이트 메서드
-    public void updateLastChatMessage(String message, LocalDateTime time) {
+    public void updateLastChatMessage(String message, LocalDateTime time, String lastReadMessageId) {
         this.lastChatMessage = message;
         this.lastChatTime = time;
+        this.lastReadMessageId = lastReadMessageId;
     }
 
 
