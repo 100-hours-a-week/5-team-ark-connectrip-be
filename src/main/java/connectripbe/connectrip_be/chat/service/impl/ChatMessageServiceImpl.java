@@ -1,5 +1,6 @@
 package connectripbe.connectrip_be.chat.service.impl;
 
+import com.mongodb.WriteConcern;
 import connectripbe.connectrip_be.chat.dto.ChatMessageRequest;
 import connectripbe.connectrip_be.chat.dto.ChatMessageResponse;
 import connectripbe.connectrip_be.chat.entity.ChatMessage;
@@ -62,16 +63,18 @@ public class ChatMessageServiceImpl implements ChatMessageService {
         ChatRoomEntity chatRoom = chatRoomRepository.findByIdWithPost(chatRoomId)
                 .orElseThrow(() -> new GlobalException(ErrorCode.CHAT_ROOM_NOT_FOUND));
 
-        String title = chatRoom.getAccompanyPost().getTitle();
-
-        // 채팅방에 입장하지 않은 사람들에게 알림 발송
-        sendMessageToNotification(chatRoomId, ChatMessageResponse.notificationFromEntity(saved, title));
-        log.info("리스폰스 {}", ChatMessageResponse.notificationFromEntity(saved, title));
+        mongoTemplate.setWriteConcern(WriteConcern.ACKNOWLEDGED);
 
         log.info("ID: {}", saved.getId());
         // 채팅방 테이블에 채팅 마지막 내용과 마지막 시간 업데이트
         chatRoom.updateLastChatMessage(saved.getContent(), saved.getCreatedAt(), saved.getId());
         chatRoomRepository.save(chatRoom);
+
+        String title = chatRoom.getAccompanyPost().getTitle();
+
+        // 채팅방에 입장하지 않은 사람들에게 알림 발송
+        sendMessageToNotification(chatRoomId, ChatMessageResponse.notificationFromEntity(saved, title));
+        log.info("리스폰스 {}", ChatMessageResponse.notificationFromEntity(saved, title));
 
         return ChatMessageResponse.fromEntity(saved);
     }
