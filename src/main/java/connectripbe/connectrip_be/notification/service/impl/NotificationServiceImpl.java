@@ -9,7 +9,6 @@ import connectripbe.connectrip_be.notification.entity.NotificationEntity;
 import connectripbe.connectrip_be.notification.repository.NotificationRepository;
 import connectripbe.connectrip_be.notification.service.NotificationService;
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import lombok.RequiredArgsConstructor;
@@ -75,15 +74,4 @@ public class NotificationServiceImpl implements NotificationService {
         }
     }
 
-
-    /**
-     * 특정 사용자의 읽지 않은 알림 목록을 조회하는 메서드. 읽지 않은 알림(읽음 시간이 설정되지 않은 알림)을 데이터베이스에서 조회하여 반환합니다.
-     *
-     * @param memberId 알림을 조회할 사용자의 ID
-     * @return 읽지 않은 알림 목록
-     */
-    @Override
-    public List<NotificationEntity> getUnreadNotifications(Long memberId) {
-        return notificationRepository.findByMemberIdAndReadAtIsNull(memberId);
-    }
 }
