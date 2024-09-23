@@ -57,7 +57,7 @@ public class ChatMessageServiceImpl implements ChatMessageService {
 
         ChatMessage saved = chatMessageRepository.save(chatMessage);
 
-        ChatRoomEntity chatRoom = chatRoomRepository.findByIdWithPost(saved.getChatRoomId())
+        ChatRoomEntity chatRoom = chatRoomRepository.findByIdWithPost(chatRoomId)
                 .orElseThrow(() -> new GlobalException(ErrorCode.CHAT_ROOM_NOT_FOUND));
 
         // 채팅방 테이블에 채팅 마지막 내용과 마지막 시간 업데이트
