@@ -38,4 +38,9 @@ public class NotificationEntity extends BaseEntity {
 
     @Column(name = "read_at")
     private LocalDateTime readAt;  // 읽은 시간
+
+    // 읽음 처리 메서드
+    public void setReadAt(LocalDateTime readAt) {
+        this.readAt = readAt;
+    }
 }

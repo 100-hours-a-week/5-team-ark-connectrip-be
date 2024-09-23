@@ -9,6 +9,7 @@ import connectripbe.connectrip_be.notification.entity.NotificationEntity;
 import connectripbe.connectrip_be.notification.repository.NotificationRepository;
 import connectripbe.connectrip_be.notification.service.NotificationService;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import lombok.RequiredArgsConstructor;
@@ -46,6 +47,12 @@ public class NotificationServiceImpl implements NotificationService {
         return emitter;
     }
 
+    /**
+     * 특정 사용자가 알림을 받을 때, 해당 사용자의 SSE 구독이 활성화되어 있으면 실시간으로 알림을 전송하는 메서드.
+     *
+     * @param memberId             알림을 받을 사용자의 ID
+     * @param notificationResponse 알림 내용
+     */
     @Override
     public void sendNotification(Long memberId, NotificationCommentResponse notificationResponse) {
 
@@ -72,6 +79,21 @@ public class NotificationServiceImpl implements NotificationService {
                 emitters.remove(memberId);
             }
         }
+    }
+
+    /**
+     * 알림 읽음 처리 메서드. 주어진 알림 ID를 이용해 해당 알림을 찾아 'readAt' 필드를 현재 시간으로 업데이트하여 읽음 처리합니다.
+     *
+     * @param notificationId 읽음 처리할 알림의 ID
+     */
+    @Override
+    public void markAsRead(Long notificationId) {
+        NotificationEntity notification = notificationRepository.findById(notificationId)
+                .orElseThrow(() -> new GlobalException(ErrorCode.USER_NOT_FOUND));
+
+        // 알림의 읽음 처리 (readAt 필드 업데이트)
+        notification.setReadAt(LocalDateTime.now());
+        notificationRepository.save(notification);
     }
 
 }

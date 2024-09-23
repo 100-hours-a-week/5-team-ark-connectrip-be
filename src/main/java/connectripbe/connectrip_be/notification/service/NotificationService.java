@@ -7,5 +7,8 @@ public interface NotificationService {
 
     SseEmitter subscribe(Long memberId); // SSE 연결 구독
 
-    void sendNotification(Long memberId, NotificationCommentResponse notificationResponse); // 알림 전송
+    void sendNotification(Long memberId, NotificationCommentResponse notificationResponse);
+
+    void markAsRead(Long notificationId); // 알림 읽음 처리
+// 알림 전송
 }
