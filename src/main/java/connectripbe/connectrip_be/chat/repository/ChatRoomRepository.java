@@ -14,6 +14,6 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoomEntity, Long> 
 
 
     @Query("select cr from chat_room cr "
-            + "join fetch cr.accompanyPost where cr.id =: chatRoomId")
+            + "join fetch cr.accompanyPost where cr.id = :chatRoomId")
     Optional<ChatRoomEntity> findByIdWithPost(@Param("chatRoomId") Long chatRoomId);
 }
