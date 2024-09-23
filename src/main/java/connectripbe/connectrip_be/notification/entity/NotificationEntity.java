@@ -12,8 +12,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -40,8 +38,4 @@ public class NotificationEntity extends BaseEntity {
 
     @Column(name = "read_at")
     private LocalDateTime readAt;  // 읽은 시간
-
-    public void markAsRead() {
-        this.readAt = ZonedDateTime.now(ZoneId.of("UTC")).toLocalDateTime();
-    }
 }
