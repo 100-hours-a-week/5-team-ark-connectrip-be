@@ -60,7 +60,7 @@ public class AccompanyCommentServiceImpl implements AccompanyCommentService {
                 limitedContent);
 
         // 게시글 작성자에게 실시간 알림 전송
-        notificationService.sendNotification(post.getMemberEntity().getId(), notificationResponse);
+        notificationService.sendNotification(post.getMemberEntity().getId(), post, notificationResponse);
 
         return AccompanyCommentResponse.fromEntity(comment);
     }

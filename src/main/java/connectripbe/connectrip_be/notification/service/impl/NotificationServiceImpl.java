@@ -8,6 +8,7 @@ import connectripbe.connectrip_be.notification.dto.NotificationCommentResponse;
 import connectripbe.connectrip_be.notification.entity.NotificationEntity;
 import connectripbe.connectrip_be.notification.repository.NotificationRepository;
 import connectripbe.connectrip_be.notification.service.NotificationService;
+import connectripbe.connectrip_be.post.entity.AccompanyPostEntity;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -56,7 +57,8 @@ public class NotificationServiceImpl implements NotificationService {
      * @param notificationResponse 알림 내용
      */
     @Override
-    public void sendNotification(Long memberId, NotificationCommentResponse notificationResponse) {
+    public void sendNotification(Long memberId, AccompanyPostEntity post,
+                                 NotificationCommentResponse notificationResponse) {
 
         // 사용자 ID로 MemberEntity 조회
         MemberEntity member = memberJpaRepository.findById(memberId)
@@ -65,6 +67,7 @@ public class NotificationServiceImpl implements NotificationService {
         // NotificationEntity를 빌더 패턴으로 생성
         NotificationEntity notification = NotificationEntity.builder()
                 .member(member)
+                .accompanyPostEntity(post)
                 .message(notificationResponse.getContent())
                 .build();
 
