@@ -82,10 +82,9 @@ public class ChatRoomEntity extends BaseEntity {
     }
 
     //마지막 채팅 메시지 및 시간 업데이트 메서드
-    public void updateLastChatMessage(String message, LocalDateTime time, String lastReadMessageId) {
+    public void updateLastChatMessage(String message, LocalDateTime time) {
         this.lastChatMessage = message;
         this.lastChatTime = time;
-        this.lastReadMessageId = lastReadMessageId;
     }
 
 
