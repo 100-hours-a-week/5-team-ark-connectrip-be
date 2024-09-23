@@ -46,9 +46,8 @@ public class ChatRoomEntity extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private ChatRoomType chatRoomType;
 
-    @Builder.Default
     @Column
-    private String lastReadMessageId = null;
+    private String lastReadMessageId;
 
     private String lastChatMessage;
 
