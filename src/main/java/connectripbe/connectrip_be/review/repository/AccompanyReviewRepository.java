@@ -30,7 +30,7 @@ public interface AccompanyReviewRepository extends JpaRepository<AccompanyReview
     List<AccompanyReviewEntity> findRecentReviewsByTargetId(@Param("memberId") Long memberId);
 
     // 특정 유저가 받은 모든 리뷰를 가져오기
-    List<AccompanyReviewEntity> findAllByTargetId(Long memberId);
+    List<AccompanyReviewEntity> findAllByTargetIdOrderByCreatedAtDesc(Long memberId);
 
     // 특정 유저가 받은 리뷰의 개수 가져오기
     int countByTargetId(Long memberId);
