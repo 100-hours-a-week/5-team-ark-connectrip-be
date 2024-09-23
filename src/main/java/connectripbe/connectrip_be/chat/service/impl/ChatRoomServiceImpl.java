@@ -27,6 +27,7 @@ import connectripbe.connectrip_be.post.exception.NotFoundAccompanyPostException;
 import connectripbe.connectrip_be.post.repository.AccompanyPostRepository;
 import connectripbe.connectrip_be.review.repository.AccompanyReviewRepository;
 import jakarta.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
@@ -61,9 +62,16 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         List<ChatRoomMemberEntity> chatRoomMembers = chatRoomMemberRepository.myChatRoomList(
                 memberId);
 
-        return chatRoomMembers.stream()
-                .map(member -> ChatRoomListResponse.fromEntity(member.getChatRoom()))
-                .toList();
+        List<ChatRoomListResponse> chatRoomListResponses = new ArrayList<>();
+
+        for (ChatRoomMemberEntity member : chatRoomMembers) {
+            ChatRoomEntity chatRoom = member.getChatRoom();
+            boolean hasUnreadMessages = hasUnreadMessage(chatRoom.getId(), memberId);
+            ChatRoomListResponse response = ChatRoomListResponse.fromEntity(chatRoom, hasUnreadMessages);
+            chatRoomListResponses.add(response);
+        }
+
+        return chatRoomListResponses;
     }
 
     /**
@@ -250,6 +258,24 @@ public class ChatRoomServiceImpl implements ChatRoomService {
 
             pendingMember.updateStatus(PendingStatus.EXIT_ROOM);
         }
+    }
+
+    private boolean hasUnreadMessage(Long chatRoomId, Long memberId) {
+        ChatRoomMemberEntity chatMember = chatRoomMemberRepository.findByChatRoom_IdAndMember_Id(
+                chatRoomId, memberId).orElseThrow(() -> new GlobalException(ErrorCode.USER_NOT_FOUND));
+
+        String lastReadMessageId = chatMember.getLastReadMessageId();
+
+        ChatMessage latestMessage = chatMessageRepository.findFirstByChatRoomIdOrderByCreatedAtDesc(chatRoomId)
+                .orElse(null);
+
+        if (latestMessage == null) {
+            // 만약 채팅방에 메시지가 없다면 읽지 않은 메시지도 없음
+            return false;
+        }
+
+        // 마지막으로 읽은 메시지 이후에 새 메시지가 있다면 true 반환
+        return lastReadMessageId == null || latestMessage.getId().compareTo(lastReadMessageId) > 0;
     }
 
     private ChatRoomEntity getChatRoom(Long chatRoomId) {
