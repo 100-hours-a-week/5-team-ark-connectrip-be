@@ -57,15 +57,18 @@ public class ChatMessageServiceImpl implements ChatMessageService {
 
         ChatMessage saved = chatMessageRepository.save(chatMessage);
 
-        ChatRoomEntity chatRoom = chatRoomRepository.findById(saved.getChatRoomId())
+        ChatRoomEntity chatRoom = chatRoomRepository.findByIdWithPost(chatRoomId)
                 .orElseThrow(() -> new GlobalException(ErrorCode.CHAT_ROOM_NOT_FOUND));
 
         // 채팅방 테이블에 채팅 마지막 내용과 마지막 시간 업데이트
         chatRoom.updateLastChatMessage(saved.getContent(), saved.getCreatedAt());
         chatRoomRepository.save(chatRoom);
 
+        String title = chatRoom.getAccompanyPost().getTitle();
+
         // 채팅방에 입장하지 않은 사람들에게 알림 발송
-        sendMessageToNotification(chatRoomId, ChatMessageResponse.fromEntity(saved));
+        sendMessageToNotification(chatRoomId, ChatMessageResponse.notificationFromEntity(saved, title));
+        log.info("리스폰스 {}", ChatMessageResponse.notificationFromEntity(saved, title));
 
         return ChatMessageResponse.fromEntity(saved);
     }
@@ -87,9 +90,14 @@ public class ChatMessageServiceImpl implements ChatMessageService {
         // 채팅방 회원 리스트
         List<Long> memberIds = chatRoomMemberRepository.findMemberIdsByChatRoomId(chatRoomId);
 
+        // 세션 ID를 Long 타입으로 변환
+        List<Long> activeMemberIds = activeSessionIds.stream()
+                .map(sessionId -> Long.valueOf(sessionId.toString()))
+                .toList();
+
         // 채팅방 회원 리스트 중 채팅방에 입장하지 않은 사람들에게 알림 발송
         memberIds.stream()
-                .filter(memberId -> !activeSessionIds.contains(memberId))
+                .filter(memberId -> !activeMemberIds.contains(memberId))
                 .forEach(memberId -> {
                     // 알림 발송
                     simpMessagingTemplate.convertAndSend("/sub/member/notification/" + memberId, message);
