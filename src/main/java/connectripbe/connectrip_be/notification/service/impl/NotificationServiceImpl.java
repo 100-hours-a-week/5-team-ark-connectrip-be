@@ -10,8 +10,10 @@ import connectripbe.connectrip_be.notification.repository.NotificationRepository
 import connectripbe.connectrip_be.notification.service.NotificationService;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -97,5 +99,18 @@ public class NotificationServiceImpl implements NotificationService {
         notificationRepository.save(notification);
     }
 
+    @Override
+    public List<NotificationCommentResponse> getUnreadNotifications(Long memberId) {
+        MemberEntity member = memberJpaRepository.findById(memberId)
+                .orElseThrow(() -> new GlobalException(ErrorCode.USER_NOT_FOUND));
+
+        // 읽지 않은 알림 조회 (readAt이 null인 알림만 조회)
+        List<NotificationEntity> unreadNotifications = notificationRepository.findAllByMemberAndReadAtIsNull(member);
+
+        // fromEntity를 사용하여 엔티티를 DTO로 변환
+        return unreadNotifications.stream()
+                .map(NotificationCommentResponse::fromEntity)  // fromEntity 메서드 호출
+                .collect(Collectors.toList());
+    }
 
 }

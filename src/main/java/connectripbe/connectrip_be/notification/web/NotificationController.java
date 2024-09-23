@@ -1,6 +1,8 @@
 package connectripbe.connectrip_be.notification.web;
 
+import connectripbe.connectrip_be.notification.dto.NotificationCommentResponse;
 import connectripbe.connectrip_be.notification.service.NotificationService;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,6 +30,13 @@ public class NotificationController {
     public ResponseEntity<Void> markAsRead(@PathVariable Long notificationId) {
         notificationService.markAsRead(notificationId);
         return ResponseEntity.ok().build();
+    }
+
+    // 읽지 않은 알림 조회 API
+    @GetMapping("/unread/{memberId}")
+    public ResponseEntity<List<NotificationCommentResponse>> getUnreadNotifications(@PathVariable Long memberId) {
+        List<NotificationCommentResponse> unreadNotifications = notificationService.getUnreadNotifications(memberId);
+        return ResponseEntity.ok(unreadNotifications);
     }
 
 }
