@@ -89,7 +89,7 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public void markAsRead(Long notificationId) {
         NotificationEntity notification = notificationRepository.findById(notificationId)
-                .orElseThrow(() -> new GlobalException(ErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new GlobalException(ErrorCode.NOTIFICATION_NOT_FOUND));
 
         // 알림의 읽음 처리 (readAt 필드를 업데이트하는 메서드 호출)
         notification.markAsRead(LocalDateTime.now());
