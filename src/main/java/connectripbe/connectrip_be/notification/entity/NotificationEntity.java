@@ -40,7 +40,7 @@ public class NotificationEntity extends BaseEntity {
     private LocalDateTime readAt;  // 읽은 시간
 
     // 읽음 처리 메서드
-    public void setReadAt(LocalDateTime readAt) {
+    public void markAsRead(LocalDateTime readAt) {
         this.readAt = readAt;
     }
 }
