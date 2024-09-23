@@ -43,7 +43,7 @@ public record ChatMessageResponse(
         }
         String content = chatMessage.getContent();
         if (content.length() > 20) {
-            content = content.substring(0, 20) + "...";
+            content = content.substring(0, 20);
         }
         return ChatMessageResponse.builder()
                 .id(chatMessage.getId())
