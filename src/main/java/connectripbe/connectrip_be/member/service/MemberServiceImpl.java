@@ -181,7 +181,7 @@ public class MemberServiceImpl implements MemberService {
         MemberEntity memberEntity = memberJpaRepository.findById(memberId)
                 .orElseThrow(NotFoundMemberException::new);
 
-        List<AccompanyReviewEntity> reviews = accompanyReviewRepository.findAllByTargetId(memberId);
+        List<AccompanyReviewEntity> reviews = accompanyReviewRepository.findAllByTargetIdOrderByCreatedAtDesc(memberId);
 
         List<AccompanyReviewDto> AccompanyReviewDto = reviews.stream()
                 .map(accompanyReviewEntity -> new AccompanyReviewDto(
