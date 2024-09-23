@@ -10,11 +10,10 @@ import connectripbe.connectrip_be.member.dto.ProfileDto;
 import connectripbe.connectrip_be.member.dto.ProfileUpdateRequestDto;
 import connectripbe.connectrip_be.member.dto.TokenAndHeaderInfoDto;
 import connectripbe.connectrip_be.member.service.MemberService;
-import connectripbe.connectrip_be.review.dto.AccompanyReviewResponse;
+import connectripbe.connectrip_be.review.dto.AccompanyReviewResponse2;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -92,9 +91,10 @@ public class MemberController {
      * @return 회원이 받은 모든 리뷰 목록
      */
     @GetMapping("/profile/{memberId}/reviews")
-    public ResponseEntity<List<AccompanyReviewResponse>> getAllReviews(@PathVariable Long memberId) {
-        List<AccompanyReviewResponse> reviews = memberService.getAllReviews(memberId);
-        return ResponseEntity.ok(reviews);
+    public ResponseEntity<AccompanyReviewResponse2> getAllReviews(@PathVariable Long memberId) {
+        AccompanyReviewResponse2 accompanyReviewResponse = memberService.getAllReviews(memberId);
+
+        return ResponseEntity.ok(accompanyReviewResponse);
     }
 
     /**

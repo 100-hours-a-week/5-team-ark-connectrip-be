@@ -8,8 +8,7 @@ import connectripbe.connectrip_be.member.dto.MemberHeaderInfoDto;
 import connectripbe.connectrip_be.member.dto.ProfileDto;
 import connectripbe.connectrip_be.member.dto.ProfileUpdateRequestDto;
 import connectripbe.connectrip_be.member.dto.TokenAndHeaderInfoDto;
-import connectripbe.connectrip_be.review.dto.AccompanyReviewResponse;
-import java.util.List;
+import connectripbe.connectrip_be.review.dto.AccompanyReviewResponse2;
 
 public interface MemberService {
 
@@ -23,7 +22,7 @@ public interface MemberService {
 
     ProfileDto getProfile(Long memberId);  // 프로필 조회 (최신 3개 리뷰 포함)
 
-    List<AccompanyReviewResponse> getAllReviews(Long memberId);  // 모든 리뷰 조회
+    AccompanyReviewResponse2 getAllReviews(Long memberId);  // 모든 리뷰 조회
 
     String calculateAgeGroup(int age);  // 나이대 계산 메서드
 

@@ -20,11 +20,16 @@ import connectripbe.connectrip_be.member.entity.type.MemberRoleType;
 import connectripbe.connectrip_be.member.exception.DuplicateMemberNicknameException;
 import connectripbe.connectrip_be.member.exception.NotFoundMemberException;
 import connectripbe.connectrip_be.member.repository.MemberJpaRepository;
+import connectripbe.connectrip_be.review.dto.AccompanyReviewDto;
 import connectripbe.connectrip_be.review.dto.AccompanyReviewResponse;
+import connectripbe.connectrip_be.review.dto.AccompanyReviewResponse2;
 import connectripbe.connectrip_be.review.entity.AccompanyReviewEntity;
 import connectripbe.connectrip_be.review.repository.AccompanyReviewRepository;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.Period;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -168,32 +173,45 @@ public class MemberServiceImpl implements MemberService {
      *
      * @param memberId 리뷰 대상이 되는 회원 ID
      * @return 해당 회원이 받은 모든 리뷰 목록과 리뷰 대상자가 받은 전체 리뷰 수를 포함한 리스트
+     * @
      */
     @Override
-    public List<AccompanyReviewResponse> getAllReviews(Long memberId) {
+    public AccompanyReviewResponse2 getAllReviews(Long memberId) {
         // 전체 리뷰 목록을 조회
+        MemberEntity memberEntity = memberJpaRepository.findById(memberId)
+                .orElseThrow(NotFoundMemberException::new);
+
         List<AccompanyReviewEntity> reviews = accompanyReviewRepository.findAllByTargetId(memberId);
 
-        // 리뷰 목록을 DTO로 변환하여 반환
-        return reviews.stream()
-                .map(this::convertReviewToResponse) // 변환 메서드를 사용하여 DTO 변환
-                .collect(Collectors.toList());
+        List<AccompanyReviewDto> AccompanyReviewDto = reviews.stream()
+                .map(accompanyReviewEntity -> new AccompanyReviewDto(
+                        accompanyReviewEntity.getId(),
+                        accompanyReviewEntity.getReviewer().getId(),
+                        accompanyReviewEntity.getReviewer().getNickname(),
+                        accompanyReviewEntity.getReviewer().getProfileImagePath(),
+                        accompanyReviewEntity.getContent(),
+                        formatToUTC(accompanyReviewEntity.getCreatedAt())
+                ))
+                .toList();
+
+        return new AccompanyReviewResponse2(
+                memberId,
+                memberEntity.getNickname(),
+                reviews.size(),
+                AccompanyReviewDto
+        );
     }
 
-    /**
-     * AccompanyReviewEntity를 AccompanyReviewResponse로 변환하는 메서드. 각 리뷰 대상자(targetId)에 대한 전체 리뷰 수를 계산하여 함께 반환.
-     *
-     * @param review AccompanyReviewEntity 객체
-     * @return 변환된 AccompanyReviewResponse 객체
-     */
-    private AccompanyReviewResponse convertReviewToResponse(AccompanyReviewEntity review) {
-        // 리뷰 대상자에 대한 전체 리뷰 수 계산
-        int reviewCount = accompanyReviewRepository.countByTargetId(review.getTarget().getId());
+    // todo-noah: 추후 UTC 관련 utils로 분리
+    private final DateTimeFormatter UTC_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
-        // DTO로 변환하여 반환
-        return AccompanyReviewResponse.fromEntity(review, reviewCount);
+    private String formatToUTC(LocalDateTime dateTime) {
+        if (dateTime == null) {
+            return null;
+        }
+        return dateTime.atZone(ZoneId.systemDefault()) // 시스템 시간대 적용
+                .format(UTC_FORMATTER); // 형식에 맞춰 반환
     }
-
 
     /**
      * 나이대 계산
@@ -221,7 +239,6 @@ public class MemberServiceImpl implements MemberService {
      *
      * @param memberId 회원 ID
      * @param dto      수정할 프로필 정보 (닉네임, 자기소개)
-     * @return 반환값 없음 (프로필 수정 후 200 OK 응답)
      */
     @Override
     public void updateProfile(Long memberId, ProfileUpdateRequestDto dto) {
@@ -238,5 +255,4 @@ public class MemberServiceImpl implements MemberService {
 
         memberJpaRepository.save(member);
     }
-
 }
