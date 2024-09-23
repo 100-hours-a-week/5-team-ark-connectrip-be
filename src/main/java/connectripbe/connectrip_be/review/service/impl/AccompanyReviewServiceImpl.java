@@ -11,9 +11,13 @@ import connectripbe.connectrip_be.member.entity.MemberEntity;
 import connectripbe.connectrip_be.member.repository.MemberJpaRepository;
 import connectripbe.connectrip_be.review.dto.AccompanyReviewRequest;
 import connectripbe.connectrip_be.review.dto.AccompanyReviewResponse;
+import connectripbe.connectrip_be.review.dto.AccompanyReviewSummaryResponse;
 import connectripbe.connectrip_be.review.entity.AccompanyReviewEntity;
 import connectripbe.connectrip_be.review.repository.AccompanyReviewRepository;
 import connectripbe.connectrip_be.review.service.AccompanyReviewService;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -88,6 +92,34 @@ public class AccompanyReviewServiceImpl implements AccompanyReviewService {
         return reviews.stream()
                 .map(this::convertToAccompanyReviewResponse)
                 .toList();
+    }
+
+    @Override
+    public AccompanyReviewSummaryResponse getReviewSummary(
+            Long chatRoomId,
+            Long reviewerId,
+            Long revieweeId) {
+        AccompanyReviewEntity accompanyReviewEntity = accompanyReviewRepository.findAccompanyReviewByChatRoomIdAndReviewerIdAndRevieweeId(
+                        chatRoomId,
+                        reviewerId,
+                        revieweeId)
+                .orElseThrow(() -> new GlobalException(ErrorCode.NOT_FOUND_REVIEW));
+
+        return new AccompanyReviewSummaryResponse(
+                accompanyReviewEntity.getTarget().getNickname(),
+                accompanyReviewEntity.getContent(),
+                formatToUTC(accompanyReviewEntity.getCreatedAt()));
+    }
+
+    // todo-noah: 추후 UTC 관련 utils로 분리
+    private final DateTimeFormatter UTC_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+
+    private String formatToUTC(LocalDateTime dateTime) {
+        if (dateTime == null) {
+            return null;
+        }
+        return dateTime.atZone(ZoneId.systemDefault()) // 시스템 시간대 적용
+                .format(UTC_FORMATTER); // 형식에 맞춰 반환
     }
 
     /**

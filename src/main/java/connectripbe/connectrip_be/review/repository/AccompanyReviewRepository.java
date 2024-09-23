@@ -2,6 +2,7 @@ package connectripbe.connectrip_be.review.repository;
 
 import connectripbe.connectrip_be.review.entity.AccompanyReviewEntity;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -10,6 +11,16 @@ public interface AccompanyReviewRepository extends JpaRepository<AccompanyReview
 
     // 특정 채팅방에 대한 리뷰 가져오기
     List<AccompanyReviewEntity> findByChatRoomId(Long chatRoomId);
+
+    // 채팅방, 리뷰 작성자, 리뷰 대상자를 통해 리뷰 찾기
+    @Query("SELECT ar FROM AccompanyReviewEntity ar " +
+            "WHERE ar.chatRoom.id = :chatRoomId " +
+            "AND ar.reviewer.id = :reviewerId " +
+            "AND ar.target.id = :revieweeId")
+    Optional<AccompanyReviewEntity> findAccompanyReviewByChatRoomIdAndReviewerIdAndRevieweeId(
+            @Param("chatRoomId") Long chatRoomId,
+            @Param("reviewerId") Long reviewerId,
+            @Param("revieweeId") Long revieweeId);
 
     // 리뷰어, 대상자, 채팅방을 기준으로 리뷰 존재 여부 확인
     boolean existsByReviewerIdAndTargetIdAndChatRoomId(Long reviewerId, Long targetId, Long chatRoomId);
