@@ -37,7 +37,7 @@ public class ChatMessageController {
     @GetMapping("/api/v1/chatRoom/{chatRoomId}/messages")
     public ResponseEntity<List<ChatMessageResponse>> getChatRoomMessages(
             @PathVariable Long chatRoomId,
-            @RequestParam(required = false) String lastMessageId,
+            @RequestParam String lastMessageId,
             @RequestParam(defaultValue = "50") int size) {
         return ResponseEntity.ok(chatMessageService.getMessagesAfterId(chatRoomId, lastMessageId, size));
     }
