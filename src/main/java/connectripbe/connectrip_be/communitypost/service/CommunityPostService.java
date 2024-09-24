@@ -2,6 +2,7 @@ package connectripbe.connectrip_be.communitypost.service;
 
 import connectripbe.connectrip_be.communitypost.dto.CommunityPostResponse;
 import connectripbe.connectrip_be.communitypost.dto.CreateCommunityPostRequest;
+import connectripbe.connectrip_be.communitypost.dto.SearchCommunityPostSummaryResponse;
 import connectripbe.connectrip_be.communitypost.dto.UpdateCommunityPostRequest;
 import java.util.List;
 
@@ -15,7 +16,7 @@ public interface CommunityPostService {
 
     CommunityPostResponse readPost(Long postId);
 
-    List<CommunityPostResponse> getAllPosts();
+    SearchCommunityPostSummaryResponse getAllPosts(int page);
 
     List<CommunityPostResponse> getAllPostsByQuery(String query);
 }

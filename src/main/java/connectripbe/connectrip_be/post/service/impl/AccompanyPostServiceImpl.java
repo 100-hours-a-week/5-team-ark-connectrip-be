@@ -16,6 +16,7 @@ import connectripbe.connectrip_be.member.repository.MemberJpaRepository;
 import connectripbe.connectrip_be.post.dto.AccompanyPostListResponse;
 import connectripbe.connectrip_be.post.dto.AccompanyPostResponse;
 import connectripbe.connectrip_be.post.dto.CreateAccompanyPostRequest;
+import connectripbe.connectrip_be.post.dto.SearchAccompanyPostSummaryResponse;
 import connectripbe.connectrip_be.post.dto.UpdateAccompanyPostRequest;
 import connectripbe.connectrip_be.post.entity.AccompanyPostEntity;
 import connectripbe.connectrip_be.post.exception.NotFoundAccompanyPostException;
@@ -28,6 +29,10 @@ import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -118,9 +123,21 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
     }
 
     @Override
-    public List<AccompanyPostListResponse> accompanyPostList() {
-        return accompanyPostRepository.findAllByDeletedAtIsNullOrderByCreatedAtDesc().stream()
-                .map(AccompanyPostListResponse::fromEntity).toList();
+    public SearchAccompanyPostSummaryResponse accompanyPostList(int page) {
+        PageRequest pageRequest = PageRequest.of(
+                page - 1,
+                10,
+                Sort.by(Direction.DESC, "createdAt"));
+
+        Page<AccompanyPostEntity> accompanyPostEntities = accompanyPostRepository
+                .findAllByDeletedAtIsNull(pageRequest);
+
+        return new SearchAccompanyPostSummaryResponse(
+                accompanyPostEntities.getTotalElements(),
+                accompanyPostEntities.getContent().stream()
+                        .map(AccompanyPostListResponse::fromEntity)
+                        .toList()
+        );
     }
 
     @Override

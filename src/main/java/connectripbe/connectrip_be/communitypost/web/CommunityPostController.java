@@ -2,6 +2,7 @@ package connectripbe.connectrip_be.communitypost.web;
 
 import connectripbe.connectrip_be.communitypost.dto.CommunityPostResponse;
 import connectripbe.connectrip_be.communitypost.dto.CreateCommunityPostRequest;
+import connectripbe.connectrip_be.communitypost.dto.SearchCommunityPostSummaryResponse;
 import connectripbe.connectrip_be.communitypost.dto.UpdateCommunityPostRequest;
 import connectripbe.connectrip_be.communitypost.service.CommunityPostService;
 import java.util.List;
@@ -83,14 +84,12 @@ public class CommunityPostController {
         return ResponseEntity.ok(response);
     }
 
-    /**
-     * 모든 게시글을 조회하는 엔드포인트. 삭제되지 않은 모든 게시글을 리스트로 반환합니다.
-     *
-     * @return 모든 게시글의 정보를 담은 List<CommunityPostResponse> 객체
-     */
     @GetMapping
-    public ResponseEntity<List<CommunityPostResponse>> getAllPosts() {
-        List<CommunityPostResponse> response = communityPostService.getAllPosts();
+    public ResponseEntity<SearchCommunityPostSummaryResponse> getAllPosts(
+            @RequestParam(defaultValue = "1") Integer page
+    ) {
+        SearchCommunityPostSummaryResponse response = communityPostService.getAllPosts(page);
+
         return ResponseEntity.ok(response);
     }
 
@@ -98,5 +97,4 @@ public class CommunityPostController {
     public ResponseEntity<List<CommunityPostResponse>> searchByQuery(@RequestParam String query) {
         return ResponseEntity.ok(communityPostService.getAllPostsByQuery(query));
     }
-
 }

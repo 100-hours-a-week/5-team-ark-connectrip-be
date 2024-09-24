@@ -5,6 +5,7 @@ import connectripbe.connectrip_be.post.dto.AccompanyPostListResponse;
 import connectripbe.connectrip_be.post.dto.AccompanyPostResponse;
 import connectripbe.connectrip_be.post.dto.CheckDuplicatedCustomUrlDto;
 import connectripbe.connectrip_be.post.dto.CreateAccompanyPostRequest;
+import connectripbe.connectrip_be.post.dto.SearchAccompanyPostSummaryResponse;
 import connectripbe.connectrip_be.post.dto.UpdateAccompanyPostRequest;
 import connectripbe.connectrip_be.post.exception.DuplicatedCustomUrlException;
 import connectripbe.connectrip_be.post.service.AccompanyPostService;
@@ -57,8 +58,10 @@ public class AccompanyPostController {
     }
 
     @GetMapping
-    public ResponseEntity<List<AccompanyPostListResponse>> listPosts() {
-        List<AccompanyPostListResponse> response = accompanyPostService.accompanyPostList();
+    public ResponseEntity<SearchAccompanyPostSummaryResponse> listPosts(
+            @RequestParam(defaultValue = "1") Integer page
+    ) {
+        SearchAccompanyPostSummaryResponse response = accompanyPostService.accompanyPostList(page);
         return ResponseEntity.ok(response);  // 전체 리스트 반환
     }
 
