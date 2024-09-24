@@ -117,7 +117,7 @@ public class ChatMessageServiceImpl implements ChatMessageService {
         Query query = new Query();
         query.addCriteria(Criteria.where("chatRoomId").is(chatRoomId));
 
-        if (lastMessageId != null) {
+        if (!lastMessageId.equals("first")) {
             // 마지막 메시지 이후 데이터를 가져옴
             query.addCriteria(Criteria.where("_id").lt(new ObjectId(lastMessageId)));
         }
