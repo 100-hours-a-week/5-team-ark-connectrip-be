@@ -12,7 +12,6 @@ import connectripbe.connectrip_be.global.exception.type.ErrorCode;
 import connectripbe.connectrip_be.global.util.bucket4j.annotation.RateLimit;
 import connectripbe.connectrip_be.member.entity.MemberEntity;
 import connectripbe.connectrip_be.member.repository.MemberJpaRepository;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -121,16 +120,22 @@ public class CommunityPostServiceImpl implements CommunityPostService {
         );
     }
 
-    /**
-     * 단어를 통해 모든 게시글을 조회하는 메서드. 삭제되지 않은 모든 게시글을 조회하여 반환합니다.
-     *
-     * @param query 검색할 단어
-     * @return 모든 게시글의 정보를 담은 List<CommunityPostResponse> 객체
-     */
     @Override
-    public List<CommunityPostResponse> getAllPostsByQuery(String query) {
-        return communityPostRepository.findAllByQuery(query).stream()
-                .map(CommunityPostResponse::fromEntity).toList();
+    public SearchCommunityPostSummaryResponse getAllPostsByQuery(String query, int page) {
+        PageRequest pageRequest = PageRequest.of(
+                page - 1,
+                10,
+                Sort.by(Direction.DESC, "createdAt"));
+
+        Page<CommunityPostEntity> communityPostEntities =
+                communityPostRepository.findAllByQueryAndDeletedAtIsNull(query, pageRequest);
+
+        return new SearchCommunityPostSummaryResponse(
+                communityPostEntities.getTotalElements(),
+                communityPostEntities.getContent().stream()
+                        .map(CommunityPostResponse::fromEntity)
+                        .toList()
+        );
     }
 
     /**

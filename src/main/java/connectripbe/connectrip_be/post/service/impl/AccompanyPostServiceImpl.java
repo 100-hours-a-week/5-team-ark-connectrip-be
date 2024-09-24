@@ -27,7 +27,6 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -142,9 +141,21 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<AccompanyPostListResponse> searchByQuery(String query) {
-        return accompanyPostRepository.findAllByQuery(query).stream()
-                .map(AccompanyPostListResponse::fromEntity).toList();
+    public SearchAccompanyPostSummaryResponse searchByQuery(String query, int page) {
+        PageRequest pageRequest = PageRequest.of(
+                page - 1,
+                10,
+                Sort.by(Direction.DESC, "createdAt"));
+
+        Page<AccompanyPostEntity> accompanyPostEntities =
+                accompanyPostRepository.findAllByQueryAndDeletedAtIsNull(query, pageRequest);
+
+        return new SearchAccompanyPostSummaryResponse(
+                accompanyPostEntities.getTotalElements(),
+                accompanyPostEntities.getContent().stream()
+                        .map(AccompanyPostListResponse::fromEntity)
+                        .toList()
+        );
     }
 
     @Override
@@ -201,10 +212,6 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
         chatRoomService.createChatRoom(post.getId(), memberId);
     }
 
-    /**
-     * @param input
-     * @return
-     */
     private String generateShortUrl(String input) {
         try {
             // SHA-256 해시 생성

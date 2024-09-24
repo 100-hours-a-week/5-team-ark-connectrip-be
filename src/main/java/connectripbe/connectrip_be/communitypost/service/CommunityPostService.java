@@ -4,7 +4,6 @@ import connectripbe.connectrip_be.communitypost.dto.CommunityPostResponse;
 import connectripbe.connectrip_be.communitypost.dto.CreateCommunityPostRequest;
 import connectripbe.connectrip_be.communitypost.dto.SearchCommunityPostSummaryResponse;
 import connectripbe.connectrip_be.communitypost.dto.UpdateCommunityPostRequest;
-import java.util.List;
 
 public interface CommunityPostService {
 
@@ -18,5 +17,5 @@ public interface CommunityPostService {
 
     SearchCommunityPostSummaryResponse getAllPosts(int page);
 
-    List<CommunityPostResponse> getAllPostsByQuery(String query);
+    SearchCommunityPostSummaryResponse getAllPostsByQuery(String query, int page);
 }
