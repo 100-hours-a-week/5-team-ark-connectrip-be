@@ -102,6 +102,12 @@ public class NotificationServiceImpl implements NotificationService {
         notificationRepository.save(notification);
     }
 
+    /**
+     * 주어진 회원 ID를 이용해 읽지 않은 알림을 조회하는 메서드. 조회된 알림 메시지는 20자 이하로 제한됩니다.
+     *
+     * @param memberId 읽지 않은 알림을 조회할 회원의 ID
+     * @return 읽지 않은 알림 목록을 NotificationCommentResponse 객체 리스트로 반환
+     */
     @Override
     public List<NotificationCommentResponse> getUnreadNotifications(Long memberId) {
         MemberEntity member = memberJpaRepository.findById(memberId)
@@ -110,10 +116,24 @@ public class NotificationServiceImpl implements NotificationService {
         // 읽지 않은 알림 조회 (readAt이 null인 알림만 조회)
         List<NotificationEntity> unreadNotifications = notificationRepository.findAllByMemberAndReadAtIsNull(member);
 
-        // fromEntity를 사용하여 엔티티를 DTO로 변환
+        // fromNotification을 사용하여 엔티티를 DTO로 변환 (메시지를 20자 이하로 제한)
         return unreadNotifications.stream()
-                .map(NotificationCommentResponse::fromNotification)  // fromEntity 메서드 호출
+                .map(notification -> {
+                    String limitedContent = limitContentTo20Characters(notification.getMessage());
+                    return NotificationCommentResponse.fromNotification(notification, limitedContent);
+                })
                 .collect(Collectors.toList());
     }
+
+    /**
+     * 댓글 내용을 20자 이하로 제한하는 메서드. 댓글 내용이 20자보다 길 경우 첫 20자를 반환하고, 그렇지 않으면 전체 내용을 반환합니다.
+     *
+     * @param content 제한할 댓글 내용
+     * @return 20자 이하로 제한된 댓글 내용
+     */
+    private String limitContentTo20Characters(String content) {
+        return content.length() > 20 ? content.substring(0, 20) : content;
+    }
+
 
 }
