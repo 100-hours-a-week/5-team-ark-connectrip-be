@@ -12,6 +12,7 @@ import connectripbe.connectrip_be.global.exception.type.ErrorCode;
 import connectripbe.connectrip_be.global.util.bucket4j.annotation.RateLimit;
 import connectripbe.connectrip_be.member.entity.MemberEntity;
 import connectripbe.connectrip_be.member.repository.MemberJpaRepository;
+import connectripbe.connectrip_be.notification.service.NotificationService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,10 +23,10 @@ import org.springframework.transaction.annotation.Transactional;
 public class CommunityCommentServiceImpl implements CommunityCommentService {
 
     private final CommunityCommentRepository communityCommentRepository;
-
     private final MemberJpaRepository memberRepository;
-
     private final CommunityPostRepository communityPostRepository;
+    private final NotificationService notificationService;
+
 
     /**
      * 새로운 댓글을 생성하는 메서드. 주어진 사용자의 ID와 요청 정보를 바탕으로 댓글을 생성하고 데이터베이스에 저장합니다.
@@ -43,6 +44,10 @@ public class CommunityCommentServiceImpl implements CommunityCommentService {
 
         CommunityCommentEntity comment = request.toEntity(post, member);
         communityCommentRepository.save(comment);
+
+        // SSE 알림 전송: 게시물 작성자에게 알림을 보냄
+        notificationService.sendNotification(post.getMemberEntity().getId(), post, comment.getContent(), member);
+
         return CommunityCommentResponse.fromEntity(comment);
     }
 
