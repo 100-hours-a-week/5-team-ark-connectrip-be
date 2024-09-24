@@ -9,4 +9,6 @@ public interface ChatMessageService {
     ChatMessageResponse saveMessage(ChatMessageRequest chatMessage, Long chatRoomId, Long memberId);
 
     List<ChatMessageResponse> getMessages(Long chatRoomId);
+
+    List<ChatMessageResponse> getMessagesAfterId(Long chatRoomId, String lastMessageId, int size);
 }

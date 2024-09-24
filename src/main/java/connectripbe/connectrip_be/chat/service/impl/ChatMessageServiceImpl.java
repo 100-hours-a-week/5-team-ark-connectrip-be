@@ -14,10 +14,15 @@ import connectripbe.connectrip_be.global.exception.type.ErrorCode;
 import connectripbe.connectrip_be.global.service.RedisService;
 import connectripbe.connectrip_be.member.entity.MemberEntity;
 import connectripbe.connectrip_be.member.repository.MemberJpaRepository;
+import java.util.Comparator;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.bson.types.ObjectId;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
@@ -105,6 +110,27 @@ public class ChatMessageServiceImpl implements ChatMessageService {
                     simpMessagingTemplate.convertAndSend("/sub/member/notification/" + memberId, message);
                     log.info("발송 성공: {}", memberId);
                 });
+    }
+
+    @Override
+    public List<ChatMessageResponse> getMessagesAfterId(Long chatRoomId, String lastMessageId, int size) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where("chatRoomId").is(chatRoomId));
+
+        if (lastMessageId != null) {
+            // 마지막 메시지 이후 데이터를 가져옴
+            query.addCriteria(Criteria.where("_id").lt(new ObjectId(lastMessageId)));
+        }
+
+        query.with(Sort.
+                by(Sort.Direction.DESC, "createdAt")); // 내림차순 정렬
+        query.limit(size); // 가져올 메시지 수 설정
+        List<ChatMessage> chatMessages = mongoTemplate.find(query, ChatMessage.class);
+
+        return chatMessages.stream()
+                .sorted(Comparator.comparing(ChatMessage::getCreatedAt))
+                .map(ChatMessageResponse::fromEntity)
+                .toList();
     }
 
 }
