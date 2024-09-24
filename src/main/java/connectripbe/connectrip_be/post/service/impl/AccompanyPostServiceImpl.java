@@ -27,7 +27,6 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -142,9 +141,21 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<AccompanyPostListResponse> searchByQuery(String query) {
-        return accompanyPostRepository.findAllByQuery(query).stream()
-                .map(AccompanyPostListResponse::fromEntity).toList();
+    public SearchAccompanyPostSummaryResponse searchByQuery(int page, String query) {
+        PageRequest pageRequest = PageRequest.of(
+                page - 1,
+                10,
+                Sort.by(Direction.DESC, "createdAt"));
+
+        Page<AccompanyPostEntity> accompanyPostEntities =
+                accompanyPostRepository.findAllByQueryAndDeletedAtIsNull(pageRequest, query);
+
+        return new SearchAccompanyPostSummaryResponse(
+                accompanyPostEntities.getTotalElements(),
+                accompanyPostEntities.getContent().stream()
+                        .map(AccompanyPostListResponse::fromEntity)
+                        .toList()
+        );
     }
 
     @Override

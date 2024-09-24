@@ -1,7 +1,6 @@
 package connectripbe.connectrip_be.post.web;
 
 import connectripbe.connectrip_be.global.dto.GlobalResponse;
-import connectripbe.connectrip_be.post.dto.AccompanyPostListResponse;
 import connectripbe.connectrip_be.post.dto.AccompanyPostResponse;
 import connectripbe.connectrip_be.post.dto.CheckDuplicatedCustomUrlDto;
 import connectripbe.connectrip_be.post.dto.CreateAccompanyPostRequest;
@@ -9,7 +8,6 @@ import connectripbe.connectrip_be.post.dto.SearchAccompanyPostSummaryResponse;
 import connectripbe.connectrip_be.post.dto.UpdateAccompanyPostRequest;
 import connectripbe.connectrip_be.post.exception.DuplicatedCustomUrlException;
 import connectripbe.connectrip_be.post.service.AccompanyPostService;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -66,8 +64,13 @@ public class AccompanyPostController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<AccompanyPostListResponse>> searchByQuery(@RequestParam String query) {
-        return ResponseEntity.ok(accompanyPostService.searchByQuery(query));
+    public ResponseEntity<SearchAccompanyPostSummaryResponse> searchByQuery(
+            @RequestParam(defaultValue = "1") Integer page,
+            @RequestParam String query
+    ) {
+        SearchAccompanyPostSummaryResponse response = accompanyPostService.searchByQuery(page, query);
+
+        return ResponseEntity.ok(response);
     }
 
     // fixme-noah: 추후 다르 중복 확인 메서드 모두 이름 수정, 혼동 있음
