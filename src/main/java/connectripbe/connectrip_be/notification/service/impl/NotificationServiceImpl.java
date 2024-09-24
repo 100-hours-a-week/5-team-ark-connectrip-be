@@ -8,10 +8,13 @@ import connectripbe.connectrip_be.notification.dto.NotificationCommentResponse;
 import connectripbe.connectrip_be.notification.entity.NotificationEntity;
 import connectripbe.connectrip_be.notification.repository.NotificationRepository;
 import connectripbe.connectrip_be.notification.service.NotificationService;
+import connectripbe.connectrip_be.post.entity.AccompanyPostEntity;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -48,22 +51,29 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     /**
-     * 특정 사용자가 알림을 받을 때, 해당 사용자의 SSE 구독이 활성화되어 있으면 실시간으로 알림을 전송하는 메서드.
+     * 특정 사용자가 알림을 받을 때, 해당 사용자의 SSE 구독이 활성화되어 있으면 실시간으로 알림을 전송하는 메서드. 댓글 내용을 20자로 제한한 후, NotificationCommentResponse를
+     * 생성하여 SSE로 전송합니다.
      *
-     * @param memberId             알림을 받을 사용자의 ID
-     * @param notificationResponse 알림 내용
+     * @param memberId       알림을 받을 사용자의 ID
+     * @param post           알림이 발생한 게시물 정보
+     * @param commentContent 댓글 내용 (전체 내용이 전달되며, 메서드 내에서 20자로 제한)
+     * @param commentAuthor  댓글 작성자의 정보
      */
     @Override
-    public void sendNotification(Long memberId, NotificationCommentResponse notificationResponse) {
-
+    public void sendNotification(Long memberId, AccompanyPostEntity post, String commentContent,
+                                 MemberEntity commentAuthor) {
         // 사용자 ID로 MemberEntity 조회
         MemberEntity member = memberJpaRepository.findById(memberId)
                 .orElseThrow(() -> new GlobalException(ErrorCode.USER_NOT_FOUND));
 
+        // 댓글 내용을 20자로 제한
+        String limitedContent = limitContentTo20Characters(commentContent);
+
         // NotificationEntity를 빌더 패턴으로 생성
         NotificationEntity notification = NotificationEntity.builder()
                 .member(member)
-                .message(notificationResponse.getContent())
+                .accompanyPostEntity(post)
+                .message(limitedContent)  // 제한된 알림 메시지를 사용
                 .build();
 
         notificationRepository.save(notification);
@@ -72,14 +82,19 @@ public class NotificationServiceImpl implements NotificationService {
         SseEmitter emitter = emitters.get(memberId);
         if (emitter != null) {
             try {
+                // DTO에서 바로 응답 객체 생성
+                NotificationCommentResponse notificationResponse = NotificationCommentResponse.fromNotification(
+                        notification, limitedContent);
+
                 emitter.send(SseEmitter.event()
                         .name("COMMENT_ADDED")
-                        .data(notificationResponse));  // NotificationCommentResponse 객체 전송
+                        .data(notificationResponse));  // 제한된 메시지가 포함된 객체 전송
             } catch (IOException e) {
                 emitters.remove(memberId);
             }
         }
     }
+
 
     /**
      * 알림 읽음 처리 메서드. 주어진 알림 ID를 이용해 해당 알림을 찾아 'readAt' 필드를 현재 시간으로 업데이트하여 읽음 처리합니다.
@@ -95,6 +110,45 @@ public class NotificationServiceImpl implements NotificationService {
         notification.markAsRead(LocalDateTime.now());
 
         notificationRepository.save(notification);
+    }
+
+    /**
+     * 주어진 회원 ID를 이용해 읽지 않은 알림을 조회하는 메서드. 조회된 알림 메시지는 20자 이하로 제한됩니다.
+     *
+     * @param memberId 읽지 않은 알림을 조회할 회원의 ID
+     * @return 읽지 않은 알림 목록을 NotificationCommentResponse 객체 리스트로 반환
+     */
+    @Override
+    public List<NotificationCommentResponse> getUnreadNotifications(Long memberId) {
+        MemberEntity member = memberJpaRepository.findById(memberId)
+                .orElseThrow(() -> new GlobalException(ErrorCode.USER_NOT_FOUND));
+
+        // 읽지 않은 알림 조회 (readAt이 null인 알림만 조회) 후 바로 변환하여 반환
+        return notificationRepository.findAllByMemberAndReadAtIsNull(member).stream()
+                .map(this::convertNotificationToResponse)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * NotificationEntity를 NotificationCommentResponse로 변환하는 메서드
+     *
+     * @param notification 변환할 NotificationEntity 객체
+     * @return NotificationCommentResponse 객체
+     */
+    private NotificationCommentResponse convertNotificationToResponse(NotificationEntity notification) {
+        String limitedContent = limitContentTo20Characters(notification.getMessage());
+        return NotificationCommentResponse.fromNotification(notification, limitedContent);
+    }
+
+
+    /**
+     * 댓글 내용을 20자 이하로 제한하는 메서드. 댓글 내용이 20자보다 길 경우 첫 20자를 반환하고, 그렇지 않으면 전체 내용을 반환합니다.
+     *
+     * @param content 제한할 댓글 내용
+     * @return 20자 이하로 제한된 댓글 내용
+     */
+    private String limitContentTo20Characters(String content) {
+        return content.length() > 20 ? content.substring(0, 20) : content;
     }
 
 

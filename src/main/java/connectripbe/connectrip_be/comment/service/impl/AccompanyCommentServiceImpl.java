@@ -10,7 +10,6 @@ import connectripbe.connectrip_be.global.exception.type.ErrorCode;
 import connectripbe.connectrip_be.global.util.bucket4j.annotation.RateLimit;
 import connectripbe.connectrip_be.member.entity.MemberEntity;
 import connectripbe.connectrip_be.member.repository.MemberJpaRepository;
-import connectripbe.connectrip_be.notification.dto.NotificationCommentResponse;
 import connectripbe.connectrip_be.notification.service.NotificationService;
 import connectripbe.connectrip_be.post.entity.AccompanyPostEntity;
 import connectripbe.connectrip_be.post.repository.AccompanyPostRepository;
@@ -52,27 +51,9 @@ public class AccompanyCommentServiceImpl implements AccompanyCommentService {
 
         accompanyCommentRepository.save(comment);
 
-        // 댓글 내용에서 첫 20자를 추출하는 로직 추가
-        String limitedContent = limitContentTo20Characters(request.getContent());
-
-        // NotificationCommentResponse 생성 (댓글 내용은 첫 20자만)
-        NotificationCommentResponse notificationResponse = NotificationCommentResponse.fromEntity(comment,
-                limitedContent);
-
-        // 게시글 작성자에게 실시간 알림 전송
-        notificationService.sendNotification(post.getMemberEntity().getId(), notificationResponse);
+        notificationService.sendNotification(post.getMemberEntity().getId(), post, comment.getContent(), member);
 
         return AccompanyCommentResponse.fromEntity(comment);
-    }
-
-    /**
-     * 댓글 내용을 20자로 제한하는 메서드
-     *
-     * @param content 댓글 내용
-     * @return 20자 이하로 잘린 댓글 내용
-     */
-    private String limitContentTo20Characters(String content) {
-        return content.length() > 20 ? content.substring(0, 20) : content;
     }
 
 

@@ -2,6 +2,7 @@ package connectripbe.connectrip_be.notification.entity;
 
 import connectripbe.connectrip_be.global.entity.BaseEntity;
 import connectripbe.connectrip_be.member.entity.MemberEntity;
+import connectripbe.connectrip_be.post.entity.AccompanyPostEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -32,6 +33,10 @@ public class NotificationEntity extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
     private MemberEntity member;  // 알림을 받을 사용자
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "accompany_post_id", nullable = false)
+    private AccompanyPostEntity accompanyPostEntity;
 
     @Column(nullable = false, length = 256)
     private String message;  // 알림 내용
