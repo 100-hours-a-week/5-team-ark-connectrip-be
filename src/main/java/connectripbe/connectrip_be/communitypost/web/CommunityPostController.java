@@ -5,7 +5,6 @@ import connectripbe.connectrip_be.communitypost.dto.CreateCommunityPostRequest;
 import connectripbe.connectrip_be.communitypost.dto.SearchCommunityPostSummaryResponse;
 import connectripbe.connectrip_be.communitypost.dto.UpdateCommunityPostRequest;
 import connectripbe.connectrip_be.communitypost.service.CommunityPostService;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -94,7 +93,12 @@ public class CommunityPostController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<CommunityPostResponse>> searchByQuery(@RequestParam String query) {
-        return ResponseEntity.ok(communityPostService.getAllPostsByQuery(query));
+    public ResponseEntity<SearchCommunityPostSummaryResponse> searchByQuery(
+            @RequestParam String query,
+            @RequestParam(defaultValue = "1") Integer page
+    ) {
+        SearchCommunityPostSummaryResponse response = communityPostService.getAllPostsByQuery(query, page);
+
+        return ResponseEntity.ok(response);
     }
 }
