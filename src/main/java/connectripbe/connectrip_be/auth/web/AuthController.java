@@ -13,7 +13,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -49,24 +48,12 @@ public class AuthController {
 
         try {
             if (tokenDto.isFirstLogin()) {
-//                Cookie tempTokenCookie = new Cookie("tempToken", tokenDto.getTempToken());
-//                tempTokenCookie.setPath("/");
-//                tempTokenCookie.setMaxAge(tokenDto.getTempTokenExpirationTime());
-//                tempTokenCookie.setHttpOnly(true);
-//
-//                httpServletResponse.addCookie(tempTokenCookie);
+                Cookie tempTokenCookie = new Cookie("tempToken", tokenDto.getTempToken());
+                tempTokenCookie.setPath("/");
+                tempTokenCookie.setMaxAge(tokenDto.getTempTokenExpirationTime());
+                tempTokenCookie.setHttpOnly(true);
 
-                ResponseCookie tempTokenCookie = ResponseCookie.from("tempToken", tokenDto.getTempToken())
-                        .path("/")                                  // 쿠키 경로 설정
-                        .maxAge(tokenDto.getTempTokenExpirationTime()) // 쿠키 만료 시간 설정
-                        .httpOnly(true)                             // HttpOnly 속성 설정
-                        .sameSite("None")                           // SameSite=None 설정
-                        .build();
-
-                // Set-Cookie 헤더에 ResponseCookie 추가
-                httpServletResponse.addHeader("Set-Cookie", tempTokenCookie.toString());
-
-//                httpServletResponse.addCookie(tempTokenCookie);
+                httpServletResponse.addCookie(tempTokenCookie);
 
                 httpServletResponse.sendRedirect(kakaoFirstLoginRedirectUrl);
             } else {
