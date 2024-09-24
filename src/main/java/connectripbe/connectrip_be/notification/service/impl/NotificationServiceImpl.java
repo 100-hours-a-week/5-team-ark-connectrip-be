@@ -113,17 +113,23 @@ public class NotificationServiceImpl implements NotificationService {
         MemberEntity member = memberJpaRepository.findById(memberId)
                 .orElseThrow(() -> new GlobalException(ErrorCode.USER_NOT_FOUND));
 
-        // 읽지 않은 알림 조회 (readAt이 null인 알림만 조회)
-        List<NotificationEntity> unreadNotifications = notificationRepository.findAllByMemberAndReadAtIsNull(member);
-
-        // fromNotification을 사용하여 엔티티를 DTO로 변환 (메시지를 20자 이하로 제한)
-        return unreadNotifications.stream()
-                .map(notification -> {
-                    String limitedContent = limitContentTo20Characters(notification.getMessage());
-                    return NotificationCommentResponse.fromNotification(notification, limitedContent);
-                })
+        // 읽지 않은 알림 조회 (readAt이 null인 알림만 조회) 후 바로 변환하여 반환
+        return notificationRepository.findAllByMemberAndReadAtIsNull(member).stream()
+                .map(this::convertNotificationToResponse)
                 .collect(Collectors.toList());
     }
+
+    /**
+     * NotificationEntity를 NotificationCommentResponse로 변환하는 메서드
+     *
+     * @param notification 변환할 NotificationEntity 객체
+     * @return NotificationCommentResponse 객체
+     */
+    private NotificationCommentResponse convertNotificationToResponse(NotificationEntity notification) {
+        String limitedContent = limitContentTo20Characters(notification.getMessage());
+        return NotificationCommentResponse.fromNotification(notification, limitedContent);
+    }
+
 
     /**
      * 댓글 내용을 20자 이하로 제한하는 메서드. 댓글 내용이 20자보다 길 경우 첫 20자를 반환하고, 그렇지 않으면 전체 내용을 반환합니다.
