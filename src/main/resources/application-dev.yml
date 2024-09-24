@@ -33,5 +33,11 @@ spring:
       client-id: ${DEV_KAKAO_CLIENT_ID}
       redirect-uri: ${DEV_KAKAO_REDIRECT_URI}
 
+server:
+  servlet:
+    session:
+      cookie:
+        same-site: none
+
 allowed:
   origins: ${DEV_ALLOWED_ORIGIN} # 허용할 오리진 설정
