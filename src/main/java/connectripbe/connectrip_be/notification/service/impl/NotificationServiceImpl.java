@@ -88,7 +88,7 @@ public class NotificationServiceImpl implements NotificationService {
                     .message(limitedContent)
                     .build();
         } else {
-            throw new IllegalArgumentException("지원하지 않는 게시물 타입입니다.");
+            throw new GlobalException(ErrorCode.UNSUPPORTED_POST_TYPE);
         }
 
         // 알림 저장
