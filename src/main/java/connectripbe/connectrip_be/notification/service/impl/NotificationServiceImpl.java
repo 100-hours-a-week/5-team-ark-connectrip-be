@@ -94,7 +94,7 @@ public class NotificationServiceImpl implements NotificationService {
         // 알림 저장
         notificationRepository.save(notification);
 
-        // SSE를 통해 실시간 알림 전송
+// SSE를 통해 실시간 알림 전송
         SseEmitter emitter = emitters.get(memberId);
         if (emitter != null) {
             try {
@@ -103,8 +103,8 @@ public class NotificationServiceImpl implements NotificationService {
                     NotificationCommentResponse notificationResponse = NotificationCommentResponse.fromNotification(
                             notification, limitedContent);
                     emitter.send(SseEmitter.event().name("COMMENT_ADDED").data(notificationResponse));
-                } else if (post instanceof CommunityPostEntity) {
-                    // 커뮤니티 게시물 알림 응답 전송
+                } else {
+                    // 커뮤니티 게시물 알림 응답 전송 (post가 항상 CommunityPostEntity일 경우)
                     NotificationCommunityCommentResponse notificationResponse = NotificationCommunityCommentResponse.fromNotification(
                             notification, limitedContent);
                     emitter.send(SseEmitter.event().name("COMMENT_ADDED").data(notificationResponse));
@@ -113,6 +113,7 @@ public class NotificationServiceImpl implements NotificationService {
                 emitters.remove(memberId);  // 전송 실패 시 구독 해제
             }
         }
+
     }
 
 
