@@ -3,6 +3,7 @@ package connectripbe.connectrip_be.post.service;
 import connectripbe.connectrip_be.post.dto.AccompanyPostListResponse;
 import connectripbe.connectrip_be.post.dto.AccompanyPostResponse;
 import connectripbe.connectrip_be.post.dto.CreateAccompanyPostRequest;
+import connectripbe.connectrip_be.post.dto.SearchAccompanyPostSummaryResponse;
 import connectripbe.connectrip_be.post.dto.UpdateAccompanyPostRequest;
 import java.util.List;
 
@@ -17,7 +18,7 @@ public interface AccompanyPostService {
 
     void deleteAccompanyPost(Long memberId, long id);
 
-    List<AccompanyPostListResponse> accompanyPostList(int page);
+    SearchAccompanyPostSummaryResponse accompanyPostList(int page);
 
     List<AccompanyPostListResponse> searchByQuery(String query);
 

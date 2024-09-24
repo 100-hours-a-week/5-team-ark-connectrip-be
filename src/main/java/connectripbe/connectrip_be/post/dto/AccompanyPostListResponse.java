@@ -3,13 +3,12 @@ package connectripbe.connectrip_be.post.dto;
 import static org.springframework.util.StringUtils.truncate;
 
 import connectripbe.connectrip_be.post.entity.AccompanyPostEntity;
-
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-
 import lombok.Builder;
 
+// todo-noah: 이름 변경, utc 분리
 @Builder
 public record AccompanyPostListResponse(
         Long id,
