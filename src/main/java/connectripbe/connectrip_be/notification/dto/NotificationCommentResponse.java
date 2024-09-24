@@ -1,6 +1,5 @@
 package connectripbe.connectrip_be.notification.dto;
 
-import connectripbe.connectrip_be.comment.entity.AccompanyCommentEntity;
 import connectripbe.connectrip_be.notification.entity.NotificationEntity;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -19,19 +18,6 @@ public class NotificationCommentResponse {
     private String content;  // 댓글 내용 (글자 제한 적용)
     private String notificationTime;  // 알림 생성 시간
     private boolean isRead;  // 읽음 여부
-
-    // 기존 AccompanyCommentEntity를 사용하는 fromEntity
-    public static NotificationCommentResponse fromAccompanyComment(AccompanyCommentEntity comment, String content) {
-        return NotificationCommentResponse.builder()
-                .userId(comment.getMemberEntity().getId())
-                .userNickname(comment.getMemberEntity().getNickname())
-                .userProfilePath(comment.getMemberEntity().getProfileImagePath())
-                .postId(comment.getAccompanyPostEntity().getId())
-                .content(content)  // 댓글 내용을 받아서 제한된 길이로 적용
-                .notificationTime(formatToUTC(LocalDateTime.now()))  // 현재 시간을 UTC 형식으로 변환
-                .isRead(false)  // 알림이 생성된 직후이므로 읽지 않은 상태로 처리
-                .build();
-    }
 
     // 새로운 NotificationEntity를 사용하는 fromEntity
     public static NotificationCommentResponse fromNotification(NotificationEntity notification, String limitedContent) {

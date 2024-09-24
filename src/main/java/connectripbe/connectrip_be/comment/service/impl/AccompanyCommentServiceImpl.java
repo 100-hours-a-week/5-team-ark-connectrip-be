@@ -14,6 +14,7 @@ import connectripbe.connectrip_be.notification.dto.NotificationCommentResponse;
 import connectripbe.connectrip_be.notification.service.NotificationService;
 import connectripbe.connectrip_be.post.entity.AccompanyPostEntity;
 import connectripbe.connectrip_be.post.repository.AccompanyPostRepository;
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -52,27 +53,21 @@ public class AccompanyCommentServiceImpl implements AccompanyCommentService {
 
         accompanyCommentRepository.save(comment);
 
-        // 댓글 내용에서 첫 20자를 추출하는 로직 추가
-        String limitedContent = limitContentTo20Characters(request.getContent());
+        // NotificationCommentResponse 생성
+        NotificationCommentResponse notificationResponse = NotificationCommentResponse.builder()
+                .userId(member.getId())
+                .userNickname(member.getNickname())
+                .userProfilePath(member.getProfileImagePath())
+                .postId(post.getId())
+                .content(comment.getContent()) // 알림 메시지에 댓글 내용 전달
+                .notificationTime(LocalDateTime.now().toString())
+                .isRead(false)
+                .build();
 
-        // NotificationCommentResponse 생성 (댓글 내용은 첫 20자만)
-        NotificationCommentResponse notificationResponse = NotificationCommentResponse.fromAccompanyComment(comment,
-                limitedContent);
-
-        // 게시글 작성자에게 실시간 알림 전송
+        // 알림 전송
         notificationService.sendNotification(post.getMemberEntity().getId(), post, notificationResponse);
 
         return AccompanyCommentResponse.fromEntity(comment);
-    }
-
-    /**
-     * 댓글 내용을 20자로 제한하는 메서드
-     *
-     * @param content 댓글 내용
-     * @return 20자 이하로 잘린 댓글 내용
-     */
-    private String limitContentTo20Characters(String content) {
-        return content.length() > 20 ? content.substring(0, 20) : content;
     }
 
 

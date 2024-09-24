@@ -64,11 +64,14 @@ public class NotificationServiceImpl implements NotificationService {
         MemberEntity member = memberJpaRepository.findById(memberId)
                 .orElseThrow(() -> new GlobalException(ErrorCode.USER_NOT_FOUND));
 
+        // 댓글 내용을 20자로 제한
+        String limitedContent = limitContentTo20Characters(notificationResponse.getContent());
+
         // NotificationEntity를 빌더 패턴으로 생성
         NotificationEntity notification = NotificationEntity.builder()
                 .member(member)
                 .accompanyPostEntity(post)
-                .message(notificationResponse.getContent())
+                .message(limitedContent)  // 제한된 알림 메시지를 사용
                 .build();
 
         notificationRepository.save(notification);
@@ -85,6 +88,7 @@ public class NotificationServiceImpl implements NotificationService {
             }
         }
     }
+
 
     /**
      * 알림 읽음 처리 메서드. 주어진 알림 ID를 이용해 해당 알림을 찾아 'readAt' 필드를 현재 시간으로 업데이트하여 읽음 처리합니다.
