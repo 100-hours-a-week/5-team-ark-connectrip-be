@@ -1,10 +1,12 @@
 package connectripbe.connectrip_be.notification.service.impl;
 
+import connectripbe.connectrip_be.communitypost.entity.CommunityPostEntity;
 import connectripbe.connectrip_be.global.exception.GlobalException;
 import connectripbe.connectrip_be.global.exception.type.ErrorCode;
 import connectripbe.connectrip_be.member.entity.MemberEntity;
 import connectripbe.connectrip_be.member.repository.MemberJpaRepository;
 import connectripbe.connectrip_be.notification.dto.NotificationCommentResponse;
+import connectripbe.connectrip_be.notification.dto.NotificationCommunityCommentResponse;
 import connectripbe.connectrip_be.notification.entity.NotificationEntity;
 import connectripbe.connectrip_be.notification.repository.NotificationRepository;
 import connectripbe.connectrip_be.notification.service.NotificationService;
@@ -51,17 +53,16 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     /**
-     * 특정 사용자가 알림을 받을 때, 해당 사용자의 SSE 구독이 활성화되어 있으면 실시간으로 알림을 전송하는 메서드. 댓글 내용을 20자로 제한한 후, NotificationCommentResponse를
-     * 생성하여 SSE로 전송합니다.
+     * 통합된 알림 전송 메서드. 동행 게시물 또는 커뮤니티 게시물의 알림을 처리하며, 게시물 타입에 따라 해당 게시물 필드 (accompany_post_id 또는 community_post_id)를
+     * 설정합니다. 두 필드는 동시에 설정되지 않도록 보장됩니다.
      *
      * @param memberId       알림을 받을 사용자의 ID
-     * @param post           알림이 발생한 게시물 정보
-     * @param commentContent 댓글 내용 (전체 내용이 전달되며, 메서드 내에서 20자로 제한)
+     * @param post           알림이 발생한 게시물 (동행 게시물 또는 커뮤니티 게시물)
+     * @param commentContent 댓글 내용 (최대 20자로 제한되어 전송됩니다)
      * @param commentAuthor  댓글 작성자의 정보
      */
     @Override
-    public void sendNotification(Long memberId, AccompanyPostEntity post, String commentContent,
-                                 MemberEntity commentAuthor) {
+    public void sendNotification(Long memberId, Object post, String commentContent, MemberEntity commentAuthor) {
         // 사용자 ID로 MemberEntity 조회
         MemberEntity member = memberJpaRepository.findById(memberId)
                 .orElseThrow(() -> new GlobalException(ErrorCode.USER_NOT_FOUND));
@@ -69,28 +70,47 @@ public class NotificationServiceImpl implements NotificationService {
         // 댓글 내용을 20자로 제한
         String limitedContent = limitContentTo20Characters(commentContent);
 
-        // NotificationEntity를 빌더 패턴으로 생성
-        NotificationEntity notification = NotificationEntity.builder()
-                .member(member)
-                .accompanyPostEntity(post)
-                .message(limitedContent)  // 제한된 알림 메시지를 사용
-                .build();
+        // NotificationEntity 빌더를 사용하여 알림 생성 (게시물 타입에 따라 하나의 필드만 설정)
+        NotificationEntity notification;
 
+        if (post instanceof AccompanyPostEntity) {
+            // 동행 게시물 알림일 경우 communityPostEntity는 null이어야 함
+            notification = NotificationEntity.builder()
+                    .member(member)
+                    .accompanyPostEntity((AccompanyPostEntity) post)  // 동행 게시물 설정
+                    .message(limitedContent)
+                    .build();
+        } else if (post instanceof CommunityPostEntity) {
+            // 커뮤니티 게시물 알림일 경우 accompanyPostEntity는 null이어야 함
+            notification = NotificationEntity.builder()
+                    .member(member)
+                    .communityPostEntity((CommunityPostEntity) post)  // 커뮤니티 게시물 설정
+                    .message(limitedContent)
+                    .build();
+        } else {
+            throw new IllegalArgumentException("지원하지 않는 게시물 타입입니다.");
+        }
+
+        // 알림 저장
         notificationRepository.save(notification);
 
-        // 알림을 받을 사용자에게 실시간 알림 전송
+        // SSE를 통해 실시간 알림 전송
         SseEmitter emitter = emitters.get(memberId);
         if (emitter != null) {
             try {
-                // DTO에서 바로 응답 객체 생성
-                NotificationCommentResponse notificationResponse = NotificationCommentResponse.fromNotification(
-                        notification, limitedContent);
-
-                emitter.send(SseEmitter.event()
-                        .name("COMMENT_ADDED")
-                        .data(notificationResponse));  // 제한된 메시지가 포함된 객체 전송
+                if (post instanceof AccompanyPostEntity) {
+                    // 동행 게시물 알림 응답 전송
+                    NotificationCommentResponse notificationResponse = NotificationCommentResponse.fromNotification(
+                            notification, limitedContent);
+                    emitter.send(SseEmitter.event().name("COMMENT_ADDED").data(notificationResponse));
+                } else if (post instanceof CommunityPostEntity) {
+                    // 커뮤니티 게시물 알림 응답 전송
+                    NotificationCommunityCommentResponse notificationResponse = NotificationCommunityCommentResponse.fromNotification(
+                            notification, limitedContent);
+                    emitter.send(SseEmitter.event().name("COMMENT_ADDED").data(notificationResponse));
+                }
             } catch (IOException e) {
-                emitters.remove(memberId);
+                emitters.remove(memberId);  // 전송 실패 시 구독 해제
             }
         }
     }
