@@ -13,6 +13,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -55,22 +56,17 @@ public class AuthController {
 //
 //                httpServletResponse.addCookie(tempTokenCookie);
 
-                Cookie tempTokenCookie = new Cookie("tempToken", tokenDto.getTempToken());
-                tempTokenCookie.setPath("/");
-                tempTokenCookie.setMaxAge(tokenDto.getTempTokenExpirationTime());
-                tempTokenCookie.setHttpOnly(true);
+                ResponseCookie tempTokenCookie = ResponseCookie.from("tempToken", tokenDto.getTempToken())
+                        .path("/")                                  // 쿠키 경로 설정
+                        .maxAge(tokenDto.getTempTokenExpirationTime()) // 쿠키 만료 시간 설정
+                        .httpOnly(true)                             // HttpOnly 속성 설정
+                        .sameSite("None")                           // SameSite=None 설정
+                        .build();
 
-                // SameSite=None으로 설정한 Set-Cookie 헤더 생성
-                String cookieHeader = String.format("%s=%s; Path=%s; Max-Age=%d; HttpOnly; SameSite=None",
-                        tempTokenCookie.getName(),
-                        tempTokenCookie.getValue(),
-                        tempTokenCookie.getPath(),
-                        tempTokenCookie.getMaxAge());
+                // Set-Cookie 헤더에 ResponseCookie 추가
+                httpServletResponse.addHeader("Set-Cookie", tempTokenCookie.toString());
 
-                // Set-Cookie 헤더에 SameSite=None 설정 추가
-                httpServletResponse.setHeader("Set-Cookie", cookieHeader);
-
-                httpServletResponse.addCookie(tempTokenCookie);
+//                httpServletResponse.addCookie(tempTokenCookie);
 
                 httpServletResponse.sendRedirect(kakaoFirstLoginRedirectUrl);
             } else {
