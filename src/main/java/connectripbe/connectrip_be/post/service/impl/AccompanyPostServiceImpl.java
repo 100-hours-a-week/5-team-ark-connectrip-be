@@ -28,6 +28,9 @@ import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -118,9 +121,12 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
     }
 
     @Override
-    public List<AccompanyPostListResponse> accompanyPostList() {
-        return accompanyPostRepository.findAllByDeletedAtIsNullOrderByCreatedAtDesc().stream()
-                .map(AccompanyPostListResponse::fromEntity).toList();
+    public List<AccompanyPostListResponse> accompanyPostList(int page) {
+        PageRequest pageRequest = PageRequest.of(page - 1, 10, Sort.by(Direction.DESC, "createdAt"));
+
+        return accompanyPostRepository.findAllByDeletedAtIsNull(pageRequest).stream()
+                .map(AccompanyPostListResponse::fromEntity)
+                .toList();
     }
 
     @Override

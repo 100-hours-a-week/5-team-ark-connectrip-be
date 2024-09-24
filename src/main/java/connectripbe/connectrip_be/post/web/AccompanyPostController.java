@@ -57,8 +57,10 @@ public class AccompanyPostController {
     }
 
     @GetMapping
-    public ResponseEntity<List<AccompanyPostListResponse>> listPosts() {
-        List<AccompanyPostListResponse> response = accompanyPostService.accompanyPostList();
+    public ResponseEntity<List<AccompanyPostListResponse>> listPosts(
+            @RequestParam(defaultValue = "1") Integer page
+    ) {
+        List<AccompanyPostListResponse> response = accompanyPostService.accompanyPostList(page);
         return ResponseEntity.ok(response);  // 전체 리스트 반환
     }
 

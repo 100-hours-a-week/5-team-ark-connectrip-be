@@ -1,10 +1,9 @@
 package connectripbe.connectrip_be.post.service;
 
 import connectripbe.connectrip_be.post.dto.AccompanyPostListResponse;
-import connectripbe.connectrip_be.post.dto.CreateAccompanyPostRequest;
 import connectripbe.connectrip_be.post.dto.AccompanyPostResponse;
+import connectripbe.connectrip_be.post.dto.CreateAccompanyPostRequest;
 import connectripbe.connectrip_be.post.dto.UpdateAccompanyPostRequest;
-
 import java.util.List;
 
 
@@ -18,8 +17,7 @@ public interface AccompanyPostService {
 
     void deleteAccompanyPost(Long memberId, long id);
 
-    //TODO 게시물 전체 리스트 - 페이징 처리
-    List<AccompanyPostListResponse> accompanyPostList();
+    List<AccompanyPostListResponse> accompanyPostList(int page);
 
     List<AccompanyPostListResponse> searchByQuery(String query);
 
