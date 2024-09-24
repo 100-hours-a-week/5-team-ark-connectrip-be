@@ -3,6 +3,7 @@ package connectripbe.connectrip_be.chat.entity;
 import connectripbe.connectrip_be.chat.entity.type.ChatRoomType;
 import connectripbe.connectrip_be.global.entity.BaseEntity;
 import connectripbe.connectrip_be.post.entity.AccompanyPostEntity;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -44,6 +45,9 @@ public class ChatRoomEntity extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     private ChatRoomType chatRoomType;
+
+    @Column
+    private String lastReadMessageId;
 
     private String lastChatMessage;
 

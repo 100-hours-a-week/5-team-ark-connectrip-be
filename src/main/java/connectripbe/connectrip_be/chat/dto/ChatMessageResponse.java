@@ -13,6 +13,7 @@ public record ChatMessageResponse(
         MessageType type,
         Long chatRoomId,
         Long senderId,
+        String chatRoomTitle,
         String senderNickname,
         String senderProfileImage,
         String content,
@@ -31,6 +32,28 @@ public record ChatMessageResponse(
                 .senderNickname(chatMessage.getSenderNickname())
                 .senderProfileImage(chatMessage.getSenderProfileImage())
                 .content(chatMessage.getContent())
+                .infoFlag(chatMessage.isInfoFlag())
+                .createdAt(formatToUTC(chatMessage.getCreatedAt()))
+                .build();
+    }
+
+    public static ChatMessageResponse notificationFromEntity(ChatMessage chatMessage, String title) {
+        if (title.length() > 15) {
+            title = title.substring(0, 15);
+        }
+        String content = chatMessage.getContent();
+        if (content.length() > 20) {
+            content = content.substring(0, 20);
+        }
+        return ChatMessageResponse.builder()
+                .id(chatMessage.getId())
+                .type(chatMessage.getType())
+                .chatRoomId(chatMessage.getChatRoomId())
+                .senderId(chatMessage.getSenderId())
+                .chatRoomTitle(title)
+                .senderNickname(chatMessage.getSenderNickname())
+                .senderProfileImage(chatMessage.getSenderProfileImage())
+                .content(content)
                 .infoFlag(chatMessage.isInfoFlag())
                 .createdAt(formatToUTC(chatMessage.getCreatedAt()))
                 .build();

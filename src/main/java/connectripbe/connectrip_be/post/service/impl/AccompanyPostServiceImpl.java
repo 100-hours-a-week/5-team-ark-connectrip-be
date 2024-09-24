@@ -8,6 +8,7 @@ import connectripbe.connectrip_be.chat.repository.ChatRoomRepository;
 import connectripbe.connectrip_be.chat.service.ChatRoomService;
 import connectripbe.connectrip_be.global.exception.GlobalException;
 import connectripbe.connectrip_be.global.exception.type.ErrorCode;
+import connectripbe.connectrip_be.global.util.bucket4j.annotation.RateLimit;
 import connectripbe.connectrip_be.member.entity.MemberEntity;
 import connectripbe.connectrip_be.member.exception.MemberNotOwnerException;
 import connectripbe.connectrip_be.member.exception.NotFoundMemberException;
@@ -43,28 +44,6 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
 
     private static final String BASE62 = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
-    // 해싱을 통해 고유한 단축 URL 생성 후 Base62 인코딩
-
-    /**
-     * @param input
-     * @return
-     */
-    private String generateShortUrl(String input) {
-        try {
-            // SHA-256 해시 생성
-            MessageDigest md = MessageDigest.getInstance("SHA-256");
-            md.update(input.getBytes(StandardCharsets.UTF_8));
-
-            // 해시의 앞 4바이트만 사용 (32비트)
-            byte[] shortHash = md.digest();
-            BigInteger number = new BigInteger(1, shortHash).shiftRight(224); // 상위 32비트만 사용
-
-            // Base62 인코딩
-            return base62Encode(number);
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("해시 알고리즘을 찾을 수 없습니다.", e);
-        }
-    }
 
     // Base62 인코딩
     private static String base62Encode(BigInteger value) {
@@ -74,48 +53,6 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
             value = value.divide(BigInteger.valueOf(62));
         }
         return sb.reverse().toString();
-    }
-
-    private String generateUniqueUrl(String title, LocalDateTime createdAt) {
-        // 게시글 제목과 생성 시간을 조합하여 입력 문자열 생성
-        String input = title + createdAt.toString();
-        String shortUrl = generateShortUrl(input);
-
-        // 중복된 URL이 없을 때까지 해시를 사용
-        while (checkDuplicatedCustomUrl(shortUrl)) {
-            input += "1";  // 중복 시 입력을 변경하여 새로운 해시 생성
-            shortUrl = generateShortUrl(input);
-        }
-
-        return shortUrl;
-    }
-
-    @Override
-    @Transactional
-    public void createAccompanyPost(Long memberId, CreateAccompanyPostRequest request) {
-        MemberEntity memberEntity = findMemberEntity(memberId);
-
-        // 게시글 제목과 생성 일시를 기반으로 단축 URL 생성
-        String customUrl = generateUniqueUrl(request.title(), LocalDateTime.now());
-
-        AccompanyPostEntity post = AccompanyPostEntity.builder()
-                .memberEntity(memberEntity)
-                .title(request.title())
-                .startDate(request.startDate())
-                .endDate(request.endDate())
-                .accompanyArea(request.accompanyArea())
-                .content(request.content())
-                .accompanyArea(request.accompanyArea())
-                .urlQrPath("temp")
-                .customUrl(customUrl)
-                .build();
-
-        accompanyPostRepository.save(post);
-        accompanyStatusJpaRepository.save(
-                new AccompanyStatusEntity(post, AccompanyStatusEnum.PROGRESSING));
-
-        // 채팅방 생성 및 게시물 작성자 채팅방 자동 참여 처리
-        chatRoomService.createChatRoom(post.getId(), memberId);
     }
 
     @Override
@@ -214,5 +151,71 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
         if (!memberEntity.getId().equals(accompanyPostEntity.getMemberEntity().getId())) {
             throw new MemberNotOwnerException();
         }
+    }
+
+    // 해싱을 통해 고유한 단축 URL 생성 후 Base62 인코딩
+
+    @RateLimit
+    @Override
+    @Transactional
+    public void createAccompanyPost(Long memberId, CreateAccompanyPostRequest request) {
+        MemberEntity memberEntity = findMemberEntity(memberId);
+
+        // 게시글 제목과 생성 일시를 기반으로 단축 URL 생성
+        String customUrl = generateUniqueUrl(request.title(), LocalDateTime.now());
+
+        AccompanyPostEntity post = AccompanyPostEntity.builder()
+                .memberEntity(memberEntity)
+                .title(request.title())
+                .startDate(request.startDate())
+                .endDate(request.endDate())
+                .accompanyArea(request.accompanyArea())
+                .content(request.content())
+                .accompanyArea(request.accompanyArea())
+                .urlQrPath("temp")
+                .customUrl(customUrl)
+                .build();
+
+        accompanyPostRepository.save(post);
+        accompanyStatusJpaRepository.save(
+                new AccompanyStatusEntity(post, AccompanyStatusEnum.PROGRESSING));
+
+        // 채팅방 생성 및 게시물 작성자 채팅방 자동 참여 처리
+        chatRoomService.createChatRoom(post.getId(), memberId);
+    }
+
+    /**
+     * @param input
+     * @return
+     */
+    private String generateShortUrl(String input) {
+        try {
+            // SHA-256 해시 생성
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            md.update(input.getBytes(StandardCharsets.UTF_8));
+
+            // 해시의 앞 4바이트만 사용 (32비트)
+            byte[] shortHash = md.digest();
+            BigInteger number = new BigInteger(1, shortHash).shiftRight(224); // 상위 32비트만 사용
+
+            // Base62 인코딩
+            return base62Encode(number);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("해시 알고리즘을 찾을 수 없습니다.", e);
+        }
+    }
+
+    private String generateUniqueUrl(String title, LocalDateTime createdAt) {
+        // 게시글 제목과 생성 시간을 조합하여 입력 문자열 생성
+        String input = title + createdAt.toString();
+        String shortUrl = generateShortUrl(input);
+
+        // 중복된 URL이 없을 때까지 해시를 사용
+        while (checkDuplicatedCustomUrl(shortUrl)) {
+            input += "1";  // 중복 시 입력을 변경하여 새로운 해시 생성
+            shortUrl = generateShortUrl(input);
+        }
+
+        return shortUrl;
     }
 }

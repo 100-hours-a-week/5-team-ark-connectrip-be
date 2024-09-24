@@ -9,7 +9,7 @@ public interface ChatRoomService {
 
     List<ChatRoomListResponse> getChatRoomList(Long memberId);
 
-    List<ChatRoomMemberResponse> getChatRoomMembers(Long chatRoomId);
+    List<ChatRoomMemberResponse> getChatRoomMembers(Long chatRoomId, Long memberId);
 
     void createChatRoom(Long postId, Long memberId);
 

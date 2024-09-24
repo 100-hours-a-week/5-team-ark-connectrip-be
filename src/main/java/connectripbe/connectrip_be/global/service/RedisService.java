@@ -1,13 +1,17 @@
 package connectripbe.connectrip_be.global.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import connectripbe.connectrip_be.global.exception.GlobalException;
+import connectripbe.connectrip_be.global.exception.type.ErrorCode;
 import java.time.Duration;
-import java.util.Map;
-
+import java.util.Collections;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 /**
  * Redis DB 데이터 처리
@@ -18,6 +22,7 @@ import org.springframework.stereotype.Service;
 public class RedisService {
 
     private final RedisTemplate<String, Object> redisTemplate;
+
 
     /**
      * 주어진 Key 에 대응하는 데이터를 Redis DB 에서 조회
@@ -70,15 +75,55 @@ public class RedisService {
         }
     }
 
-    public void increaseHashData(String hashKey, String key) {
-        redisTemplate.opsForHash().increment(hashKey, key, 1);
+
+    public <T> T getClassData(String key, Class<T> elementClass) {
+        try {
+            String jsonResult = (String) redisTemplate.opsForValue().get(key);
+            if (StringUtils.isEmpty(jsonResult)) {
+                throw new GlobalException(ErrorCode.REDIS_GET_ERROR);
+            } else {
+                ObjectMapper mapper = new ObjectMapper();
+                return mapper.readValue(jsonResult, elementClass);
+            }
+        } catch (Exception e) {
+            log.error("Redis getClassData Error: {}", e.getMessage());
+            throw new GlobalException(ErrorCode.REDIS_GET_ERROR);
+        }
     }
 
-    public Map<Object, Object> hasHashKeys(String key) {
-        return redisTemplate.opsForHash().entries(key);
+    public void setClassData(String key, Object data) {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            String jsonData = mapper.writeValueAsString(data);
+            redisTemplate.opsForValue().set(key, jsonData);
+        } catch (Exception e) {
+            log.error("Redis setClassData Error : {}", e.getMessage());
+        }
     }
 
-    public void deleteHashKey(String hashKey, String key) {
-        redisTemplate.opsForHash().delete(hashKey, key);
+    // 리스트로 저장
+    public void setListData(String key, Object data) {
+        try {
+            redisTemplate.opsForList().rightPush(key, data);
+        } catch (Exception e) {
+            log.error("Redis setListData Error : {}", e.getMessage());
+        }
+    }
+
+    public void deleteListData(String key, Object data) {
+        try {
+            redisTemplate.opsForList().remove(key, 1, data);
+        } catch (Exception e) {
+            log.error("Redis deleteListData Error : {}", e.getMessage());
+        }
+    }
+
+    public List<Object> getListData(String key) {
+        try {
+            return redisTemplate.opsForList().range(key, 0, -1);
+        } catch (Exception e) {
+            log.error("Error fetching Redis List Data: {}", e.getMessage());
+            return Collections.emptyList();
+        }
     }
 }

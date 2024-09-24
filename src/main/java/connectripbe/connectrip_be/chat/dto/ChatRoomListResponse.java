@@ -1,12 +1,10 @@
 package connectripbe.connectrip_be.chat.dto;
 
 import connectripbe.connectrip_be.chat.entity.ChatRoomEntity;
-
 import connectripbe.connectrip_be.chat.entity.type.ChatRoomMemberStatus;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-
 import lombok.Builder;
 
 @Builder
@@ -19,11 +17,12 @@ public record ChatRoomListResponse(
         String endDate,
         String lastChatMessage,
         String lastChatMessageTime,
-        int memberNumber
+        int memberNumber,
+        boolean hasUnreadMessages
 ) {
 
 
-    public static ChatRoomListResponse fromEntity(ChatRoomEntity chatRoom) {
+    public static ChatRoomListResponse fromEntity(ChatRoomEntity chatRoom, boolean hasUnreadMessages) {
         // 마지막 채팅 시간이 없을 경우 생성 시간으로 대체
         LocalDateTime lastChatTime = chatRoom.getLastChatTime() != null
                 ? chatRoom.getLastChatTime()
@@ -44,6 +43,7 @@ public record ChatRoomListResponse(
                 .lastChatMessage(chatRoom.getLastChatMessage())
                 .lastChatMessageTime(formatToUTC(lastChatTime))
                 .memberNumber(activeMemberCnt)
+                .hasUnreadMessages(hasUnreadMessages)
                 .build();
     }
 

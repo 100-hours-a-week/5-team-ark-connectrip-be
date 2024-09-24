@@ -3,6 +3,7 @@ package connectripbe.connectrip_be.chat.web;
 import connectripbe.connectrip_be.chat.dto.ChatMessageRequest;
 import connectripbe.connectrip_be.chat.dto.ChatMessageResponse;
 import connectripbe.connectrip_be.chat.service.ChatMessageService;
+import java.security.Principal;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -23,8 +24,10 @@ public class ChatMessageController {
 
     @MessageMapping("/chat/room/{chatRoomId}")
     public void sendMessage(@Payload ChatMessageRequest chatMessage,
-                            @DestinationVariable("chatRoomId") Long chatRoomId) {
-        ChatMessageResponse savedMessage = chatMessageService.saveMessage(chatMessage, chatRoomId);
+                            @DestinationVariable("chatRoomId") Long chatRoomId,
+                            Principal principal) {
+        ChatMessageResponse savedMessage = chatMessageService.saveMessage(chatMessage, chatRoomId,
+                Long.parseLong(principal.getName()));
         simpMessagingTemplate.convertAndSend("/sub/chat/room/" + chatRoomId, savedMessage);
     }
 

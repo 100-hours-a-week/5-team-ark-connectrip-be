@@ -1,5 +1,6 @@
 package connectripbe.connectrip_be.global.config;
 
+import io.lettuce.core.RedisClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;
@@ -22,6 +23,8 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 @RequiredArgsConstructor
 public class RedisConfig {
 
+    private static final String PREFIX = "redis://";
+
     @Value("${spring.data.redis.host}")
     private String host;
 
@@ -31,7 +34,7 @@ public class RedisConfig {
     @Bean
     public CacheManager redisCacheManager(RedisConnectionFactory redisConnectionFactory) {
 
-        RedisCacheConfiguration conf = RedisCacheConfiguration.defaultCacheConfig()
+        RedisCacheConfiguration cacheConfig = RedisCacheConfiguration.defaultCacheConfig()
                 .serializeKeysWith(RedisSerializationContext.SerializationPair
                         .fromSerializer(new StringRedisSerializer()))
                 .serializeValuesWith(RedisSerializationContext.SerializationPair
@@ -39,33 +42,36 @@ public class RedisConfig {
 
         return RedisCacheManager.RedisCacheManagerBuilder
                 .fromConnectionFactory(redisConnectionFactory)
-                .cacheDefaults(conf)
+                .cacheDefaults(cacheConfig)
                 .build();
     }
 
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
-        return new LettuceConnectionFactory(host, port);
+        LettuceConnectionFactory factory = new LettuceConnectionFactory(host, port);
+        factory.setShareNativeConnection(false); // 스레드 간 연결 공유를 막음 (필요시)
+        return factory;
     }
 
     @Bean
-    public RedisTemplate<String, Object> redisTemplate() {
+    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
         RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
+        redisTemplate.setConnectionFactory(redisConnectionFactory);
 
-        // RedisTemplate 에  위에서 생성한 Redis 연결 팩토리를 설정
-        redisTemplate.setConnectionFactory(redisConnectionFactory());
-
-        // RedisTemplate 에 키와 값을 String 형ㅌ태로 직렬화/ 역직렬화
+        // 키는 문자열로, 값은 JSON으로 직렬화
         redisTemplate.setKeySerializer(new StringRedisSerializer());
-        redisTemplate.setValueSerializer(new StringRedisSerializer());
+        redisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer());
 
-        // RedisTemplate 에 해시키와 값을 String 형태로 직렬화/ 역직렬화
+        // 해시 키와 해시 값 직렬화 설정
         redisTemplate.setHashKeySerializer(new StringRedisSerializer());
-        redisTemplate.setValueSerializer(new StringRedisSerializer());
+        redisTemplate.setHashValueSerializer(new GenericJackson2JsonRedisSerializer());
 
-        // RedisTemplate 에 기본 직렬화 도구로 설정
-        redisTemplate.setValueSerializer(new StringRedisSerializer());
-
+        redisTemplate.afterPropertiesSet();
         return redisTemplate;
+    }
+
+    @Bean(name = "lettuceRedisClient")
+    public RedisClient redisClient() {
+        return RedisClient.create(PREFIX + host + ":" + port);
     }
 }

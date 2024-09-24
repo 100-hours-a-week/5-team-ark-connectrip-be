@@ -1,8 +1,10 @@
 package connectripbe.connectrip_be.auth.jwt;
 
 import connectripbe.connectrip_be.auth.jwt.dto.CustomUserDto;
+
 import java.util.Collection;
 import java.util.List;
+
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

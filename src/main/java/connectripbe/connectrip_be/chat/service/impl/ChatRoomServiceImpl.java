@@ -25,7 +25,9 @@ import connectripbe.connectrip_be.pending_list.repository.PendingListRepository;
 import connectripbe.connectrip_be.post.entity.AccompanyPostEntity;
 import connectripbe.connectrip_be.post.exception.NotFoundAccompanyPostException;
 import connectripbe.connectrip_be.post.repository.AccompanyPostRepository;
+import connectripbe.connectrip_be.review.repository.AccompanyReviewRepository;
 import jakarta.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
@@ -43,6 +45,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     private final AccompanyStatusJpaRepository accompanyStatusJpaRepository;
     private final PendingListRepository pendingListRepository;
     private final ChatMessageRepository chatMessageRepository;
+    private final AccompanyReviewRepository reviewRepository;
 
     private final ChatRoomMemberService chatRoomMemberService;
 
@@ -59,28 +62,60 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         List<ChatRoomMemberEntity> chatRoomMembers = chatRoomMemberRepository.myChatRoomList(
                 memberId);
 
-        return chatRoomMembers.stream()
-                .map(member -> ChatRoomListResponse.fromEntity(member.getChatRoom()))
-                .toList();
+        List<ChatRoomListResponse> chatRoomListResponses = new ArrayList<>();
+
+        for (ChatRoomMemberEntity member : chatRoomMembers) {
+            ChatRoomEntity chatRoom = member.getChatRoom();
+            boolean hasUnreadMessages = hasUnreadMessage(chatRoom.getId(), memberId);
+            ChatRoomListResponse response = ChatRoomListResponse.fromEntity(chatRoom, hasUnreadMessages);
+            chatRoomListResponses.add(response);
+        }
+
+        return chatRoomListResponses;
     }
 
     /**
-     * 주어진 채팅방의 참여자 목록을 조회하여 반환하는 메서드. 주어진 채팅방의 ID를 기반으로 해당 채팅방의 모든 참여자를 조회
+     * 주어진 채팅방의 참여자 목록을 조회하여 반환하는 메서드. 채팅방 ID와 사용자 ID를 기반으로 해당 채팅방의 모든 참여자를 조회하고, 로그인한 사용자가 각 멤버에 대해 리뷰를 작성할 수 있는지 여부를
+     * 함께 반환.
      *
-     * @param chatRoomId 채팅방의 ID. 이 ID를 기반으로 해당 채팅방의 참여자를 조회
-     * @return 채팅방의 참여자 목록을 포함하는 `List<ChatRoomMemberResponse>` 채팅방에 참여한 사용자가 없을 경우 빈 리스트를 반환
+     * @param chatRoomId 채팅방의 ID. 이 ID를 기반으로 해당 채팅방의 참여자를 조회.
+     * @param memberId   현재 로그인한 사용자의 ID.
+     * @return 채팅방의 참여자 목록을 포함하는 `List<ChatRoomMemberResponse>`. 각 응답에는 리뷰 작성 가능 여부도 포함됨. 채팅방에 참여한 사용자가 없을 경우 빈 리스트를 반환.
      */
     @Override
-    public List<ChatRoomMemberResponse> getChatRoomMembers(Long chatRoomId) {
+    public List<ChatRoomMemberResponse> getChatRoomMembers(Long chatRoomId, Long memberId) {
 
         List<ChatRoomMemberEntity> chatRoomMembers = chatRoomMemberRepository.findByChatRoom_Id(
+                chatRoomId);
+
+        List<Long> targetIds = reviewRepository.findAllTargetIdsByReviewerIdAndChatRoomId(memberId,
                 chatRoomId);
 
         return chatRoomMembers.stream()
                 .filter(member -> !Objects.equals(member.getStatus(),
                         ChatRoomMemberStatus.EXIT))
-                .map(ChatRoomMemberResponse::fromEntity)
+                .map(member -> chatRoomMemberResponse(member, memberId, targetIds))
                 .toList();
+    }
+
+    /**
+     * ChatRoomMemberEntity 를 기반으로 ChatRoomMemberResponse 객체를 생성하는 메서드. 해당 멤버가 리뷰 작성 대상인지 여부를 판단하여 응답에 포함.
+     *
+     * @param chatRoomMember  참여자 엔티티.
+     * @param currentMemberId 현재 로그인한 사용자의 ID.
+     * @param targetIds       현재 로그인한 사용자가 이미 리뷰를 작성한 멤버들의 ID 목록.
+     * @return `ChatRoomMemberResponse` 객체. 각 참여자에 대해 리뷰 작성 가능 여부 포함.
+     */
+    private ChatRoomMemberResponse chatRoomMemberResponse(ChatRoomMemberEntity chatRoomMember,
+                                                          Long currentMemberId,
+                                                          List<Long> targetIds) {
+        Long targetId = chatRoomMember.getMember().getId();
+
+        boolean hasWrittenReview = targetIds.contains(targetId);
+
+        boolean canWritReview = !targetId.equals(currentMemberId) && !hasWrittenReview;
+
+        return ChatRoomMemberResponse.fromEntity(chatRoomMember, canWritReview);
     }
 
     /**
@@ -223,6 +258,24 @@ public class ChatRoomServiceImpl implements ChatRoomService {
 
             pendingMember.updateStatus(PendingStatus.EXIT_ROOM);
         }
+    }
+
+    private boolean hasUnreadMessage(Long chatRoomId, Long memberId) {
+        ChatRoomMemberEntity chatMember = chatRoomMemberRepository.findByChatRoom_IdAndMember_Id(
+                chatRoomId, memberId).orElseThrow(() -> new GlobalException(ErrorCode.USER_NOT_FOUND));
+
+        String lastReadMessageId = chatMember.getLastReadMessageId();
+
+        ChatMessage latestMessage = chatMessageRepository.findFirstByChatRoomIdOrderByCreatedAtDesc(chatRoomId)
+                .orElse(null);
+
+        if (latestMessage == null) {
+            // 만약 채팅방에 메시지가 없다면 읽지 않은 메시지도 없음
+            return false;
+        }
+
+        // 마지막으로 읽은 메시지 이후에 새 메시지가 있다면 true 반환
+        return lastReadMessageId == null || latestMessage.getId().compareTo(lastReadMessageId) > 0;
     }
 
     private ChatRoomEntity getChatRoom(Long chatRoomId) {
