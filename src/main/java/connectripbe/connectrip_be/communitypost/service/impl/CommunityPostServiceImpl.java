@@ -2,6 +2,7 @@ package connectripbe.connectrip_be.communitypost.service.impl;
 
 import connectripbe.connectrip_be.communitypost.dto.CommunityPostResponse;
 import connectripbe.connectrip_be.communitypost.dto.CreateCommunityPostRequest;
+import connectripbe.connectrip_be.communitypost.dto.SearchCommunityPostSummaryResponse;
 import connectripbe.connectrip_be.communitypost.dto.UpdateCommunityPostRequest;
 import connectripbe.connectrip_be.communitypost.entity.CommunityPostEntity;
 import connectripbe.connectrip_be.communitypost.repository.CommunityPostRepository;
@@ -13,6 +14,7 @@ import connectripbe.connectrip_be.member.entity.MemberEntity;
 import connectripbe.connectrip_be.member.repository.MemberJpaRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
@@ -101,18 +103,22 @@ public class CommunityPostServiceImpl implements CommunityPostService {
         return CommunityPostResponse.fromEntity(postEntity);
     }
 
-    /**
-     * 모든 게시글을 조회하는 메서드. 삭제되지 않은 모든 게시글을 조회하여 반환.
-     *
-     * @return 삭제되지 않은 모든 게시글의 정보를 담은 List<CommunityPostResponse> 객체
-     */
     @Override
-    public List<CommunityPostResponse> getAllPosts(int page) {
-        PageRequest pageRequest = PageRequest.of(page - 1, 10, Sort.by(Direction.DESC, "createdAt"));
+    public SearchCommunityPostSummaryResponse getAllPosts(int page) {
+        PageRequest pageRequest = PageRequest.of(
+                page - 1,
+                10,
+                Sort.by(Direction.DESC, "createdAt"));
 
-        return communityPostRepository.findAllByDeletedAtIsNull(pageRequest).stream()
-                .map(CommunityPostResponse::fromEntity)
-                .toList();
+        Page<CommunityPostEntity> communityPostEntities = communityPostRepository
+                .findAllByDeletedAtIsNull(pageRequest);
+
+        return new SearchCommunityPostSummaryResponse(
+                communityPostEntities.getTotalElements(),
+                communityPostEntities.getContent().stream()
+                        .map(CommunityPostResponse::fromEntity)
+                        .toList()
+        );
     }
 
     /**
