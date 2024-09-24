@@ -48,10 +48,27 @@ public class AuthController {
 
         try {
             if (tokenDto.isFirstLogin()) {
+//                Cookie tempTokenCookie = new Cookie("tempToken", tokenDto.getTempToken());
+//                tempTokenCookie.setPath("/");
+//                tempTokenCookie.setMaxAge(tokenDto.getTempTokenExpirationTime());
+//                tempTokenCookie.setHttpOnly(true);
+//
+//                httpServletResponse.addCookie(tempTokenCookie);
+
                 Cookie tempTokenCookie = new Cookie("tempToken", tokenDto.getTempToken());
                 tempTokenCookie.setPath("/");
                 tempTokenCookie.setMaxAge(tokenDto.getTempTokenExpirationTime());
                 tempTokenCookie.setHttpOnly(true);
+
+                // SameSite=None으로 설정한 Set-Cookie 헤더 생성
+                String cookieHeader = String.format("%s=%s; Path=%s; Max-Age=%d; HttpOnly; SameSite=None",
+                        tempTokenCookie.getName(),
+                        tempTokenCookie.getValue(),
+                        tempTokenCookie.getPath(),
+                        tempTokenCookie.getMaxAge());
+
+                // Set-Cookie 헤더에 SameSite=None 설정 추가
+                httpServletResponse.setHeader("Set-Cookie", cookieHeader);
 
                 httpServletResponse.addCookie(tempTokenCookie);
 
