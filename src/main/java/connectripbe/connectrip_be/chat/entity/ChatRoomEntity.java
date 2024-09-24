@@ -3,7 +3,6 @@ package connectripbe.connectrip_be.chat.entity;
 import connectripbe.connectrip_be.chat.entity.type.ChatRoomType;
 import connectripbe.connectrip_be.global.entity.BaseEntity;
 import connectripbe.connectrip_be.post.entity.AccompanyPostEntity;
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -38,16 +37,13 @@ public class ChatRoomEntity extends BaseEntity {
     @JoinColumn(name = "accompany_post_id")
     private AccompanyPostEntity accompanyPost;
 
-    // 방장 설정: ChatRoomMember의 ID를 참조
+    // 방장 설정: ChatRoomMember 의 ID를 참조
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "leader_id")
     private ChatRoomMemberEntity currentLeader;
 
     @Enumerated(EnumType.STRING)
     private ChatRoomType chatRoomType;
-
-    @Column
-    private String lastReadMessageId;
 
     private String lastChatMessage;
 
