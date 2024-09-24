@@ -18,7 +18,7 @@ public interface AccompanyPostService {
 
     SearchAccompanyPostSummaryResponse accompanyPostList(int page);
 
-    SearchAccompanyPostSummaryResponse searchByQuery(int page, String query);
+    SearchAccompanyPostSummaryResponse searchByQuery(String query, int page);
 
     boolean checkDuplicatedCustomUrl(String customUrl);
 }

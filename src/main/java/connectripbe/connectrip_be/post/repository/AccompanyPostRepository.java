@@ -17,7 +17,7 @@ public interface AccompanyPostRepository extends JpaRepository<AccompanyPostEnti
     Optional<AccompanyPostEntity> findByIdAndDeletedAtIsNull(long id);
 
     @Query("SELECT ap FROM AccompanyPostEntity ap WHERE (ap.title LIKE %:query% OR ap.content LIKE %:query%) AND ap.deletedAt IS NULL")
-    Page<AccompanyPostEntity> findAllByQueryAndDeletedAtIsNull(Pageable pageable, @Param("query") String query);
+    Page<AccompanyPostEntity> findAllByQueryAndDeletedAtIsNull(@Param("query") String query, Pageable pageable);
 
     Page<AccompanyPostEntity> findAllByDeletedAtIsNull(Pageable pageable);
 

@@ -65,10 +65,10 @@ public class AccompanyPostController {
 
     @GetMapping("/search")
     public ResponseEntity<SearchAccompanyPostSummaryResponse> searchByQuery(
-            @RequestParam(defaultValue = "1") Integer page,
-            @RequestParam String query
+            @RequestParam String query,
+            @RequestParam(defaultValue = "1") Integer page
     ) {
-        SearchAccompanyPostSummaryResponse response = accompanyPostService.searchByQuery(page, query);
+        SearchAccompanyPostSummaryResponse response = accompanyPostService.searchByQuery(query, page);
 
         return ResponseEntity.ok(response);
     }

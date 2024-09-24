@@ -141,14 +141,14 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
 
     @Override
     @Transactional(readOnly = true)
-    public SearchAccompanyPostSummaryResponse searchByQuery(int page, String query) {
+    public SearchAccompanyPostSummaryResponse searchByQuery(String query, int page) {
         PageRequest pageRequest = PageRequest.of(
                 page - 1,
                 10,
                 Sort.by(Direction.DESC, "createdAt"));
 
         Page<AccompanyPostEntity> accompanyPostEntities =
-                accompanyPostRepository.findAllByQueryAndDeletedAtIsNull(pageRequest, query);
+                accompanyPostRepository.findAllByQueryAndDeletedAtIsNull(query, pageRequest);
 
         return new SearchAccompanyPostSummaryResponse(
                 accompanyPostEntities.getTotalElements(),
@@ -212,10 +212,6 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
         chatRoomService.createChatRoom(post.getId(), memberId);
     }
 
-    /**
-     * @param input
-     * @return
-     */
     private String generateShortUrl(String input) {
         try {
             // SHA-256 해시 생성
