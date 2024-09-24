@@ -51,21 +51,23 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     /**
-     * 특정 사용자가 알림을 받을 때, 해당 사용자의 SSE 구독이 활성화되어 있으면 실시간으로 알림을 전송하는 메서드.
+     * 특정 사용자가 알림을 받을 때, 해당 사용자의 SSE 구독이 활성화되어 있으면 실시간으로 알림을 전송하는 메서드. 댓글 내용을 20자로 제한한 후, NotificationCommentResponse를
+     * 생성하여 SSE로 전송합니다.
      *
-     * @param memberId             알림을 받을 사용자의 ID
-     * @param notificationResponse 알림 내용
+     * @param memberId       알림을 받을 사용자의 ID
+     * @param post           알림이 발생한 게시물 정보
+     * @param commentContent 댓글 내용 (전체 내용이 전달되며, 메서드 내에서 20자로 제한)
+     * @param commentAuthor  댓글 작성자의 정보
      */
     @Override
-    public void sendNotification(Long memberId, AccompanyPostEntity post,
-                                 NotificationCommentResponse notificationResponse) {
-
+    public void sendNotification(Long memberId, AccompanyPostEntity post, String commentContent,
+                                 MemberEntity commentAuthor) {
         // 사용자 ID로 MemberEntity 조회
         MemberEntity member = memberJpaRepository.findById(memberId)
                 .orElseThrow(() -> new GlobalException(ErrorCode.USER_NOT_FOUND));
 
         // 댓글 내용을 20자로 제한
-        String limitedContent = limitContentTo20Characters(notificationResponse.getContent());
+        String limitedContent = limitContentTo20Characters(commentContent);
 
         // NotificationEntity를 빌더 패턴으로 생성
         NotificationEntity notification = NotificationEntity.builder()
@@ -80,9 +82,13 @@ public class NotificationServiceImpl implements NotificationService {
         SseEmitter emitter = emitters.get(memberId);
         if (emitter != null) {
             try {
+                // DTO에서 바로 응답 객체 생성
+                NotificationCommentResponse notificationResponse = NotificationCommentResponse.fromNotification(
+                        notification, limitedContent);
+
                 emitter.send(SseEmitter.event()
                         .name("COMMENT_ADDED")
-                        .data(notificationResponse));  // NotificationCommentResponse 객체 전송
+                        .data(notificationResponse));  // 제한된 메시지가 포함된 객체 전송
             } catch (IOException e) {
                 emitters.remove(memberId);
             }

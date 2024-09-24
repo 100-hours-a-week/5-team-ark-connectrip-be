@@ -10,11 +10,9 @@ import connectripbe.connectrip_be.global.exception.type.ErrorCode;
 import connectripbe.connectrip_be.global.util.bucket4j.annotation.RateLimit;
 import connectripbe.connectrip_be.member.entity.MemberEntity;
 import connectripbe.connectrip_be.member.repository.MemberJpaRepository;
-import connectripbe.connectrip_be.notification.dto.NotificationCommentResponse;
 import connectripbe.connectrip_be.notification.service.NotificationService;
 import connectripbe.connectrip_be.post.entity.AccompanyPostEntity;
 import connectripbe.connectrip_be.post.repository.AccompanyPostRepository;
-import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -53,19 +51,7 @@ public class AccompanyCommentServiceImpl implements AccompanyCommentService {
 
         accompanyCommentRepository.save(comment);
 
-        // NotificationCommentResponse 생성
-        NotificationCommentResponse notificationResponse = NotificationCommentResponse.builder()
-                .userId(member.getId())
-                .userNickname(member.getNickname())
-                .userProfilePath(member.getProfileImagePath())
-                .postId(post.getId())
-                .content(comment.getContent()) // 알림 메시지에 댓글 내용 전달
-                .notificationTime(LocalDateTime.now().toString())
-                .isRead(false)
-                .build();
-
-        // 알림 전송
-        notificationService.sendNotification(post.getMemberEntity().getId(), post, notificationResponse);
+        notificationService.sendNotification(post.getMemberEntity().getId(), post, comment.getContent(), member);
 
         return AccompanyCommentResponse.fromEntity(comment);
     }
