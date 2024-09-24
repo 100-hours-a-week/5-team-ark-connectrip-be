@@ -36,12 +36,12 @@ public class NotificationEntity extends BaseEntity {
     private MemberEntity member;  // 알림을 받을 사용자
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "accompany_post_id", nullable = false)
-    private AccompanyPostEntity accompanyPostEntity;
+    @JoinColumn(name = "accompany_post_id", nullable = true)
+    private AccompanyPostEntity accompanyPostEntity;  // 동행 게시물
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "community_post_id")
-    private CommunityPostEntity communityPostEntity;
+    @JoinColumn(name = "community_post_id", nullable = true)
+    private CommunityPostEntity communityPostEntity;  // 커뮤니티 게시물
 
     @Column(nullable = false, length = 256)
     private String message;  // 알림 내용
