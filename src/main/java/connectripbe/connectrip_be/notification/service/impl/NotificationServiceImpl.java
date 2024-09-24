@@ -112,7 +112,7 @@ public class NotificationServiceImpl implements NotificationService {
 
         // fromEntity를 사용하여 엔티티를 DTO로 변환
         return unreadNotifications.stream()
-                .map(NotificationCommentResponse::fromEntity)  // fromEntity 메서드 호출
+                .map(NotificationCommentResponse::fromNotification)  // fromEntity 메서드 호출
                 .collect(Collectors.toList());
     }
 

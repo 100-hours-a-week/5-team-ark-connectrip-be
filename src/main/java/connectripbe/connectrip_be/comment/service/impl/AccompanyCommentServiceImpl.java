@@ -56,7 +56,7 @@ public class AccompanyCommentServiceImpl implements AccompanyCommentService {
         String limitedContent = limitContentTo20Characters(request.getContent());
 
         // NotificationCommentResponse 생성 (댓글 내용은 첫 20자만)
-        NotificationCommentResponse notificationResponse = NotificationCommentResponse.fromEntity(comment,
+        NotificationCommentResponse notificationResponse = NotificationCommentResponse.fromAccompanyComment(comment,
                 limitedContent);
 
         // 게시글 작성자에게 실시간 알림 전송

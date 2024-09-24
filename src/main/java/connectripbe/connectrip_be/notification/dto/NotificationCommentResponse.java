@@ -21,7 +21,7 @@ public class NotificationCommentResponse {
     private boolean isRead;  // 읽음 여부
 
     // 기존 AccompanyCommentEntity를 사용하는 fromEntity
-    public static NotificationCommentResponse fromEntity(AccompanyCommentEntity comment, String content) {
+    public static NotificationCommentResponse fromAccompanyComment(AccompanyCommentEntity comment, String content) {
         return NotificationCommentResponse.builder()
                 .userId(comment.getMemberEntity().getId())
                 .userNickname(comment.getMemberEntity().getNickname())
@@ -34,7 +34,7 @@ public class NotificationCommentResponse {
     }
 
     // 새로운 NotificationEntity를 사용하는 fromEntity
-    public static NotificationCommentResponse fromEntity(NotificationEntity notification) {
+    public static NotificationCommentResponse fromNotification(NotificationEntity notification) {
         return NotificationCommentResponse.builder()
                 .userId(notification.getMember().getId())  // 사용자 ID
                 .userNickname(notification.getMember().getNickname())  // 사용자 닉네임
