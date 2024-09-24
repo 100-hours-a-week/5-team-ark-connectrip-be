@@ -15,7 +15,7 @@ public interface CommunityPostService {
 
     CommunityPostResponse readPost(Long postId);
 
-    List<CommunityPostResponse> getAllPosts();
+    List<CommunityPostResponse> getAllPosts(int page);
 
     List<CommunityPostResponse> getAllPostsByQuery(String query);
 }

@@ -12,8 +12,10 @@ import connectripbe.connectrip_be.global.util.bucket4j.annotation.RateLimit;
 import connectripbe.connectrip_be.member.entity.MemberEntity;
 import connectripbe.connectrip_be.member.repository.MemberJpaRepository;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -105,11 +107,12 @@ public class CommunityPostServiceImpl implements CommunityPostService {
      * @return 삭제되지 않은 모든 게시글의 정보를 담은 List<CommunityPostResponse> 객체
      */
     @Override
-    public List<CommunityPostResponse> getAllPosts() {
-        List<CommunityPostEntity> posts = communityPostRepository.findAllByDeletedAtIsNullOrderByCreatedAtDesc();
-        return posts.stream()
+    public List<CommunityPostResponse> getAllPosts(int page) {
+        PageRequest pageRequest = PageRequest.of(page - 1, 10, Sort.by(Direction.DESC, "createdAt"));
+
+        return communityPostRepository.findAllByDeletedAtIsNull(pageRequest).stream()
                 .map(CommunityPostResponse::fromEntity)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     /**

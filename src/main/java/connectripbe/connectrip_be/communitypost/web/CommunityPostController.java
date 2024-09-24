@@ -89,8 +89,11 @@ public class CommunityPostController {
      * @return 모든 게시글의 정보를 담은 List<CommunityPostResponse> 객체
      */
     @GetMapping
-    public ResponseEntity<List<CommunityPostResponse>> getAllPosts() {
-        List<CommunityPostResponse> response = communityPostService.getAllPosts();
+    public ResponseEntity<List<CommunityPostResponse>> getAllPosts(
+            @RequestParam(defaultValue = "1") Integer page
+    ) {
+        List<CommunityPostResponse> response = communityPostService.getAllPosts(page);
+
         return ResponseEntity.ok(response);
     }
 
@@ -98,5 +101,4 @@ public class CommunityPostController {
     public ResponseEntity<List<CommunityPostResponse>> searchByQuery(@RequestParam String query) {
         return ResponseEntity.ok(communityPostService.getAllPostsByQuery(query));
     }
-
 }
