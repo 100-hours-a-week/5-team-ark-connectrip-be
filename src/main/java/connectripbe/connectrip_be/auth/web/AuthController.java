@@ -53,8 +53,8 @@ public class AuthController {
                         .path("/")
                         .httpOnly(true)
                         .maxAge(tokenDto.getTempTokenExpirationTime())
-                        .sameSite("None")
-                        .secure(true)
+//                        .sameSite("None")
+//                        .secure(true)
                         .build();
 
                 httpServletResponse.addHeader("Set-Cookie", tempTokenCookie.toString());
