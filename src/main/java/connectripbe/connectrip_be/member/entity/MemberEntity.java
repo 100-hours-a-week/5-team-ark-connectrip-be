@@ -72,9 +72,6 @@ public class MemberEntity extends BaseEntity {
     @OneToMany(mappedBy = "target", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AccompanyReviewEntity> reviews = new ArrayList<>();
 
-    @Builder.Default
-    @Column(name = "accompany_count", nullable = false)
-    private int accompanyCount = 0;
 
     public void profileUpdate(String nickname, String description) {
         this.nickname = nickname;
