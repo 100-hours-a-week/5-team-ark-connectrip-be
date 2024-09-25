@@ -49,7 +49,10 @@ public class AccompanyReviewController {
      */
     @GetMapping("/profile/{memberId}")
     public ResponseEntity<AccompanyReviewListResponse> getAllReviews(@PathVariable Long memberId) {
-        return null;
+        AccompanyReviewListResponse response =
+                accompanyReviewService.getAllReviews(memberId);
+
+        return ResponseEntity.ok(response);
     }
 
 //    해당 엔드-포인트 사용하지 않아서 주석 처리
