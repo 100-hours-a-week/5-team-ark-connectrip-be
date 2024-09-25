@@ -54,7 +54,7 @@ public class AuthController {
                         .httpOnly(true)
                         .maxAge(tokenDto.getTempTokenExpirationTime())
                         .domain("connectrip.site")
-                        .sameSite("None")
+//                        .sameSite("None")
                         .secure(true)
                         .build();
 
