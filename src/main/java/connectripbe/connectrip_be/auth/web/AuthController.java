@@ -48,16 +48,6 @@ public class AuthController {
 
         try {
             if (tokenDto.isFirstLogin()) {
-//                ResponseCookie tempTokenCookie = ResponseCookie.from("tempToken", tokenDto.getTempToken())
-//                        .path("/")
-//                        .httpOnly(true)
-//                        .maxAge(tokenDto.getTempTokenExpirationTime())
-//                        .sameSite("None")
-//                        .secure(true)
-//                        .build();
-
-//                httpServletResponse.addHeader("Set-Cookie", tempTokenCookie.toString());
-
                 Cookie tempTokenCookie = new Cookie("tempToken", tokenDto.getTempToken());
                 tempTokenCookie.setPath("/");
                 tempTokenCookie.setMaxAge(tokenDto.getTempTokenExpirationTime());
