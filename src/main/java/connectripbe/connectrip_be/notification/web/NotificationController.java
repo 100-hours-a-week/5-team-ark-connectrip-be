@@ -1,6 +1,5 @@
 package connectripbe.connectrip_be.notification.web;
 
-import connectripbe.connectrip_be.notification.dto.NotificationCommentResponse;
 import connectripbe.connectrip_be.notification.service.NotificationService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -32,10 +31,10 @@ public class NotificationController {
         return ResponseEntity.ok().build();
     }
 
-    // 읽지 않은 알림 조회 API
+    // 읽지 않은 알림 조회 API (동행 댓글과 커뮤니티 댓글 통합)
     @GetMapping("/unread/{memberId}")
-    public ResponseEntity<List<NotificationCommentResponse>> getUnreadNotifications(@PathVariable Long memberId) {
-        List<NotificationCommentResponse> unreadNotifications = notificationService.getUnreadNotifications(memberId);
+    public ResponseEntity<List<Object>> getUnreadNotifications(@PathVariable Long memberId) {
+        List<Object> unreadNotifications = notificationService.getUnreadNotifications(memberId);
         return ResponseEntity.ok(unreadNotifications);
     }
 

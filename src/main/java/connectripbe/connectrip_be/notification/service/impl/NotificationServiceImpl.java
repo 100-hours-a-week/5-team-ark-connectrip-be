@@ -13,12 +13,14 @@ import connectripbe.connectrip_be.notification.service.NotificationService;
 import connectripbe.connectrip_be.post.entity.AccompanyPostEntity;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 @Service
@@ -134,21 +136,42 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     /**
-     * 주어진 회원 ID를 이용해 읽지 않은 알림을 조회하는 메서드. 조회된 알림 메시지는 20자 이하로 제한됩니다.
+     * 주어진 회원 ID를 이용해 읽지 않은 알림을 조회하는 메서드. 알림이 동행 게시물 또는 커뮤니티 게시물과 연관된 경우 각각 다른 DTO로 변환하여 반환합니다. 조회된 알림 메시지는 20자 이하로
+     * 제한됩니다.
      *
      * @param memberId 읽지 않은 알림을 조회할 회원의 ID
-     * @return 읽지 않은 알림 목록을 NotificationCommentResponse 객체 리스트로 반환
+     * @return 읽지 않은 알림 목록을 NotificationCommentResponse 또는 NotificationCommunityCommentResponse 객체 리스트로 반환
      */
     @Override
-    public List<NotificationCommentResponse> getUnreadNotifications(Long memberId) {
+    @Transactional(readOnly = true)
+    public List<Object> getUnreadNotifications(Long memberId) {
         MemberEntity member = memberJpaRepository.findById(memberId)
                 .orElseThrow(() -> new GlobalException(ErrorCode.USER_NOT_FOUND));
 
-        // 읽지 않은 알림 조회 (readAt이 null인 알림만 조회) 후 바로 변환하여 반환
-        return notificationRepository.findAllByMemberAndReadAtIsNull(member).stream()
-                .map(this::convertNotificationToResponse)
+        // 읽지 않은 알림 조회 (readAt이 null인 알림만 조회)
+        List<NotificationEntity> unreadNotifications = notificationRepository.findAllByMemberAndReadAtIsNull(member);
+
+        if (unreadNotifications.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        // 알림을 DTO로 변환 (동행 게시물과 커뮤니티 게시물을 구분하여 처리)
+        return unreadNotifications.stream()
+                .map(notification -> {
+                    if (notification.getAccompanyPostEntity() != null) {
+                        // 동행 게시물 알림 응답 객체로 변환
+                        return NotificationCommentResponse.fromNotification(notification, notification.getMessage());
+                    } else if (notification.getCommunityPostEntity() != null) {
+                        // 커뮤니티 게시물 알림 응답 객체로 변환
+                        return NotificationCommunityCommentResponse.fromNotification(notification,
+                                notification.getMessage());
+                    } else {
+                        throw new GlobalException(ErrorCode.UNSUPPORTED_POST_TYPE);
+                    }
+                })
                 .collect(Collectors.toList());
     }
+
 
     /**
      * NotificationEntity를 NotificationCommentResponse로 변환하는 메서드
