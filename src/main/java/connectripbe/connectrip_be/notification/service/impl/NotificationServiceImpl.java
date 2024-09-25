@@ -174,18 +174,6 @@ public class NotificationServiceImpl implements NotificationService {
 
 
     /**
-     * NotificationEntity를 NotificationCommentResponse로 변환하는 메서드
-     *
-     * @param notification 변환할 NotificationEntity 객체
-     * @return NotificationCommentResponse 객체
-     */
-    private NotificationCommentResponse convertNotificationToResponse(NotificationEntity notification) {
-        String limitedContent = limitContentTo20Characters(notification.getMessage());
-        return NotificationCommentResponse.fromNotification(notification, limitedContent);
-    }
-
-
-    /**
      * 댓글 내용을 20자 이하로 제한하는 메서드. 댓글 내용이 20자보다 길 경우 첫 20자를 반환하고, 그렇지 않으면 전체 내용을 반환합니다.
      *
      * @param content 제한할 댓글 내용
