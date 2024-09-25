@@ -1,5 +1,6 @@
 package connectripbe.connectrip_be.review.service;
 
+import connectripbe.connectrip_be.review.dto.AccompanyReviewListResponse;
 import connectripbe.connectrip_be.review.dto.AccompanyReviewRequest;
 import connectripbe.connectrip_be.review.dto.AccompanyReviewResponse;
 import connectripbe.connectrip_be.review.dto.AccompanyReviewSummaryResponse;
@@ -15,4 +16,7 @@ public interface AccompanyReviewService {
             Long chatRoomId,
             Long reviewerId,
             Long revieweeId);
+
+    AccompanyReviewListResponse getAllReviews(Long memberId);  // 모든 리뷰 조회
+
 }
