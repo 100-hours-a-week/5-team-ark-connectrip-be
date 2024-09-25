@@ -135,6 +135,7 @@ public class NotificationServiceImpl implements NotificationService {
         notificationRepository.save(notification);
     }
 
+
     /**
      * 주어진 회원 ID를 이용해 읽지 않은 알림을 조회하는 메서드. 알림이 동행 게시물 또는 커뮤니티 게시물과 연관된 경우 각각 다른 DTO로 변환하여 반환합니다. 조회된 알림 메시지는 20자 이하로
      * 제한됩니다.
@@ -155,21 +156,30 @@ public class NotificationServiceImpl implements NotificationService {
             return Collections.emptyList();
         }
 
-        // 알림을 DTO로 변환 (동행 게시물과 커뮤니티 게시물을 구분하여 처리)
+        // 메서드 참조로 변환
         return unreadNotifications.stream()
-                .map(notification -> {
-                    if (notification.getAccompanyPostEntity() != null) {
-                        // 동행 게시물 알림 응답 객체로 변환
-                        return NotificationCommentResponse.fromNotification(notification, notification.getMessage());
-                    } else if (notification.getCommunityPostEntity() != null) {
-                        // 커뮤니티 게시물 알림 응답 객체로 변환
-                        return NotificationCommunityCommentResponse.fromNotification(notification,
-                                notification.getMessage());
-                    } else {
-                        throw new GlobalException(ErrorCode.UNSUPPORTED_POST_TYPE);
-                    }
-                })
+                .map(this::convertNotificationToDTO) // 메서드 참조로 변경
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * NotificationEntity를 적절한 DTO로 변환하는 메서드. 알림이 동행 게시물 또는 커뮤니티 게시물과 연관된 경우 각각 NotificationCommentResponse 또는
+     * NotificationCommunityCommentResponse로 변환하여 반환합니다.
+     *
+     * @param notification 변환할 NotificationEntity 객체
+     * @return 변환된 DTO 객체 (NotificationCommentResponse 또는 NotificationCommunityCommentResponse)
+     */
+    private Object convertNotificationToDTO(NotificationEntity notification) {
+        if (notification.getAccompanyPostEntity() != null) {
+            // 동행 게시물 알림 응답 객체로 변환
+            return NotificationCommentResponse.fromNotification(notification, notification.getMessage());
+        } else if (notification.getCommunityPostEntity() != null) {
+            // 커뮤니티 게시물 알림 응답 객체로 변환
+            return NotificationCommunityCommentResponse.fromNotification(notification, notification.getMessage());
+        } else {
+            // 지원되지 않는 게시물 타입일 경우 예외 발생
+            throw new GlobalException(ErrorCode.UNSUPPORTED_POST_TYPE);
+        }
     }
 
 
