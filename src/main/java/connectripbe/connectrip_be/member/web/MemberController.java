@@ -10,7 +10,6 @@ import connectripbe.connectrip_be.member.dto.ProfileDto;
 import connectripbe.connectrip_be.member.dto.ProfileUpdateRequestDto;
 import connectripbe.connectrip_be.member.dto.TokenAndHeaderInfoDto;
 import connectripbe.connectrip_be.member.service.MemberService;
-import connectripbe.connectrip_be.review.dto.AccompanyReviewResponse2;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -73,7 +72,7 @@ public class MemberController {
     }
 
     /**
-     * 회원의 프로필 정보와 최신 3개의 리뷰를 조회
+     * 회원의 프로필 정보 조회
      *
      * @param memberId 조회할 회원의 ID
      * @return 회원의 프로필과 최신 3개 리뷰를 담은 ProfileDto
@@ -82,19 +81,6 @@ public class MemberController {
     public ResponseEntity<ProfileDto> getProfile(@PathVariable Long memberId) {
         ProfileDto profile = memberService.getProfile(memberId);
         return ResponseEntity.ok(profile);
-    }
-
-    /**
-     * 회원의 모든 리뷰 조회
-     *
-     * @param memberId 조회할 회원의 ID
-     * @return 회원이 받은 모든 리뷰 목록
-     */
-    @GetMapping("/profile/{memberId}/reviews")
-    public ResponseEntity<AccompanyReviewResponse2> getAllReviews(@PathVariable Long memberId) {
-        AccompanyReviewResponse2 accompanyReviewResponse = memberService.getAllReviews(memberId);
-
-        return ResponseEntity.ok(accompanyReviewResponse);
     }
 
     /**

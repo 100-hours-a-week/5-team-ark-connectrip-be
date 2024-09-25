@@ -21,8 +21,8 @@ import connectripbe.connectrip_be.member.exception.DuplicateMemberNicknameExcept
 import connectripbe.connectrip_be.member.exception.NotFoundMemberException;
 import connectripbe.connectrip_be.member.repository.MemberJpaRepository;
 import connectripbe.connectrip_be.review.dto.AccompanyReviewDto;
+import connectripbe.connectrip_be.review.dto.AccompanyReviewListResponse;
 import connectripbe.connectrip_be.review.dto.AccompanyReviewResponse;
-import connectripbe.connectrip_be.review.dto.AccompanyReviewResponse2;
 import connectripbe.connectrip_be.review.entity.AccompanyReviewEntity;
 import connectripbe.connectrip_be.review.repository.AccompanyReviewRepository;
 import java.time.LocalDate;
@@ -176,7 +176,7 @@ public class MemberServiceImpl implements MemberService {
      * @
      */
     @Override
-    public AccompanyReviewResponse2 getAllReviews(Long memberId) {
+    public AccompanyReviewListResponse getAllReviews(Long memberId) {
         // 전체 리뷰 목록을 조회
         MemberEntity memberEntity = memberJpaRepository.findById(memberId)
                 .orElseThrow(NotFoundMemberException::new);
@@ -194,7 +194,7 @@ public class MemberServiceImpl implements MemberService {
                 ))
                 .toList();
 
-        return new AccompanyReviewResponse2(
+        return new AccompanyReviewListResponse(
                 memberId,
                 memberEntity.getNickname(),
                 reviews.size(),
