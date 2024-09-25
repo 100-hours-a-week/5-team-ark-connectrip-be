@@ -220,7 +220,7 @@ public class MemberServiceImpl implements MemberService {
      * @return 나이대에 해당하는 문자열
      */
     public String calculateAgeGroup(int age) {
-        return AgeGroup.fromAge(age); // getLabel()이 필요하지 않음
+        return AgeGroup.fromAge(age);
     }
 
     /**
