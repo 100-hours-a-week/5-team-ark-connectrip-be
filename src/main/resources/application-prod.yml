@@ -30,5 +30,8 @@ spring:
       client-id: ${PROD_KAKAO_CLIENT_ID}
       redirect-uri: ${PROD_KAKAO_REDIRECT_URI}
 
+  customurl:
+    success-redirect-url: ${PROD_CUSTOMURL_REDIRECT_URL}
+
 allowed:
   origins: ${PROD_ALLOWED_ORIGIN} # 허용할 오리진 설정
