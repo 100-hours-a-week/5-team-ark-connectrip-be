@@ -1,9 +1,9 @@
 spring:
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
-    url: ${LOCAL_DATABASE_URL}
-    username: ${LOCAL_DATABASE_USERNAME}
-    password: ${LOCAL_DATABASE_PASSWORD}
+    url: ${DEV_DATABASE_URL}
+    username: ${DEV_DATABASE_USERNAME}
+    password: ${DEV_DATABASE_PASSWORD}
 
   jpa:
     hibernate:
@@ -35,6 +35,9 @@ spring:
     kakao:
       client-id: ${LOCAL_KAKAO_CLIENT_ID}
       redirect-uri: ${LOCAL_KAKAO_REDIRECT_URI}
+
+  customurl:
+    success-redirect-url: ${LOCAL_CUSTOMURL_REDIRECT_URL}
 
 allowed:
   origins: http://localhost:3000  # 허용할 오리진 설정

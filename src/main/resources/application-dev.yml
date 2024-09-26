@@ -4,6 +4,7 @@ spring:
     url: ${DEV_DATABASE_URL}
     username: ${DEV_DATABASE_USERNAME}
     password: ${DEV_DATABASE_PASSWORD}
+
   jpa:
     hibernate:
       ddl-auto: update
@@ -32,6 +33,10 @@ spring:
     kakao:
       client-id: ${DEV_KAKAO_CLIENT_ID}
       redirect-uri: ${DEV_KAKAO_REDIRECT_URI}
+
+  customurl:
+    success-redirect-url: ${DEV_CUSTOMURL_REDIRECT_URL}
+
 
 allowed:
   origins: ${DEV_ALLOWED_ORIGIN} # 허용할 오리진 설정
