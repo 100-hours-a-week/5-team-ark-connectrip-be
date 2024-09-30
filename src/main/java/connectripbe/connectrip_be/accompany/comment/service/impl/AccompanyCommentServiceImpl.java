@@ -29,12 +29,13 @@ public class AccompanyCommentServiceImpl implements AccompanyCommentService {
 
 
     /**
-     * 댓글을 생성하는 메서드. 사용자 이메일을 통해 MemberEntity를 조회하고, 게시물 ID를 통해 AccompanyPostEntity를 조회한 후 AccompanyCommentEntity를 생성하여
-     * 데이터베이스에 저장
+     * 댓글을 생성하는 메서드. 주어진 memberId를 통해 사용자 정보를 조회하고, 요청 정보에서 게시물 ID를 가져와 해당 게시물 정보를 조회한 후, AccompanyCommentRequest를 사용하여
+     * 새로운 AccompanyCommentEntity를 생성하고 데이터베이스에 저장합니다.
      *
      * @param memberId 댓글 작성자의 아이디
-     * @param request  댓글 생성 요청 정보 (게시물 ID, 댓글 내용 포함)
-     * @return 생성된 댓글의 정보를 담은 AccompanyCommentResponse 객체
+     * @param request  댓글 생성 요청 정보 (게시물 ID 및 댓글 내용 포함)
+     * @return 생성된 댓글 정보를 담고 있는 AccompanyCommentResponse 객체
+     * @throws GlobalException 사용자가 존재하지 않거나 게시물이 존재하지 않을 경우 예외 발생
      */
     @Override
     @RateLimit(capacity = 10, refillTokens = 10)
@@ -42,12 +43,7 @@ public class AccompanyCommentServiceImpl implements AccompanyCommentService {
         MemberEntity member = getMember(memberId);
         AccompanyPostEntity post = getPost(request.getPostId());
 
-        // 댓글 생성
-        AccompanyCommentEntity comment = AccompanyCommentEntity.builder()
-                .memberEntity(member)
-                .accompanyPostEntity(post)
-                .content(request.getContent())
-                .build();
+        AccompanyCommentEntity comment = request.toEntity(post, member);
 
         accompanyCommentRepository.save(comment);
 
