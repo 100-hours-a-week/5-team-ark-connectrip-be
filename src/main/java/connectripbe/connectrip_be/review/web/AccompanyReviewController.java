@@ -1,9 +1,9 @@
 package connectripbe.connectrip_be.review.web;
 
-import connectripbe.connectrip_be.review.dto.AccompanyReviewListResponse;
 import connectripbe.connectrip_be.review.dto.AccompanyReviewRequest;
-import connectripbe.connectrip_be.review.dto.AccompanyReviewResponse;
-import connectripbe.connectrip_be.review.dto.AccompanyReviewSummaryResponse;
+import connectripbe.connectrip_be.review.dto.response.AccompanyReviewListResponse;
+import connectripbe.connectrip_be.review.dto.response.AccompanyReviewResponse;
+import connectripbe.connectrip_be.review.dto.response.AccompanyReviewSummaryResponse;
 import connectripbe.connectrip_be.review.service.AccompanyReviewService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
