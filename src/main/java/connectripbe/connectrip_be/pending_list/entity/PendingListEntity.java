@@ -1,9 +1,9 @@
 package connectripbe.connectrip_be.pending_list.entity;
 
+import connectripbe.connectrip_be.accompany.post.entity.AccompanyPostEntity;
 import connectripbe.connectrip_be.global.entity.BaseEntity;
 import connectripbe.connectrip_be.member.entity.MemberEntity;
 import connectripbe.connectrip_be.pending_list.entity.type.PendingStatus;
-import connectripbe.connectrip_be.post.entity.AccompanyPostEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

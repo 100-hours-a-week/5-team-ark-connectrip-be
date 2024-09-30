@@ -1,8 +1,11 @@
 package connectripbe.connectrip_be.chat.service.impl;
 
-import connectripbe.connectrip_be.accompany_status.entity.AccompanyStatusEntity;
-import connectripbe.connectrip_be.accompany_status.entity.AccompanyStatusEnum;
-import connectripbe.connectrip_be.accompany_status.repository.AccompanyStatusJpaRepository;
+import connectripbe.connectrip_be.accompany.post.entity.AccompanyPostEntity;
+import connectripbe.connectrip_be.accompany.post.exception.NotFoundAccompanyPostException;
+import connectripbe.connectrip_be.accompany.post.repository.AccompanyPostRepository;
+import connectripbe.connectrip_be.accompany.status.entity.AccompanyStatusEntity;
+import connectripbe.connectrip_be.accompany.status.entity.AccompanyStatusEnum;
+import connectripbe.connectrip_be.accompany.status.repository.AccompanyStatusJpaRepository;
 import connectripbe.connectrip_be.chat.dto.ChatRoomEnterDto;
 import connectripbe.connectrip_be.chat.dto.ChatRoomListResponse;
 import connectripbe.connectrip_be.chat.dto.ChatRoomMemberResponse;
@@ -22,9 +25,6 @@ import connectripbe.connectrip_be.global.exception.type.ErrorCode;
 import connectripbe.connectrip_be.pending_list.entity.PendingListEntity;
 import connectripbe.connectrip_be.pending_list.entity.type.PendingStatus;
 import connectripbe.connectrip_be.pending_list.repository.PendingListRepository;
-import connectripbe.connectrip_be.post.entity.AccompanyPostEntity;
-import connectripbe.connectrip_be.post.exception.NotFoundAccompanyPostException;
-import connectripbe.connectrip_be.post.repository.AccompanyPostRepository;
 import connectripbe.connectrip_be.review.repository.AccompanyReviewRepository;
 import jakarta.transaction.Transactional;
 import java.util.ArrayList;

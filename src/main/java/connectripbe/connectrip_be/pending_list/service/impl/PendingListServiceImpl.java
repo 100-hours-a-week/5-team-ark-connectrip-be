@@ -1,5 +1,7 @@
 package connectripbe.connectrip_be.pending_list.service.impl;
 
+import connectripbe.connectrip_be.accompany.post.entity.AccompanyPostEntity;
+import connectripbe.connectrip_be.accompany.post.repository.AccompanyPostRepository;
 import connectripbe.connectrip_be.chat.entity.ChatRoomEntity;
 import connectripbe.connectrip_be.chat.repository.ChatRoomRepository;
 import connectripbe.connectrip_be.chat.service.ChatRoomMemberService;
@@ -13,8 +15,6 @@ import connectripbe.connectrip_be.pending_list.entity.PendingListEntity;
 import connectripbe.connectrip_be.pending_list.entity.type.PendingStatus;
 import connectripbe.connectrip_be.pending_list.repository.PendingListRepository;
 import connectripbe.connectrip_be.pending_list.service.PendingListService;
-import connectripbe.connectrip_be.post.entity.AccompanyPostEntity;
-import connectripbe.connectrip_be.post.repository.AccompanyPostRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

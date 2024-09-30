@@ -20,16 +20,10 @@ import connectripbe.connectrip_be.member.entity.type.MemberRoleType;
 import connectripbe.connectrip_be.member.exception.DuplicateMemberNicknameException;
 import connectripbe.connectrip_be.member.exception.NotFoundMemberException;
 import connectripbe.connectrip_be.member.repository.MemberJpaRepository;
-import connectripbe.connectrip_be.review.dto.AccompanyReviewDto;
-import connectripbe.connectrip_be.review.dto.AccompanyReviewResponse;
-import connectripbe.connectrip_be.review.dto.AccompanyReviewResponse2;
-import connectripbe.connectrip_be.review.entity.AccompanyReviewEntity;
+import connectripbe.connectrip_be.review.dto.response.AccompanyReviewResponse;
 import connectripbe.connectrip_be.review.repository.AccompanyReviewRepository;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.Period;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -169,58 +163,13 @@ public class MemberServiceImpl implements MemberService {
 
 
     /**
-     * 특정 회원이 받은 모든 리뷰를 조회하고, 각 리뷰를 AccompanyReviewResponse로 변환하여 반환하는 메서드.
-     *
-     * @param memberId 리뷰 대상이 되는 회원 ID
-     * @return 해당 회원이 받은 모든 리뷰 목록과 리뷰 대상자가 받은 전체 리뷰 수를 포함한 리스트
-     * @
-     */
-    @Override
-    public AccompanyReviewResponse2 getAllReviews(Long memberId) {
-        // 전체 리뷰 목록을 조회
-        MemberEntity memberEntity = memberJpaRepository.findById(memberId)
-                .orElseThrow(NotFoundMemberException::new);
-
-        List<AccompanyReviewEntity> reviews = accompanyReviewRepository.findAllByTargetIdOrderByCreatedAtDesc(memberId);
-
-        List<AccompanyReviewDto> AccompanyReviewDto = reviews.stream()
-                .map(accompanyReviewEntity -> new AccompanyReviewDto(
-                        accompanyReviewEntity.getId(),
-                        accompanyReviewEntity.getReviewer().getId(),
-                        accompanyReviewEntity.getReviewer().getNickname(),
-                        accompanyReviewEntity.getReviewer().getProfileImagePath(),
-                        accompanyReviewEntity.getContent(),
-                        formatToUTC(accompanyReviewEntity.getCreatedAt())
-                ))
-                .toList();
-
-        return new AccompanyReviewResponse2(
-                memberId,
-                memberEntity.getNickname(),
-                reviews.size(),
-                AccompanyReviewDto
-        );
-    }
-
-    // todo-noah: 추후 UTC 관련 utils로 분리
-    private final DateTimeFormatter UTC_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
-
-    private String formatToUTC(LocalDateTime dateTime) {
-        if (dateTime == null) {
-            return null;
-        }
-        return dateTime.atZone(ZoneId.systemDefault()) // 시스템 시간대 적용
-                .format(UTC_FORMATTER); // 형식에 맞춰 반환
-    }
-
-    /**
      * 나이대 계산
      *
      * @param age 나이
      * @return 나이대에 해당하는 문자열
      */
     public String calculateAgeGroup(int age) {
-        return AgeGroup.fromAge(age).getLabel();
+        return AgeGroup.fromAge(age);
     }
 
     /**

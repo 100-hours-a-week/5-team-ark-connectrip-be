@@ -17,7 +17,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
 @Table(name = "accompany_review")
@@ -43,7 +42,6 @@ public class AccompanyReviewEntity extends BaseEntity {
     @JoinColumn(name = "chat_room_id", nullable = false)
     private ChatRoomEntity chatRoom;
 
-    @Setter
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 }

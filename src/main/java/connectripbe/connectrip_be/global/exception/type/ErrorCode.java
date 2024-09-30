@@ -32,6 +32,8 @@ public enum ErrorCode {
     NOT_CHATROOM_LEADER(HttpStatus.BAD_REQUEST, "채팅방 방장이 아닙니다."),
     TOKEN_NOT_FOUND(HttpStatus.BAD_REQUEST, "토큰을 찾을 수 없습니다."),
 
+    //Notification type erro
+    UNSUPPORTED_POST_TYPE(HttpStatus.BAD_REQUEST, "지원하지 않는 게시물 타입입니다."),
 
     // Member, 사용자
     NOT_FOUND_MEMBER(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다."),

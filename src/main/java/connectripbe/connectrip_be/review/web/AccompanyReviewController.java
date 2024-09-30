@@ -1,8 +1,9 @@
 package connectripbe.connectrip_be.review.web;
 
 import connectripbe.connectrip_be.review.dto.AccompanyReviewRequest;
-import connectripbe.connectrip_be.review.dto.AccompanyReviewResponse;
-import connectripbe.connectrip_be.review.dto.AccompanyReviewSummaryResponse;
+import connectripbe.connectrip_be.review.dto.response.AccompanyReviewListResponse;
+import connectripbe.connectrip_be.review.dto.response.AccompanyReviewResponse;
+import connectripbe.connectrip_be.review.dto.response.AccompanyReviewSummaryResponse;
 import connectripbe.connectrip_be.review.service.AccompanyReviewService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/v1/chatrooms/{chatRoomId}/reviews")
+@RequestMapping("/api/v1/reviews")
 @RequiredArgsConstructor
 public class AccompanyReviewController {
 
@@ -29,13 +30,27 @@ public class AccompanyReviewController {
      * @param reviewRequest 리뷰 생성 요청 정보
      * @return 생성된 리뷰 정보를 담은 ResponseEntity<AccompanyReviewResponse>
      */
-    @PostMapping
+    @PostMapping("/{chatRoomId}")
     public ResponseEntity<AccompanyReviewResponse> createReview(
             @AuthenticationPrincipal Long memberId,
             @PathVariable Long chatRoomId,
             @RequestBody AccompanyReviewRequest reviewRequest) {
         AccompanyReviewResponse response =
                 accompanyReviewService.createReview(chatRoomId, memberId, reviewRequest);
+
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * 회원의 모든 리뷰 조회
+     *
+     * @param memberId 조회할 회원의 ID
+     * @return 회원이 받은 모든 리뷰 목록
+     */
+    @GetMapping("/profile/{memberId}")
+    public ResponseEntity<AccompanyReviewListResponse> getAllReviews(@PathVariable Long memberId) {
+        AccompanyReviewListResponse response =
+                accompanyReviewService.getAllReviews(memberId);
 
         return ResponseEntity.ok(response);
     }
@@ -58,7 +73,7 @@ public class AccompanyReviewController {
      *
      * @return 리뷰
      */
-    @GetMapping
+    @GetMapping("/{chatRoomId}")
     public ResponseEntity<AccompanyReviewSummaryResponse> getReviewSummary
     (
             @AuthenticationPrincipal Long memberId,

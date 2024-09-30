@@ -1,9 +1,9 @@
 package connectripbe.connectrip_be.member.entity;
 
+import connectripbe.connectrip_be.accompany.post.entity.AccompanyPostEntity;
 import connectripbe.connectrip_be.global.entity.BaseEntity;
 import connectripbe.connectrip_be.member.entity.type.MemberLoginType;
 import connectripbe.connectrip_be.member.entity.type.MemberRoleType;
-import connectripbe.connectrip_be.post.entity.AccompanyPostEntity;
 import connectripbe.connectrip_be.review.entity.AccompanyReviewEntity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -72,9 +72,6 @@ public class MemberEntity extends BaseEntity {
     @OneToMany(mappedBy = "target", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AccompanyReviewEntity> reviews = new ArrayList<>();
 
-    @Builder.Default
-    @Column(name = "accompany_count", nullable = false)
-    private int accompanyCount = 0;
 
     public void profileUpdate(String nickname, String description) {
         this.nickname = nickname;

@@ -1,11 +1,10 @@
 package connectripbe.connectrip_be.member.entity.enums;
 
+import lombok.Getter;
+
+@Getter
 public enum AgeGroup {
     TEENAGER("10대"),
-    TWENTIES("20대"),
-    THIRTIES("30대"),
-    FORTIES("40대"),
-    FIFTIES("50대"),
     SIXTIES_AND_ABOVE("60대 이상");
 
     private final String label;
@@ -14,23 +13,14 @@ public enum AgeGroup {
         this.label = label;
     }
 
-    public static AgeGroup fromAge(int age) {
+    public static String fromAge(int age) {
         if (age < 20) {
-            return TEENAGER;
-        } else if (age < 30) {
-            return TWENTIES;
-        } else if (age < 40) {
-            return THIRTIES;
-        } else if (age < 50) {
-            return FORTIES;
-        } else if (age < 60) {
-            return FIFTIES;
-        } else {
-            return SIXTIES_AND_ABOVE;
+            return TEENAGER.getLabel();
         }
-    }
-
-    public String getLabel() {
-        return label;
+        if (age >= 60) {
+            return SIXTIES_AND_ABOVE.getLabel();
+        }
+        int decade = (age / 10) * 10;
+        return decade + "대";
     }
 }

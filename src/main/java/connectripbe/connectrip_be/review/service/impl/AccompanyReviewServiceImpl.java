@@ -1,17 +1,20 @@
 package connectripbe.connectrip_be.review.service.impl;
 
-import connectripbe.connectrip_be.accompany_status.entity.AccompanyStatusEntity;
-import connectripbe.connectrip_be.accompany_status.entity.AccompanyStatusEnum;
-import connectripbe.connectrip_be.accompany_status.repository.AccompanyStatusJpaRepository;
+import connectripbe.connectrip_be.accompany.status.entity.AccompanyStatusEntity;
+import connectripbe.connectrip_be.accompany.status.entity.AccompanyStatusEnum;
+import connectripbe.connectrip_be.accompany.status.repository.AccompanyStatusJpaRepository;
 import connectripbe.connectrip_be.chat.entity.ChatRoomEntity;
 import connectripbe.connectrip_be.chat.repository.ChatRoomRepository;
 import connectripbe.connectrip_be.global.exception.GlobalException;
 import connectripbe.connectrip_be.global.exception.type.ErrorCode;
 import connectripbe.connectrip_be.member.entity.MemberEntity;
+import connectripbe.connectrip_be.member.exception.NotFoundMemberException;
 import connectripbe.connectrip_be.member.repository.MemberJpaRepository;
+import connectripbe.connectrip_be.review.dto.AccompanyReviewDto;
 import connectripbe.connectrip_be.review.dto.AccompanyReviewRequest;
-import connectripbe.connectrip_be.review.dto.AccompanyReviewResponse;
-import connectripbe.connectrip_be.review.dto.AccompanyReviewSummaryResponse;
+import connectripbe.connectrip_be.review.dto.response.AccompanyReviewListResponse;
+import connectripbe.connectrip_be.review.dto.response.AccompanyReviewResponse;
+import connectripbe.connectrip_be.review.dto.response.AccompanyReviewSummaryResponse;
 import connectripbe.connectrip_be.review.entity.AccompanyReviewEntity;
 import connectripbe.connectrip_be.review.repository.AccompanyReviewRepository;
 import connectripbe.connectrip_be.review.service.AccompanyReviewService;
@@ -123,6 +126,40 @@ public class AccompanyReviewServiceImpl implements AccompanyReviewService {
     }
 
     /**
+     * 특정 회원이 받은 모든 리뷰를 조회하고, 각 리뷰를 AccompanyReviewResponse로 변환하여 반환하는 메서드.
+     *
+     * @param memberId 리뷰 대상이 되는 회원 ID
+     * @return 해당 회원이 받은 모든 리뷰 목록과 리뷰 대상자가 받은 전체 리뷰 수를 포함한 리스트
+     * @
+     */
+    @Override
+    public AccompanyReviewListResponse getAllReviews(Long memberId) {
+        // 전체 리뷰 목록을 조회
+        MemberEntity memberEntity = memberJpaRepository.findById(memberId)
+                .orElseThrow(NotFoundMemberException::new);
+
+        List<AccompanyReviewEntity> reviews = accompanyReviewRepository.findAllByTargetIdOrderByCreatedAtDesc(memberId);
+
+        List<AccompanyReviewDto> AccompanyReviewDto = reviews.stream()
+                .map(accompanyReviewEntity -> new AccompanyReviewDto(
+                        accompanyReviewEntity.getId(),
+                        accompanyReviewEntity.getReviewer().getId(),
+                        accompanyReviewEntity.getReviewer().getNickname(),
+                        accompanyReviewEntity.getReviewer().getProfileImagePath(),
+                        accompanyReviewEntity.getContent(),
+                        formatToUTC(accompanyReviewEntity.getCreatedAt())
+                ))
+                .toList();
+
+        return new AccompanyReviewListResponse(
+                memberId,
+                memberEntity.getNickname(),
+                reviews.size(),
+                AccompanyReviewDto
+        );
+    }
+
+    /**
      * AccompanyReviewEntity 객체를 AccompanyReviewResponse로 변환하고 리뷰 개수를 포함시키는 메서드.
      *
      * @param review AccompanyReviewEntity 객체
@@ -155,4 +192,5 @@ public class AccompanyReviewServiceImpl implements AccompanyReviewService {
         return chatRoomRepository.findById(chatRoomId)
                 .orElseThrow(() -> new GlobalException(ErrorCode.NOT_FOUND_ACCOMPANY_POST));
     }
+
 }
