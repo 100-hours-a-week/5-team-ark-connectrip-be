@@ -1,9 +1,7 @@
 package connectripbe.connectrip_be.review.dto;
 
+import connectripbe.connectrip_be.global.util.time.DateTimeUtils;
 import connectripbe.connectrip_be.review.entity.AccompanyReviewEntity;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -20,7 +18,6 @@ public class AccompanyReviewResponse {
     private int reviewCount; // 리뷰 개수 추가
     private String createdAt;
 
-    // 엔티티를 DTO로 변환하는 메서드
     public static AccompanyReviewResponse fromEntity(AccompanyReviewEntity review, int reviewCount) {
         return AccompanyReviewResponse.builder()
                 .reviewId(review.getId())
@@ -31,19 +28,10 @@ public class AccompanyReviewResponse {
                 .reviewerId(review.getReviewer().getId()) // 작성자 ID
                 .targetId(review.getTarget().getId()) // 대상자 ID
                 .reviewCount(reviewCount) // 리뷰 수 추가
-                .createdAt(formatToUTC(review.getCreatedAt())) // 작성일
+                .createdAt(DateTimeUtils.formatUTC(review.getCreatedAt())) // 작성일
                 .build();
     }
 
-    // UTC 형식으로 변환하는 메서드
-    private static final DateTimeFormatter UTC_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
-    private static String formatToUTC(LocalDateTime dateTime) {
-        if (dateTime == null) {
-            return null;
-        }
-        return dateTime.atZone(ZoneId.systemDefault()) // 시스템 시간대 적용
-                .format(UTC_FORMATTER); // 형식에 맞춰 반환
-    }
 }
 

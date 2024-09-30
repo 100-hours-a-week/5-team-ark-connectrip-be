@@ -18,11 +18,8 @@ public class CustomChatRoomMemberRepositoryImpl implements CustomChatRoomMemberR
     private final JPAQueryFactory jpa;
 
     /**
-     *
-     * 주어진 이메일에 해당하는 사용자가 속한 채팅방 목록을 반환
-     * 채팅방 목록은 사용자가 참여 중인 방으로 제한되며,
-     * 삭제되었거나 사용자가 나간 방은 제외.
-     * 결과는 마지막 채팅 시간(lastChatTime)을 기준으로 내림차순 정렬됩니다.
+     * 주어진 이메일에 해당하는 사용자가 속한 채팅방 목록을 반환 채팅방 목록은 사용자가 참여 중인 방으로 제한되며, 삭제되었거나 사용자가 나간 방은 제외. 결과는 마지막 채팅 시간(lastChatTime)을
+     * 기준으로 내림차순 정렬됩니다.
      *
      * @param memberId 조회할 사용자의 아이디
      * @return 사용자가 속한 ChatRoomMemberEntity 의 리스트
@@ -43,4 +40,5 @@ public class CustomChatRoomMemberRepositoryImpl implements CustomChatRoomMemberR
                 .orderBy(chatRoom.lastChatTime.desc())
                 .fetch();
     }
+
 }
