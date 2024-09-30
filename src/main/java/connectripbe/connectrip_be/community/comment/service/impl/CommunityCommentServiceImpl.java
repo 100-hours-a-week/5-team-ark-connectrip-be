@@ -58,18 +58,24 @@ public class CommunityCommentServiceImpl implements CommunityCommentService {
      * @param commentId 수정할 댓글의 ID
      * @param request   수정된 댓글 내용을 포함한 요청 정보
      * @return 수정된 댓글 정보를 담은 CommunityCommentResponse 객체
+     * @throws GlobalException 수정 권한이 없는 경우 예외 발생
      */
     @Override
     @Transactional
     public CommunityCommentResponse updateComment(Long memberId, Long commentId, CommunityCommentRequest request) {
+        // 댓글 조회
         CommunityCommentEntity comment = getComment(commentId);
 
+        // 댓글 작성자와 요청자가 같은지 확인
         validateCommentAuthor(memberId, comment);
 
-        comment.setContent(request.getContent());
+        // 댓글 내용 업데이트 (setter 대신 updateContent 메서드 사용)
+        comment.updateContent(request.getContent());
 
+        // 업데이트된 댓글을 데이터베이스에 저장하고 결과 반환
         return CommunityCommentResponse.fromEntity(communityCommentRepository.save(comment));
     }
+
 
     /**
      * 댓글을 삭제하는 메서드. 주어진 댓글 ID로 댓글을 조회하고, 삭제 권한이 있는지 확인한 후 댓글을 삭제합니다.

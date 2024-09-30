@@ -17,7 +17,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
 @Table(name = "community_comment")
@@ -39,8 +38,11 @@ public class CommunityCommentEntity extends BaseEntity {
     @JoinColumn(name = "community_post_id", nullable = false)
     private CommunityPostEntity communityPostEntity;  // 커뮤니티 아이디 (외래키)
 
-    @Setter
     @Column(nullable = false, length = 256)
     private String content;  // 내용
+
+    public void updateContent(String content) {
+        this.content = content;
+    }
 
 }
