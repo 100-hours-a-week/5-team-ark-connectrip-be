@@ -41,5 +41,8 @@ public class AccompanyCommentEntity extends BaseEntity {
     @Column(nullable = false, length = 256)
     private String content;  // 내용
 
-    // 기존 생성자 제거 (빌더 패턴으로 대체됨)
+    public void updateContent(String newContent) {
+        this.content = newContent;
+    }
+
 }

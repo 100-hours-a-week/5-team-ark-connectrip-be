@@ -68,22 +68,22 @@ public class AccompanyCommentServiceImpl implements AccompanyCommentService {
     @Override
     @Transactional
     public AccompanyCommentResponse updateComment(Long memberId, Long commentId, AccompanyCommentRequest request) {
-        // 댓글 엔티티 조회
-        AccompanyCommentEntity existingComment = getComment(commentId);
+        // 댓글 조회
+        AccompanyCommentEntity comment = getComment(commentId);
 
-        // 댓글 작성자와 요청한 사용자가 일치하는지 확인
-        validateCommentAuthor(memberId, existingComment);
+        // 권한 확인 (댓글 작성자와 요청자의 ID가 다른 경우 예외 발생)
+        if (!comment.getMemberEntity().getId().equals(memberId)) {
+            throw new GlobalException(ErrorCode.WRITE_NOT_YOURSELF);
+        }
 
-        // 새 댓글 엔티티 생성 (수정된 내용 반영)
-        AccompanyCommentEntity updatedComment = AccompanyCommentEntity.builder()
-                .id(existingComment.getId()) // 기존 ID 유지
-                .memberEntity(existingComment.getMemberEntity()) // 기존 사용자 정보 유지
-                .accompanyPostEntity(existingComment.getAccompanyPostEntity()) // 기존 게시글 정보 유지
-                .content(request.getContent()) // 새 내용 반영
-                .build();
+        // 댓글 내용 업데이트
+        comment.updateContent(request.getContent());
 
-        // 댓글 저장 및 응답 반환
-        return AccompanyCommentResponse.fromEntity(accompanyCommentRepository.save(updatedComment));
+        // 엔티티를 저장하여 업데이트 반영
+        accompanyCommentRepository.save(comment);
+
+        // 수정된 댓글 정보 반환
+        return AccompanyCommentResponse.fromEntity(comment);
     }
 
 
