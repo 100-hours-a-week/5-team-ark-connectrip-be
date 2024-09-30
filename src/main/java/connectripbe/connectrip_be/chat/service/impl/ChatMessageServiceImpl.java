@@ -107,7 +107,7 @@ public class ChatMessageServiceImpl implements ChatMessageService {
                 .forEach(memberId -> {
                     // 알림 발송
                     simpMessagingTemplate.convertAndSend("/sub/member/notification/" + memberId, message);
-                    log.info("발송 성공: {}", memberId);
+                    log.info("발송 성공: {}", memberId, message.senderNickname());
                 });
     }
 
