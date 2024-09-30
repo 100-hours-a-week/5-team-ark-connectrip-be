@@ -74,7 +74,7 @@ public class ChatMessageServiceImpl implements ChatMessageService {
         String title = chatRoom.getAccompanyPost().getTitle();
 
         // 채팅방에 입장하지 않은 사람들에게 알림 발송
-        sendMessageToNotification(chatRoomId, ChatMessageResponse.notificationFromEntity(saved, title));
+        sendMessageToNotification1test(chatRoomId, ChatMessageResponse.notificationFromEntity(saved, title));
         log.info("리스폰스 {}", ChatMessageResponse.notificationFromEntity(saved, title));
 
         return ChatMessageResponse.fromEntity(saved);
@@ -109,6 +109,18 @@ public class ChatMessageServiceImpl implements ChatMessageService {
                     simpMessagingTemplate.convertAndSend("/sub/member/notification/" + memberId, message);
                     log.info("발송 성공: {}", memberId);
                 });
+    }
+
+    private void sendMessageToNotification1test(Long chatRoomId, ChatMessageResponse message) {
+
+        // 채팅방 회원 리스트
+        List<Long> memberIds = chatRoomMemberRepository.findMemberIdsByChatRoomId(chatRoomId);
+
+        memberIds.forEach(memberId -> {
+            // 알림 발송
+            simpMessagingTemplate.convertAndSend("/sub/member/notification/" + memberId, message);
+            log.info("발송 성공: {}", memberId);
+        });
     }
 
     @Override
