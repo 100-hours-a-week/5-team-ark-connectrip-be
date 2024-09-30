@@ -2,7 +2,7 @@ package connectripbe.connectrip_be.member.dto;
 
 import connectripbe.connectrip_be.global.util.time.DateTimeUtils;
 import connectripbe.connectrip_be.member.entity.MemberEntity;
-import connectripbe.connectrip_be.review.dto.AccompanyReviewResponse;
+import connectripbe.connectrip_be.review.dto.response.AccompanyReviewResponse;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

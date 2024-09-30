@@ -1,4 +1,4 @@
-package connectripbe.connectrip_be.review.dto;
+package connectripbe.connectrip_be.review.dto.response;
 
 public record AccompanyReviewSummaryResponse(
         String revieweeNickname,

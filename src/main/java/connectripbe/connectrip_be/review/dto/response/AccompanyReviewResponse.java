@@ -1,4 +1,4 @@
-package connectripbe.connectrip_be.review.dto;
+package connectripbe.connectrip_be.review.dto.response;
 
 import connectripbe.connectrip_be.global.util.time.DateTimeUtils;
 import connectripbe.connectrip_be.review.entity.AccompanyReviewEntity;
