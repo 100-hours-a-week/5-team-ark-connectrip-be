@@ -1,7 +1,6 @@
-package connectripbe.connectrip_be.notification.entity;
+package connectripbe.connectrip_be.accompany.comment.entity;
 
 import connectripbe.connectrip_be.accompany.post.entity.AccompanyPostEntity;
-import connectripbe.connectrip_be.community.post.entity.CommunityPostEntity;
 import connectripbe.connectrip_be.global.entity.BaseEntity;
 import connectripbe.connectrip_be.member.entity.MemberEntity;
 import jakarta.persistence.Column;
@@ -13,19 +12,20 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import java.time.LocalDateTime;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
-@Table(name = "notifications")
+@Table(name = "accompany_comment")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@NoArgsConstructor
-@AllArgsConstructor
 @Builder
-public class NotificationEntity extends BaseEntity {
+public class AccompanyCommentEntity extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,24 +33,15 @@ public class NotificationEntity extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
-    private MemberEntity member;  // 알림을 받을 사용자
+    private MemberEntity memberEntity;  // 사용자 아이디 (외래키)
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "accompany_post_id", nullable = true)
-    private AccompanyPostEntity accompanyPostEntity;  // 동행 게시물
+    @JoinColumn(name = "accompany_post_id", nullable = false)
+    private AccompanyPostEntity accompanyPostEntity;  // 동행 아이디 (외래키)
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "community_post_id", nullable = true)
-    private CommunityPostEntity communityPostEntity;  // 커뮤니티 게시물
-
+    @Setter
     @Column(nullable = false, length = 256)
-    private String message;  // 알림 내용
+    private String content;  // 내용
 
-    @Column(name = "read_at")
-    private LocalDateTime readAt;  // 읽은 시간
-
-    // 읽음 처리 메서드
-    public void markAsRead(LocalDateTime readAt) {
-        this.readAt = readAt;
-    }
+    // 기존 생성자 제거 (빌더 패턴으로 대체됨)
 }

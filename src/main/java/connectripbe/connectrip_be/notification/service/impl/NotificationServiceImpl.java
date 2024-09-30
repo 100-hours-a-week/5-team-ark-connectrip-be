@@ -1,6 +1,7 @@
 package connectripbe.connectrip_be.notification.service.impl;
 
-import connectripbe.connectrip_be.communitypost.entity.CommunityPostEntity;
+import connectripbe.connectrip_be.accompany.post.entity.AccompanyPostEntity;
+import connectripbe.connectrip_be.community.post.entity.CommunityPostEntity;
 import connectripbe.connectrip_be.global.exception.GlobalException;
 import connectripbe.connectrip_be.global.exception.type.ErrorCode;
 import connectripbe.connectrip_be.member.entity.MemberEntity;
@@ -10,7 +11,6 @@ import connectripbe.connectrip_be.notification.dto.NotificationCommunityCommentR
 import connectripbe.connectrip_be.notification.entity.NotificationEntity;
 import connectripbe.connectrip_be.notification.repository.NotificationRepository;
 import connectripbe.connectrip_be.notification.service.NotificationService;
-import connectripbe.connectrip_be.post.entity.AccompanyPostEntity;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Collections;

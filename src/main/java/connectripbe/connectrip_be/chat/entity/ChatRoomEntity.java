@@ -1,8 +1,8 @@
 package connectripbe.connectrip_be.chat.entity;
 
+import connectripbe.connectrip_be.accompany.post.entity.AccompanyPostEntity;
 import connectripbe.connectrip_be.chat.entity.type.ChatRoomType;
 import connectripbe.connectrip_be.global.entity.BaseEntity;
-import connectripbe.connectrip_be.post.entity.AccompanyPostEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;

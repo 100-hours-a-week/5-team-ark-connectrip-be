@@ -1,8 +1,8 @@
 package connectripbe.connectrip_be.review.service.impl;
 
-import connectripbe.connectrip_be.accompany_status.entity.AccompanyStatusEntity;
-import connectripbe.connectrip_be.accompany_status.entity.AccompanyStatusEnum;
-import connectripbe.connectrip_be.accompany_status.repository.AccompanyStatusJpaRepository;
+import connectripbe.connectrip_be.accompany.status.entity.AccompanyStatusEntity;
+import connectripbe.connectrip_be.accompany.status.entity.AccompanyStatusEnum;
+import connectripbe.connectrip_be.accompany.status.repository.AccompanyStatusJpaRepository;
 import connectripbe.connectrip_be.chat.entity.ChatRoomEntity;
 import connectripbe.connectrip_be.chat.repository.ChatRoomRepository;
 import connectripbe.connectrip_be.global.exception.GlobalException;
