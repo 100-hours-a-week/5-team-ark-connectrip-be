@@ -2,7 +2,7 @@ spring:
   application:
     name: connectrip_be
   profiles:
-    active: local
+    active: dev
 
   servlet:
     multipart:
