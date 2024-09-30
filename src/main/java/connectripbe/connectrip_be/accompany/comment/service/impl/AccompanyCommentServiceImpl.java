@@ -60,24 +60,32 @@ public class AccompanyCommentServiceImpl implements AccompanyCommentService {
     /**
      * 댓글을 수정하는 메서드. 주어진 댓글 ID를 통해 AccompanyCommentEntity를 조회하고, 수정 권한이 있는지 확인한 후 댓글 내용을 업데이트
      *
-     * @param memberId  수정하려는 사용자의 아이디
-     * @param request   댓글 수정 요청 정보 (수정된 댓글 내용 포함)
+     * @param memberId  댓글을 수정하려는 사용자의 아이디
      * @param commentId 수정할 댓글의 ID
-     * @return 수정된 댓글의 정보를 담은 AccompanyCommentResponse 객체
+     * @param request   댓글 수정 요청 정보
+     * @return 수정된 댓글 정보를 담은 AccompanyCommentResponse 객체
      */
     @Override
     @Transactional
     public AccompanyCommentResponse updateComment(Long memberId, Long commentId, AccompanyCommentRequest request) {
-        AccompanyCommentEntity comment = getComment(commentId);
+        // 댓글 엔티티 조회
+        AccompanyCommentEntity existingComment = getComment(commentId);
 
         // 댓글 작성자와 요청한 사용자가 일치하는지 확인
-        validateCommentAuthor(memberId, comment);
+        validateCommentAuthor(memberId, existingComment);
 
-        // 댓글 내용 업데이트
-        comment.setContent(request.getContent());
+        // 새 댓글 엔티티 생성 (수정된 내용 반영)
+        AccompanyCommentEntity updatedComment = AccompanyCommentEntity.builder()
+                .id(existingComment.getId()) // 기존 ID 유지
+                .memberEntity(existingComment.getMemberEntity()) // 기존 사용자 정보 유지
+                .accompanyPostEntity(existingComment.getAccompanyPostEntity()) // 기존 게시글 정보 유지
+                .content(request.getContent()) // 새 내용 반영
+                .build();
 
-        return AccompanyCommentResponse.fromEntity(accompanyCommentRepository.save(comment));
+        // 댓글 저장 및 응답 반환
+        return AccompanyCommentResponse.fromEntity(accompanyCommentRepository.save(updatedComment));
     }
+
 
     /**
      * 댓글을 삭제하는 메서드. 주어진 댓글 ID를 통해 AccompanyCommentEntity를 조회한 후, 삭제 권한이 있는지 확인하고 해당 댓글을 데이터베이스에서 삭제
