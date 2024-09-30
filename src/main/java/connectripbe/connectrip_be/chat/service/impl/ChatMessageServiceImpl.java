@@ -101,7 +101,6 @@ public class ChatMessageServiceImpl implements ChatMessageService {
         List<Long> activeMemberIds = activeSessionIds.stream()
                 .map(sessionId -> Long.valueOf(sessionId.toString()))
                 .toList();
-
         // 채팅방 회원 리스트 중 채팅방에 입장하지 않은 사람들에게 알림 발송
         memberIds.stream()
                 .filter(memberId -> !activeMemberIds.contains(memberId))
@@ -113,7 +112,14 @@ public class ChatMessageServiceImpl implements ChatMessageService {
     }
 
     @Override
-    public List<ChatMessageResponse> getMessagesAfterId(Long chatRoomId, String lastMessageId, int size) {
+    public List<ChatMessageResponse> getMessagesAfterId(Long memberId, Long chatRoomId, String lastMessageId,
+                                                        int size) {
+
+        boolean exists = chatRoomMemberRepository.existsByChatRoom_IdAndMember_Id(chatRoomId, memberId);
+        if (!exists) {
+            throw new GlobalException(ErrorCode.CHAT_ROOM_MEMBER_NOT_FOUND);
+        }
+
         Query query = new Query();
         query.addCriteria(Criteria.where("chatRoomId").is(chatRoomId));
 
@@ -131,6 +137,7 @@ public class ChatMessageServiceImpl implements ChatMessageService {
                 .sorted(Comparator.comparing(ChatMessage::getCreatedAt))
                 .map(ChatMessageResponse::fromEntity)
                 .toList();
+
     }
 
 }

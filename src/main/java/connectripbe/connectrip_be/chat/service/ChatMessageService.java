@@ -10,5 +10,5 @@ public interface ChatMessageService {
 
     List<ChatMessageResponse> getMessages(Long chatRoomId);
 
-    List<ChatMessageResponse> getMessagesAfterId(Long chatRoomId, String lastMessageId, int size);
+    List<ChatMessageResponse> getMessagesAfterId(Long memberId, Long chatRoomId, String lastMessageId, int size);
 }

@@ -12,6 +12,7 @@ import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -36,10 +37,11 @@ public class ChatMessageController {
 
     @GetMapping("/api/v1/chatRoom/{chatRoomId}/messages")
     public ResponseEntity<List<ChatMessageResponse>> getChatRoomMessages(
+            @AuthenticationPrincipal Long memberId,
             @PathVariable Long chatRoomId,
             @RequestParam String lastMessageId,
             @RequestParam(defaultValue = "50") int size) {
-        return ResponseEntity.ok(chatMessageService.getMessagesAfterId(chatRoomId, lastMessageId, size));
+        return ResponseEntity.ok(chatMessageService.getMessagesAfterId(memberId, chatRoomId, lastMessageId, size));
     }
 
 
