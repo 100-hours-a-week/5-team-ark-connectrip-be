@@ -23,6 +23,8 @@ public interface ChatRoomMemberRepository extends JpaRepository<ChatRoomMemberEn
 
     Optional<ChatRoomMemberEntity> findByChatRoom_IdAndMember_Id(Long chatRoomId, Long memberId);
 
+    boolean existsByChatRoom_IdAndMember_Id(Long chatRoomId, Long memberId);
+
     Integer countByChatRoom_IdAndStatus(Long chatRoomId, ChatRoomMemberStatus chatRoomMemberStatus);
 
     Optional<ChatRoomMemberEntity> findFirstByChatRoom_IdAndStatusOrderByCreatedAt(Long chatRoomId,

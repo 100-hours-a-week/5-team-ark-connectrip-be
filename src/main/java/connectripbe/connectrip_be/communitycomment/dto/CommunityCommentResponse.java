@@ -1,9 +1,7 @@
 package connectripbe.connectrip_be.communitycomment.dto;
 
 import connectripbe.connectrip_be.communitycomment.entity.CommunityCommentEntity;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
+import connectripbe.connectrip_be.global.util.time.DateTimeUtils;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -36,21 +34,11 @@ public class CommunityCommentResponse {
                 .memberNickname(comment.getMemberEntity().getNickname())
                 .memberProfileImage(comment.getMemberEntity().getProfileImagePath())
                 .content(comment.getContent())
-                .createdAt(formatToUTC(comment.getCreatedAt()))
-                .updatedAt(formatToUTC(comment.getUpdatedAt()))
-                .deletedAt(formatToUTC(comment.getDeletedAt()))
+                .createdAt(DateTimeUtils.formatUTC(comment.getCreatedAt()))
+                .updatedAt(DateTimeUtils.formatUTC(comment.getUpdatedAt()))
+                .deletedAt(DateTimeUtils.formatUTC(comment.getDeletedAt()))
                 .build();
     }
 
-    // UTC 형식으로 변환하는 메서드 추가
-    private static final DateTimeFormatter UTC_FORMATTER = DateTimeFormatter.ofPattern(
-            "yyyy-MM-dd'T'HH:mm:ss'Z'");
 
-    private static String formatToUTC(LocalDateTime dateTime) {
-        if (dateTime == null) {
-            return null;
-        }
-        return dateTime.atZone(ZoneId.systemDefault())
-                .format(UTC_FORMATTER);
-    }
 }

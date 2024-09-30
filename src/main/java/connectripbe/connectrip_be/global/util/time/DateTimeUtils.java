@@ -1,6 +1,7 @@
 package connectripbe.connectrip_be.global.util.time;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import lombok.experimental.UtilityClass;
 
@@ -13,7 +14,7 @@ public class DateTimeUtils {
         if (dateTime == null) {
             return null;
         }
-        return dateTime.atZone(DateTimeUtils.UTC_FORMATTER.getZone())
+        return dateTime.atZone(ZoneId.systemDefault())
                 .format(DateTimeUtils.UTC_FORMATTER);
     }
 
