@@ -117,17 +117,6 @@ public class CommunityCommentServiceImpl implements CommunityCommentService {
     }
 
     /**
-     * 주어진 댓글 ID로 댓글을 조회하는 메서드. 만약 해당 댓글이 존재하지 않거나 삭제된 경우 예외를 발생시킵니다.
-     *
-     * @param commentId 조회할 댓글의 ID
-     * @return 조회된 CommunityCommentEntity 객체
-     */
-    private CommunityCommentEntity getComment(Long commentId) {
-        return communityCommentRepository.findByIdAndDeletedAtIsNull(commentId)
-                .orElseThrow(() -> new GlobalException(ErrorCode.COMMENT_NOT_FOUND));
-    }
-
-    /**
      * 주어진 게시물 ID로 게시물을 조회하는 메서드. 게시물이 존재하지 않거나 삭제된 경우 예외를 발생시킵니다.
      *
      * @param postId 조회할 게시물의 ID
