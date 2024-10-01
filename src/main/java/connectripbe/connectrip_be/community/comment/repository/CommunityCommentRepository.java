@@ -11,4 +11,8 @@ public interface CommunityCommentRepository extends JpaRepository<CommunityComme
 
     // CommunityPostEntity 의 ID로 삭제되지 않은 댓글 목록 조회
     List<CommunityCommentEntity> findByCommunityPostEntity_IdAndDeletedAtIsNull(Long postId);
+
+    boolean existsByIdAndMemberEntity_IdAndDeletedAtIsNull(Long commentId, Long memberId);
+
+
 }

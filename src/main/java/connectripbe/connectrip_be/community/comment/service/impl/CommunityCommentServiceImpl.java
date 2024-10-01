@@ -63,34 +63,40 @@ public class CommunityCommentServiceImpl implements CommunityCommentService {
     @Override
     @Transactional
     public CommunityCommentResponse updateComment(Long memberId, Long commentId, CommunityCommentRequest request) {
-        // 댓글 조회
-        CommunityCommentEntity comment = getComment(commentId);
+        CommunityCommentEntity comment = communityCommentRepository.findByIdAndDeletedAtIsNull(commentId)
+                .orElseThrow(() -> new GlobalException(ErrorCode.COMMENT_NOT_FOUND));
 
-        // 댓글 작성자와 요청자가 같은지 확인
-        validateCommentAuthor(memberId, comment);
+        if (!communityCommentRepository.existsByIdAndMemberEntity_IdAndDeletedAtIsNull(commentId, memberId)) {
+            throw new GlobalException(ErrorCode.WRITE_NOT_YOURSELF);
+        }
 
-        // 댓글 내용 업데이트 (setter 대신 updateContent 메서드 사용)
         comment.updateContent(request.getContent());
 
-        // 업데이트된 댓글을 데이터베이스에 저장하고 결과 반환
-        return CommunityCommentResponse.fromEntity(communityCommentRepository.save(comment));
+        communityCommentRepository.save(comment);
+
+        return CommunityCommentResponse.fromEntity(comment);
     }
 
 
     /**
-     * 댓글을 삭제하는 메서드. 주어진 댓글 ID로 댓글을 조회하고, 삭제 권한이 있는지 확인한 후 댓글을 삭제합니다.
+     * 댓글을 삭제하는 메서드. 주어진 댓글 ID로 댓글을 조회하고, 댓글 작성자와 현재 사용자가 일치하는지 확인한 후 삭제 처리합니다.
      *
      * @param memberId  삭제 요청자의 ID
      * @param commentId 삭제할 댓글의 ID
+     * @throws GlobalException 댓글이 존재하지 않거나 작성자가 아닌 경우 예외 발생
      */
     @Override
     @Transactional
     public void deleteComment(Long memberId, Long commentId) {
-        CommunityCommentEntity comment = getComment(commentId);
+        CommunityCommentEntity comment = communityCommentRepository.findByIdAndDeletedAtIsNull(commentId)
+                .orElseThrow(() -> new GlobalException(ErrorCode.COMMENT_NOT_FOUND));
 
-        validateCommentAuthor(memberId, comment);
+        if (!communityCommentRepository.existsByIdAndMemberEntity_IdAndDeletedAtIsNull(commentId, memberId)) {
+            throw new GlobalException(ErrorCode.WRITE_NOT_YOURSELF);
+        }
 
         comment.deleteEntity();
+        communityCommentRepository.save(comment);
     }
 
     /**
@@ -141,17 +147,5 @@ public class CommunityCommentServiceImpl implements CommunityCommentService {
     private MemberEntity getMember(Long memberId) {
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new GlobalException(ErrorCode.NOT_FOUND_MEMBER));
-    }
-
-    /**
-     * 댓글 작성자와 요청자가 일치하는지 확인하는 메서드. 일치하지 않을 경우 예외를 발생시킵니다.
-     *
-     * @param memberId 요청자의 ID
-     * @param comment  조회된 댓글 엔티티
-     */
-    private void validateCommentAuthor(Long memberId, CommunityCommentEntity comment) {
-        if (!comment.getMemberEntity().getId().equals(memberId)) {
-            throw new GlobalException(ErrorCode.WRITE_NOT_YOURSELF);
-        }
     }
 }
