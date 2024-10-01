@@ -42,8 +42,12 @@ public class AccompanyCommentServiceImpl implements AccompanyCommentService {
     public AccompanyCommentResponse createComment(Long memberId, AccompanyCommentRequest request) {
         MemberEntity member = getMember(memberId);
         AccompanyPostEntity post = getPost(request.getPostId());
-
-        AccompanyCommentEntity comment = request.toEntity(post, member);
+        
+        AccompanyCommentEntity comment = AccompanyCommentEntity.builder()
+                .memberEntity(member)
+                .accompanyPostEntity(post)
+                .content(request.getContent())
+                .build();
 
         accompanyCommentRepository.save(comment);
 
