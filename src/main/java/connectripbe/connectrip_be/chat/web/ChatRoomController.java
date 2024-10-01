@@ -2,6 +2,7 @@ package connectripbe.connectrip_be.chat.web;
 
 import connectripbe.connectrip_be.chat.dto.ChatRoomEnterDto;
 import connectripbe.connectrip_be.chat.dto.ChatRoomListResponse;
+import connectripbe.connectrip_be.chat.dto.ChatUnreadMessagesResponse;
 import connectripbe.connectrip_be.chat.service.ChatRoomService;
 import connectripbe.connectrip_be.global.dto.GlobalResponse;
 import java.util.List;
@@ -60,5 +61,17 @@ public class ChatRoomController {
                         .body(new GlobalResponse<>("SUCCESS", chatRoomService.enterChatRoom(chatRoomId, memberId)));
 
 
+    }
+
+
+    // 채팅방 중 새로운 메시지 온다면 표시
+    @GetMapping("/new")
+    public ResponseEntity<GlobalResponse<ChatUnreadMessagesResponse>> hasUnreadMessagesAcrossRooms(
+            @AuthenticationPrincipal Long memberId
+    ) {
+        return
+                ResponseEntity
+                        .ok()
+                        .body(new GlobalResponse<>("SUCCESS", chatRoomService.hasUnreadMessagesAcrossRooms(memberId)));
     }
 }

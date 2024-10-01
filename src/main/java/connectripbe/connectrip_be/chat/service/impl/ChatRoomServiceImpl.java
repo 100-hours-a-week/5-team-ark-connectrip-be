@@ -9,6 +9,7 @@ import connectripbe.connectrip_be.accompany.status.repository.AccompanyStatusJpa
 import connectripbe.connectrip_be.chat.dto.ChatRoomEnterDto;
 import connectripbe.connectrip_be.chat.dto.ChatRoomListResponse;
 import connectripbe.connectrip_be.chat.dto.ChatRoomMemberResponse;
+import connectripbe.connectrip_be.chat.dto.ChatUnreadMessagesResponse;
 import connectripbe.connectrip_be.chat.entity.ChatMessage;
 import connectripbe.connectrip_be.chat.entity.ChatRoomEntity;
 import connectripbe.connectrip_be.chat.entity.ChatRoomMemberEntity;
@@ -276,6 +277,30 @@ public class ChatRoomServiceImpl implements ChatRoomService {
 
         // 마지막으로 읽은 메시지 이후에 새 메시지가 있다면 true 반환
         return lastReadMessageId == null || latestMessage.getId().compareTo(lastReadMessageId) > 0;
+    }
+
+    @Override
+    public ChatUnreadMessagesResponse hasUnreadMessagesAcrossRooms(Long memberId) {
+        List<ChatRoomMemberEntity> chatRooms = chatRoomMemberRepository.myChatRoomList(memberId);
+
+        for (ChatRoomMemberEntity chatRoomMember : chatRooms) {
+            ChatRoomEntity chatRoom = chatRoomMember.getChatRoom();
+            String lastReadMessageId = chatRoomMember.getLastReadMessageId();
+
+            // 채팅방의 마지막 메시지를 가져옴
+            ChatMessage latestMessage = chatMessageRepository.findFirstByChatRoomIdOrderByCreatedAtDesc(
+                            chatRoom.getId())
+                    .orElse(null);
+
+            if (latestMessage != null &&
+                    (lastReadMessageId == null || latestMessage.getId().compareTo(lastReadMessageId) > 0)) {
+                // 읽지 않은 메시지가 하나라도 있으면 true 반환
+                return new ChatUnreadMessagesResponse(true);
+            }
+        }
+
+        // 모든 채팅방을 확인했을 때 읽지 않은 메시지가 없으면 false 반환
+        return new ChatUnreadMessagesResponse(false);
     }
 
     private ChatRoomEntity getChatRoom(Long chatRoomId) {
