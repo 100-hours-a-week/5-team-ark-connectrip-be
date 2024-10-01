@@ -69,9 +69,12 @@ public class AccompanyCommentServiceImpl implements AccompanyCommentService {
     @Override
     @Transactional
     public AccompanyCommentResponse updateComment(Long memberId, Long commentId, AccompanyCommentRequest request) {
+        // 작성자가 맞는지 확인하며 댓글을 조회
         AccompanyCommentEntity comment = accompanyCommentRepository.findByIdAndMemberEntity_IdAndDeletedAtIsNull(
                         commentId, memberId)
                 .orElseThrow(() -> new GlobalException(ErrorCode.WRITE_NOT_YOURSELF));
+
+        getComment(commentId);
 
         comment.updateContent(request.getContent());
 
@@ -79,6 +82,7 @@ public class AccompanyCommentServiceImpl implements AccompanyCommentService {
 
         return AccompanyCommentResponse.fromEntity(comment);
     }
+
 
     /**
      * 댓글을 삭제하는 메서드. 주어진 댓글 ID와 작성자 ID로 AccompanyCommentEntity를 조회한 후, 해당 댓글이 본인의 댓글인지 확인하고, 삭제 처리합니다.
@@ -92,6 +96,8 @@ public class AccompanyCommentServiceImpl implements AccompanyCommentService {
         AccompanyCommentEntity comment = accompanyCommentRepository.findByIdAndMemberEntity_IdAndDeletedAtIsNull(
                         commentId, memberId)
                 .orElseThrow(() -> new GlobalException(ErrorCode.WRITE_NOT_YOURSELF));
+
+        getComment(commentId);
 
         comment.deleteEntity();
 
