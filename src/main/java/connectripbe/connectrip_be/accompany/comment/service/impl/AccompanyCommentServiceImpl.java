@@ -42,7 +42,7 @@ public class AccompanyCommentServiceImpl implements AccompanyCommentService {
     public AccompanyCommentResponse createComment(Long memberId, AccompanyCommentRequest request) {
         MemberEntity member = getMember(memberId);
         AccompanyPostEntity post = getPost(request.getPostId());
-        
+
         AccompanyCommentEntity comment = AccompanyCommentEntity.builder()
                 .memberEntity(member)
                 .accompanyPostEntity(post)
@@ -58,34 +58,27 @@ public class AccompanyCommentServiceImpl implements AccompanyCommentService {
 
 
     /**
-     * 댓글을 수정하는 메서드. 주어진 댓글 ID를 통해 AccompanyCommentEntity를 조회하고, 수정 권한이 있는지 확인한 후 댓글 내용을 업데이트
+     * 댓글을 수정하는 메서드. 주어진 댓글 ID와 작성자 ID로 삭제되지 않은 댓글을 조회하고, 엔티티의 메서드를 사용해 댓글 내용을 업데이트합니다.
      *
-     * @param memberId  댓글을 수정하려는 사용자의 아이디
+     * @param memberId  댓글 작성자의 아이디
      * @param commentId 수정할 댓글의 ID
-     * @param request   댓글 수정 요청 정보
-     * @return 수정된 댓글 정보를 담은 AccompanyCommentResponse 객체
+     * @param request   수정 요청 정보 (수정된 댓글 내용 포함)
+     * @return 수정된 댓글 정보를 담고 있는 AccompanyCommentResponse 객체
+     * @throws GlobalException 댓글이 존재하지 않거나 작성자가 다를 경우 예외 발생
      */
     @Override
     @Transactional
     public AccompanyCommentResponse updateComment(Long memberId, Long commentId, AccompanyCommentRequest request) {
-        // 댓글 조회
-        AccompanyCommentEntity comment = getComment(commentId);
+        AccompanyCommentEntity comment = accompanyCommentRepository.findByIdAndMemberEntity_IdAndDeletedAtIsNull(
+                        commentId, memberId)
+                .orElseThrow(() -> new GlobalException(ErrorCode.WRITE_NOT_YOURSELF));
 
-        // 권한 확인 (댓글 작성자와 요청자의 ID가 다른 경우 예외 발생)
-        if (!comment.getMemberEntity().getId().equals(memberId)) {
-            throw new GlobalException(ErrorCode.WRITE_NOT_YOURSELF);
-        }
-
-        // 댓글 내용 업데이트
         comment.updateContent(request.getContent());
 
-        // 엔티티를 저장하여 업데이트 반영
         accompanyCommentRepository.save(comment);
 
-        // 수정된 댓글 정보 반환
         return AccompanyCommentResponse.fromEntity(comment);
     }
-
 
     /**
      * 댓글을 삭제하는 메서드. 주어진 댓글 ID를 통해 AccompanyCommentEntity를 조회한 후, 삭제 권한이 있는지 확인하고 해당 댓글을 데이터베이스에서 삭제
