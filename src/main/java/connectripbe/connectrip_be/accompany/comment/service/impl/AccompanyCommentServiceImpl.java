@@ -81,7 +81,7 @@ public class AccompanyCommentServiceImpl implements AccompanyCommentService {
     }
 
     /**
-     * 댓글을 삭제하는 메서드. 주어진 댓글 ID를 통해 AccompanyCommentEntity를 조회한 후, 삭제 권한이 있는지 확인하고 해당 댓글을 데이터베이스에서 삭제
+     * 댓글을 삭제하는 메서드. 주어진 댓글 ID와 작성자 ID로 AccompanyCommentEntity를 조회한 후, 해당 댓글이 본인의 댓글인지 확인하고, 삭제 처리합니다.
      *
      * @param memberId  삭제하려는 사용자의 아이디
      * @param commentId 삭제할 댓글의 ID
@@ -89,13 +89,15 @@ public class AccompanyCommentServiceImpl implements AccompanyCommentService {
     @Override
     @Transactional
     public void deleteComment(Long memberId, Long commentId) {
-        AccompanyCommentEntity comment = getComment(commentId);
-
-        // 댓글 작성자와 요청한 사용자가 일치하는지 확인
-        validateCommentAuthor(memberId, comment);
+        AccompanyCommentEntity comment = accompanyCommentRepository.findByIdAndMemberEntity_IdAndDeletedAtIsNull(
+                        commentId, memberId)
+                .orElseThrow(() -> new GlobalException(ErrorCode.WRITE_NOT_YOURSELF));
 
         comment.deleteEntity();
+
+        accompanyCommentRepository.save(comment);
     }
+
 
     /**
      * 특정 게시물에 달린 모든 댓글을 조회하는 메서드. 주어진 게시물 ID를 통해 해당 게시물에 달린 삭제되지 않은 댓글 목록을 조회한 후, 이를 DTO로 변환하여 반환
@@ -144,17 +146,5 @@ public class AccompanyCommentServiceImpl implements AccompanyCommentService {
     private MemberEntity getMember(Long memberId) {
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new GlobalException(ErrorCode.NOT_FOUND_MEMBER));
-    }
-
-    /**
-     * 댓글 작성자와 요청한 사용자가 일치하는지 확인하는 메서드. 만약 일치하지 않으면 GlobalException을 발생
-     *
-     * @param memberId 요청한 사용자의 아이디
-     * @param comment  조회된 AccompanyCommentEntity 객체
-     */
-    private void validateCommentAuthor(Long memberId, AccompanyCommentEntity comment) {
-        if (!comment.getMemberEntity().getId().equals(memberId)) {
-            throw new GlobalException(ErrorCode.WRITE_NOT_YOURSELF);
-        }
     }
 }
