@@ -3,6 +3,7 @@ package connectripbe.connectrip_be.chat.web;
 import connectripbe.connectrip_be.chat.dto.SearchChatRoomWithToggleResponse;
 import connectripbe.connectrip_be.chat.dto.UpdateChatRoomSharingRequest;
 import connectripbe.connectrip_be.chat.service.ChatRoomLocationService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/chatRoom")
 @RequiredArgsConstructor
+@Tag(name = "Chat Room Location", description = "채팅방 위치 공유 관리")
 public class ChatRoomLocationController {
 
     private final ChatRoomLocationService chatRoomLocationService;

@@ -1,6 +1,7 @@
 package connectripbe.connectrip_be.notification.web;
 
 import connectripbe.connectrip_be.notification.service.NotificationService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 @RestController
 @RequestMapping("/api/v1/notifications")
 @RequiredArgsConstructor
+@Tag(name = "Pending List", description = "Accompany 게시물의 대기자 목록 관리")
 public class NotificationController {
 
     private final NotificationService notificationService;

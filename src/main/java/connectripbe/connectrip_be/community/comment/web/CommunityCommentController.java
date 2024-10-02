@@ -3,6 +3,7 @@ package connectripbe.connectrip_be.community.comment.web;
 import connectripbe.connectrip_be.community.comment.dto.CommunityCommentRequest;
 import connectripbe.connectrip_be.community.comment.dto.CommunityCommentResponse;
 import connectripbe.connectrip_be.community.comment.service.CommunityCommentService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("api/v1/community/comment")
 @RequiredArgsConstructor
+@Tag(name = "Community Comment", description = "커뮤니티 댓글 관리")
 public class CommunityCommentController {
 
     private final CommunityCommentService communityCommentService;

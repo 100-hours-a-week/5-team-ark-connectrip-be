@@ -5,6 +5,7 @@ import connectripbe.connectrip_be.community.post.dto.CreateCommunityPostRequest;
 import connectripbe.connectrip_be.community.post.dto.SearchCommunityPostSummaryResponse;
 import connectripbe.connectrip_be.community.post.dto.UpdateCommunityPostRequest;
 import connectripbe.connectrip_be.community.post.service.CommunityPostService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/community/posts")
 @RequiredArgsConstructor
+@Tag(name = "Community Post", description = "커뮤니티 게시물 관리")
 public class CommunityPostController {
 
     private final CommunityPostService communityPostService;

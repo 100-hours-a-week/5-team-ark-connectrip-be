@@ -7,6 +7,7 @@ import connectripbe.connectrip_be.auth.jwt.dto.TokenDto;
 import connectripbe.connectrip_be.auth.kakao.service.KakaoService;
 import connectripbe.connectrip_be.auth.service.AuthService;
 import connectripbe.connectrip_be.global.dto.GlobalResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -27,6 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
+@Tag(name = "Auth", description = "인증 및 인가 관리")
 public class AuthController {
 
     private final AuthService authService;

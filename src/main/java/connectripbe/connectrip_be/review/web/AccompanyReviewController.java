@@ -5,6 +5,7 @@ import connectripbe.connectrip_be.review.dto.response.AccompanyReviewListRespons
 import connectripbe.connectrip_be.review.dto.response.AccompanyReviewResponse;
 import connectripbe.connectrip_be.review.dto.response.AccompanyReviewSummaryResponse;
 import connectripbe.connectrip_be.review.service.AccompanyReviewService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/reviews")
 @RequiredArgsConstructor
+@Tag(name = "Accompany Review", description = "Accompany 리뷰 관리")
 public class AccompanyReviewController {
 
     private final AccompanyReviewService accompanyReviewService;
