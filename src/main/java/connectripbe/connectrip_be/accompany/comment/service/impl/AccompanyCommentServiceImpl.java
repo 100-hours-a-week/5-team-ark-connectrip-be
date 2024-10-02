@@ -29,12 +29,13 @@ public class AccompanyCommentServiceImpl implements AccompanyCommentService {
 
 
     /**
-     * 댓글을 생성하는 메서드. 사용자 이메일을 통해 MemberEntity를 조회하고, 게시물 ID를 통해 AccompanyPostEntity를 조회한 후 AccompanyCommentEntity를 생성하여
-     * 데이터베이스에 저장
+     * 댓글을 생성하는 메서드. 주어진 memberId를 통해 사용자 정보를 조회하고, 요청 정보에서 게시물 ID를 가져와 해당 게시물 정보를 조회한 후, AccompanyCommentRequest를 사용하여
+     * 새로운 AccompanyCommentEntity를 생성하고 데이터베이스에 저장합니다.
      *
      * @param memberId 댓글 작성자의 아이디
-     * @param request  댓글 생성 요청 정보 (게시물 ID, 댓글 내용 포함)
-     * @return 생성된 댓글의 정보를 담은 AccompanyCommentResponse 객체
+     * @param request  댓글 생성 요청 정보 (게시물 ID 및 댓글 내용 포함)
+     * @return 생성된 댓글 정보를 담고 있는 AccompanyCommentResponse 객체
+     * @throws GlobalException 사용자가 존재하지 않거나 게시물이 존재하지 않을 경우 예외 발생
      */
     @Override
     @RateLimit(capacity = 10, refillTokens = 10)
@@ -42,7 +43,6 @@ public class AccompanyCommentServiceImpl implements AccompanyCommentService {
         MemberEntity member = getMember(memberId);
         AccompanyPostEntity post = getPost(request.getPostId());
 
-        // 댓글 생성
         AccompanyCommentEntity comment = AccompanyCommentEntity.builder()
                 .memberEntity(member)
                 .accompanyPostEntity(post)
@@ -58,43 +58,58 @@ public class AccompanyCommentServiceImpl implements AccompanyCommentService {
 
 
     /**
-     * 댓글을 수정하는 메서드. 주어진 댓글 ID를 통해 AccompanyCommentEntity를 조회하고, 수정 권한이 있는지 확인한 후 댓글 내용을 업데이트
+     * 댓글을 수정하는 메서드. 주어진 댓글 ID와 작성자 ID로 삭제되지 않은 댓글을 조회하고, 댓글 작성자와 현재 사용자가 일치하는지 확인한 후, 엔티티의 메서드를 사용해 댓글 내용을 업데이트합니다.
      *
-     * @param memberId  수정하려는 사용자의 아이디
-     * @param request   댓글 수정 요청 정보 (수정된 댓글 내용 포함)
+     * @param memberId  댓글 작성자의 아이디
      * @param commentId 수정할 댓글의 ID
-     * @return 수정된 댓글의 정보를 담은 AccompanyCommentResponse 객체
+     * @param request   수정 요청 정보 (수정된 댓글 내용 포함)
+     * @return 수정된 댓글 정보를 담고 있는 AccompanyCommentResponse 객체
+     * @throws GlobalException 댓글이 존재하지 않거나 작성자가 다를 경우 예외 발생
      */
     @Override
     @Transactional
     public AccompanyCommentResponse updateComment(Long memberId, Long commentId, AccompanyCommentRequest request) {
-        AccompanyCommentEntity comment = getComment(commentId);
+        // 댓글 ID로 삭제되지 않은 댓글을 조회
+        AccompanyCommentEntity comment = accompanyCommentRepository.findByIdAndDeletedAtIsNull(commentId)
+                .orElseThrow(() -> new GlobalException(ErrorCode.COMMENT_NOT_FOUND));
 
-        // 댓글 작성자와 요청한 사용자가 일치하는지 확인
-        validateCommentAuthor(memberId, comment);
+        // 댓글 작성자와 현재 사용자가 일치하는지 확인
+        if (!accompanyCommentRepository.existsByIdAndMemberEntity_IdAndDeletedAtIsNull(commentId, memberId)) {
+            // 작성자가 아닌 사용자가 댓글 수정 시 예외 발생
+            throw new GlobalException(ErrorCode.WRITE_NOT_YOURSELF); // 수정된 에러 코드 사용
+        }
 
-        // 댓글 내용 업데이트
-        comment.setContent(request.getContent());
+        // 기존 댓글 내용을 새로운 내용으로 업데이트
+        comment.updateContent(request.getContent());
 
-        return AccompanyCommentResponse.fromEntity(accompanyCommentRepository.save(comment));
+        accompanyCommentRepository.save(comment); // 수정된 댓글 엔티티 저장
+
+        return AccompanyCommentResponse.fromEntity(comment); // 수정된 댓글 응답 생성
     }
 
+
     /**
-     * 댓글을 삭제하는 메서드. 주어진 댓글 ID를 통해 AccompanyCommentEntity를 조회한 후, 삭제 권한이 있는지 확인하고 해당 댓글을 데이터베이스에서 삭제
+     * 댓글을 삭제하는 메서드. 주어진 댓글 ID와 작성자 ID로 삭제되지 않은 댓글을 조회하고, 해당 댓글이 본인의 댓글인지 확인한 후, 삭제 처리합니다.
      *
      * @param memberId  삭제하려는 사용자의 아이디
      * @param commentId 삭제할 댓글의 ID
+     * @throws GlobalException 댓글이 존재하지 않거나 작성자가 다를 경우 예외 발생
      */
     @Override
     @Transactional
     public void deleteComment(Long memberId, Long commentId) {
-        AccompanyCommentEntity comment = getComment(commentId);
+        AccompanyCommentEntity comment = accompanyCommentRepository.findByIdAndDeletedAtIsNull(commentId)
+                .orElseThrow(() -> new GlobalException(ErrorCode.COMMENT_NOT_FOUND));
 
-        // 댓글 작성자와 요청한 사용자가 일치하는지 확인
-        validateCommentAuthor(memberId, comment);
+        if (!accompanyCommentRepository.existsByIdAndMemberEntity_IdAndDeletedAtIsNull(commentId, memberId)) {
+            throw new GlobalException(ErrorCode.WRITE_NOT_YOURSELF);
+        }
 
-        comment.deleteEntity();
+        comment.deleteEntity(); // deleteEntity 메서드로 삭제 처리
+
+        accompanyCommentRepository.save(comment); // 변경된 댓글 엔티티 저장
     }
+
 
     /**
      * 특정 게시물에 달린 모든 댓글을 조회하는 메서드. 주어진 게시물 ID를 통해 해당 게시물에 달린 삭제되지 않은 댓글 목록을 조회한 후, 이를 DTO로 변환하여 반환
@@ -112,16 +127,6 @@ public class AccompanyCommentServiceImpl implements AccompanyCommentService {
                 .toList();
     }
 
-    /**
-     * 주어진 댓글 ID로 댓글을 조회하는 메서드. 만약 해당 댓글이 존재하지 않으면 GlobalException 을 발생
-     *
-     * @param commentId 조회할 댓글의 ID
-     * @return 조회된 AccompanyCommentEntity 객체
-     */
-    private AccompanyCommentEntity getComment(Long commentId) {
-        return accompanyCommentRepository.findByIdAndDeletedAtIsNull(commentId)
-                .orElseThrow(() -> new GlobalException(ErrorCode.COMMENT_NOT_FOUND));
-    }
 
     /**
      * 주어진 게시물 ID로 게시물을 조회하는 메서드. 만약 해당 게시물이 존재하지 않으면 GlobalException을 발생
@@ -143,17 +148,5 @@ public class AccompanyCommentServiceImpl implements AccompanyCommentService {
     private MemberEntity getMember(Long memberId) {
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new GlobalException(ErrorCode.NOT_FOUND_MEMBER));
-    }
-
-    /**
-     * 댓글 작성자와 요청한 사용자가 일치하는지 확인하는 메서드. 만약 일치하지 않으면 GlobalException을 발생
-     *
-     * @param memberId 요청한 사용자의 아이디
-     * @param comment  조회된 AccompanyCommentEntity 객체
-     */
-    private void validateCommentAuthor(Long memberId, AccompanyCommentEntity comment) {
-        if (!comment.getMemberEntity().getId().equals(memberId)) {
-            throw new GlobalException(ErrorCode.WRITE_NOT_YOURSELF);
-        }
     }
 }

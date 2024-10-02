@@ -17,7 +17,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
 @Table(name = "accompany_comment")
@@ -39,9 +38,11 @@ public class AccompanyCommentEntity extends BaseEntity {
     @JoinColumn(name = "accompany_post_id", nullable = false)
     private AccompanyPostEntity accompanyPostEntity;  // 동행 아이디 (외래키)
 
-    @Setter
     @Column(nullable = false, length = 256)
     private String content;  // 내용
 
-    // 기존 생성자 제거 (빌더 패턴으로 대체됨)
+    public void updateContent(String newContent) {
+        this.content = newContent;
+    }
+
 }
