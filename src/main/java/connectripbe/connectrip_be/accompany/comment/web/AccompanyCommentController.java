@@ -3,6 +3,7 @@ package connectripbe.connectrip_be.accompany.comment.web;
 import connectripbe.connectrip_be.accompany.comment.dto.AccompanyCommentRequest;
 import connectripbe.connectrip_be.accompany.comment.dto.AccompanyCommentResponse;
 import connectripbe.connectrip_be.accompany.comment.service.AccompanyCommentService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("api/v1/comment")
 @RequiredArgsConstructor
+@Tag(name = "Accompany Comment", description = "Accompany 게시물의 댓글 관리")
 public class AccompanyCommentController {
 
     private final AccompanyCommentService accompanyCommentService;

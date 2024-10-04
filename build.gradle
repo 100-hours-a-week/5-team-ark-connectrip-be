@@ -92,6 +92,9 @@ dependencies {
     //Bucket4j
     implementation 'com.bucket4j:bucket4j-redis:8.7.0'
 
+    //Swagger
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
+
 }
 
 tasks.named('bootBuildImage') {

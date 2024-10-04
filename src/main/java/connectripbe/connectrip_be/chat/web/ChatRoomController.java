@@ -5,6 +5,7 @@ import connectripbe.connectrip_be.chat.dto.ChatRoomListResponse;
 import connectripbe.connectrip_be.chat.dto.ChatUnreadMessagesResponse;
 import connectripbe.connectrip_be.chat.service.ChatRoomService;
 import connectripbe.connectrip_be.global.dto.GlobalResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/chatRoom")
 @RequiredArgsConstructor
+@Tag(name = "Chat Room", description = "채팅방 관리")
 public class ChatRoomController {
 
     private final ChatRoomService chatRoomService;

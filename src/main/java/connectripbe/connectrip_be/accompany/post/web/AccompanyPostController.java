@@ -8,6 +8,7 @@ import connectripbe.connectrip_be.accompany.post.dto.UpdateAccompanyPostRequest;
 import connectripbe.connectrip_be.accompany.post.exception.DuplicatedCustomUrlException;
 import connectripbe.connectrip_be.accompany.post.service.AccompanyPostService;
 import connectripbe.connectrip_be.global.dto.GlobalResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/accompany/posts")
 @RequiredArgsConstructor
+@Tag(name = "Accompany Post", description = "Accompany 게시물 관리")
 public class AccompanyPostController {
 
     private final AccompanyPostService accompanyPostService;
