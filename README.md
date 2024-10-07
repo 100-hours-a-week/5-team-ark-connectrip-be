@@ -6,8 +6,8 @@
 
 | <img width=128 height=128 src=./images/eric.jpeg> | <img width=128 height=128 src=./images/noah.jpg> | <img width=128 height=128 src=./images/paz.jpg> | <img width=128 height=128 src=./images/true.jpeg> |
 |:-------------------------------------------------:|:------------------------------------------------:|:-----------------------------------------------:|:-------------------------------------------------:|
-|                   eric.ha (하남규)                   |                  noah.jo (조태현)                   |                 paz.kang (강지훈)                  |                  true.choi (최진실)                  |
-|                     @Namgyu11                     |                   @49EHyeon42                    |                   @TopazKang                    |                      @trueS2                      |
+|                  eric.ha (하남규)                 |                 noah.jo (조태현)                 |                paz.kang (강지훈)                |                 true.choi (최진실)                |
+|      [@Namgyu11](https://github.com/Namgyu11)     |   [@49EHyeon42](https://github.com/49EHyeon42)   |    [@TopazKang](https://github.com/TopazKang)   |        [@trueS2](https://github.com/trueS2)       |
 
 ## 기술 스택
 
