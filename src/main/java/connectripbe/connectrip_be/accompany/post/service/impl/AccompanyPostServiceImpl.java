@@ -17,7 +17,6 @@ import connectripbe.connectrip_be.chat.repository.ChatRoomRepository;
 import connectripbe.connectrip_be.chat.service.ChatRoomService;
 import connectripbe.connectrip_be.global.exception.GlobalException;
 import connectripbe.connectrip_be.global.exception.type.ErrorCode;
-import connectripbe.connectrip_be.global.util.bucket4j.annotation.RateLimit;
 import connectripbe.connectrip_be.member.entity.MemberEntity;
 import connectripbe.connectrip_be.member.exception.MemberNotOwnerException;
 import connectripbe.connectrip_be.member.exception.NotFoundMemberException;
@@ -183,7 +182,6 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
 
     // 해싱을 통해 고유한 단축 URL 생성 후 Base62 인코딩
 
-    @RateLimit
     @Override
     @Transactional
     public void createAccompanyPost(Long memberId, CreateAccompanyPostRequest request) {
