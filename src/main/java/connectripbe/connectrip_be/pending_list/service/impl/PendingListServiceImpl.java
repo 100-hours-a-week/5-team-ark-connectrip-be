@@ -157,7 +157,7 @@ public class PendingListServiceImpl implements PendingListService {
                                 member)
                         .orElseThrow(() -> new GlobalException(ErrorCode.PENDING_NOT_FOUND));
 
-                // 상태가 DEFAULT라면 PENDING으로 업데이트
+                // 상태가 DEFAULT 라면 PENDING 으로 업데이트
                 if (existingPending.getStatus().equals(PendingStatus.DEFAULT)) {
                     existingPending.updateStatus(PendingStatus.PENDING);
                     pendingListRepository.save(existingPending);
@@ -203,7 +203,7 @@ public class PendingListServiceImpl implements PendingListService {
         ChatRoomEntity chatRoom = chatRoomRepository.findByAccompanyPost_Id(accompanyPostId)
                 .orElseThrow(() -> new GlobalException(ErrorCode.CHATROOM_NOT_FOUND));
 
-        chatRoomMemberService.jointChatRoom(chatRoom.getId(), memberId);
+        chatRoomMemberService.jointChatRoom(chatRoom, member);
 
         return PendingResponse.builder()
                 .status(pending.getStatus().toString())
@@ -211,7 +211,7 @@ public class PendingListServiceImpl implements PendingListService {
     }
 
     /**
-     * 사용자의 동행 신청을 거절합니다. 신청 상태를 REJECTED로 변경합니다.
+     * 사용자의 동행 신청을 거절합니다. 신청 상태를 REJECTED 로 변경합니다.
      *
      * @param memberId        거절할 사용자의 ID
      * @param accompanyPostId 신청한 게시물의 ID

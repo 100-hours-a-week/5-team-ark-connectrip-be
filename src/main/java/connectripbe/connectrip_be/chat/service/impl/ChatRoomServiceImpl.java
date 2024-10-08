@@ -2,7 +2,6 @@ package connectripbe.connectrip_be.chat.service.impl;
 
 import connectripbe.connectrip_be.accompany.post.entity.AccompanyPostEntity;
 import connectripbe.connectrip_be.accompany.post.exception.NotFoundAccompanyPostException;
-import connectripbe.connectrip_be.accompany.post.repository.AccompanyPostRepository;
 import connectripbe.connectrip_be.accompany.status.entity.AccompanyStatusEntity;
 import connectripbe.connectrip_be.accompany.status.entity.AccompanyStatusEnum;
 import connectripbe.connectrip_be.accompany.status.repository.AccompanyStatusJpaRepository;
@@ -23,6 +22,7 @@ import connectripbe.connectrip_be.chat.service.ChatRoomMemberService;
 import connectripbe.connectrip_be.chat.service.ChatRoomService;
 import connectripbe.connectrip_be.global.exception.GlobalException;
 import connectripbe.connectrip_be.global.exception.type.ErrorCode;
+import connectripbe.connectrip_be.member.entity.MemberEntity;
 import connectripbe.connectrip_be.pending_list.entity.PendingListEntity;
 import connectripbe.connectrip_be.pending_list.entity.type.PendingStatus;
 import connectripbe.connectrip_be.pending_list.repository.PendingListRepository;
@@ -42,7 +42,6 @@ public class ChatRoomServiceImpl implements ChatRoomService {
 
     private final ChatRoomRepository chatRoomRepository;
     private final ChatRoomMemberRepository chatRoomMemberRepository;
-    private final AccompanyPostRepository accompanyPostRepository;
     private final AccompanyStatusJpaRepository accompanyStatusJpaRepository;
     private final PendingListRepository pendingListRepository;
     private final ChatMessageRepository chatMessageRepository;
@@ -122,16 +121,15 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     /**
      * 특정 게시물에 대한 채팅방을 생성하고, 게시물 작성자를 해당 채팅방에 자동으로 참여. 생성된 채팅방에서 게시물 작성자는 초기 방장으로 설정.
      *
-     * @param postId   채팅방을 생성할 게시물의 ID
-     * @param memberId 채팅방에 자동으로 참여시킬 게시물 작성자의 ID
+     * @param postEntity   채팅방을 생성할 게시물의 ID
+     * @param memberEntity 채팅방에 자동으로 참여시킬 게시물 작성자의 ID
      * @throws GlobalException 게시물을 찾을 수 없거나, 게시물 작성자를 채팅방에 참여시키는 데 문제가 발생한 경우 발생하는 예외
      */
     @Override
-    public void createChatRoom(Long postId, Long memberId) {
+    public void createChatRoom(AccompanyPostEntity postEntity, MemberEntity memberEntity) {
         ChatRoomEntity chatRoom = ChatRoomEntity
                 .builder()
-                .accompanyPost(accompanyPostRepository.findById(postId)
-                        .orElseThrow(() -> new GlobalException(ErrorCode.POST_NOT_FOUND)))
+                .accompanyPost(postEntity)
                 .chatRoomType(ChatRoomType.ACTIVE)
                 .build();
 
@@ -139,12 +137,12 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         chatRoomRepository.save(chatRoom);
 
         // 채팅방에 게시물 작성자 자동 참여
-        chatRoomMemberService.jointChatRoom(chatRoom.getId(), memberId);
-
-        // 채팅방 방장 초기 설정
-        ChatRoomMemberEntity leaderMember = chatRoomMemberRepository
-                .findByChatRoom_IdAndMember_Id(chatRoom.getId(), memberId)
-                .orElseThrow(() -> new GlobalException(ErrorCode.CHAT_ROOM_MEMBER_NOT_FOUND));
+        ChatRoomMemberEntity leaderMember = chatRoomMemberService.jointChatRoom(chatRoom, memberEntity);
+//
+//        // 채팅방 방장 초기 설정
+//        ChatRoomMemberEntity leaderMember = chatRoomMemberRepository
+//                .findByChatRoom_IdAndMember_Id(chatRoom.getId(), memberId)
+//                .orElseThrow(() -> new GlobalException(ErrorCode.CHAT_ROOM_MEMBER_NOT_FOUND));
 
         // 방장 설정
         chatRoom.setInitialLeader(leaderMember);
@@ -152,7 +150,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         ChatMessage chatMessage = ChatMessage.builder()
                 .type(MessageType.ENTER)
                 .chatRoomId(chatRoom.getId())
-                .senderId(memberId)
+                .senderId(memberEntity.getId())
                 .senderNickname(leaderMember.getMember().getNickname())
                 .senderProfileImage(leaderMember.getMember().getProfileImagePath())
                 .content(leaderMember.getMember().getNickname() + "님이 입장하셨습니다.")

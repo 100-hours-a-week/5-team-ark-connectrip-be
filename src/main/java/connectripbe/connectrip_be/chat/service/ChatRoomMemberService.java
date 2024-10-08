@@ -1,7 +1,11 @@
 package connectripbe.connectrip_be.chat.service;
 
+import connectripbe.connectrip_be.chat.entity.ChatRoomEntity;
+import connectripbe.connectrip_be.chat.entity.ChatRoomMemberEntity;
+import connectripbe.connectrip_be.member.entity.MemberEntity;
+
 public interface ChatRoomMemberService {
 
-    void jointChatRoom(Long chatRoomId, Long memberId);
+    ChatRoomMemberEntity jointChatRoom(ChatRoomEntity chatRoom, MemberEntity member);
 
 }

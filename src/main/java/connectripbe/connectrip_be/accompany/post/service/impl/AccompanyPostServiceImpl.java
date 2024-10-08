@@ -207,7 +207,7 @@ public class AccompanyPostServiceImpl implements AccompanyPostService {
                 new AccompanyStatusEntity(post, AccompanyStatusEnum.PROGRESSING));
 
         // 채팅방 생성 및 게시물 작성자 채팅방 자동 참여 처리
-        chatRoomService.createChatRoom(post.getId(), memberId);
+        chatRoomService.createChatRoom(post, memberEntity);
     }
 
     private String generateShortUrl(String input) {
